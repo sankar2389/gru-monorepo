@@ -1,5 +1,5 @@
 {
-  "name": "@gru-monorepo/web",
+  "name": "@gru-monorepo/components",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
@@ -8,9 +8,7 @@
     "@types/react": "16.8.8",
     "@types/react-dom": "16.8.2",
     "react": "^16.8.4",
-    "react-art": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-native-web": "^0.10.1",
     "react-scripts": "2.1.8",
     "typescript": "3.3.3333"
   },
@@ -28,8 +26,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "devDependencies": {
-    "babel-plugin-react-native-web": "^0.10.1"
-  }
+  ]
 }
