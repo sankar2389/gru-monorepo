@@ -1,0 +1,13 @@
+{
+  "name": "@gru-monorepo/web",
+  "version": "0.0.0",
+  "dependencies": {
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "react-native-web": "^0.10.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "compile": "tsc -b"
+  }
+}
