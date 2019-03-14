@@ -1,6 +1,6 @@
 {
   "name": "gru",
-  "version": "0.47.4",
+  "version": "0.0.1",
   "private": true,
   "author": {
     "name": "0mkar",
@@ -23,23 +23,6 @@
   "dependencies": {},
   "devDependencies": {
     "concurrently": "^4.1.0",
-    "cross-env": "^5.2.0",
-    "lint-staged": "^8.1.5",
-    "now": "*",
-    "patch-package": "^5.1.1",
-    "postinstall-prepare": "^1.0.1",
-    "prettier": "1.16.4",
-    "shx": "0.3.2",
-    "tslint": "5.13.1",
-    "tslint-config-prettier": "1.18.0",
-    "tslint-react": "3.6.0",
     "typescript": "3.3.3333"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "tslint --fix",
-      "prettier --write",
-      "git add"
-    ]
   }
 }
