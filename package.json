@@ -1,7 +1,14 @@
 {
-  "name": "gru-monorepo",
-  "version": "0.0.0",
+  "name": "gru",
+  "version": "0.47.4",
   "private": true,
+  "author": {
+    "name": "Bruno Lemos",
+    "email": "bruno@devhubapp.com",
+    "url": "https://twitter.com/brunolemos"
+  },
+  "description": "TweetDeck for GitHub",
+  "repository": "https://github.com/devhubapp/devhub",
   "workspaces": {
     "packages": [
       "packages/*"
@@ -10,27 +17,30 @@
       "**/react-native-firebase"
     ]
   },
-  "dependencies": {
-    "react": "^16.8.4",
-    "react-dom": "^16.8.4",
-    "react-scripts": "2.1.8"
-  },
   "scripts": {
-    "dev:web": "yarn workspace @gru-monorepo/web && concurrently --kill-others \"yarn workspace @gru-monorepo/web start\"",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "clean": "yarn workspaces run clean",
+    "dev:web": "yarn workspace @gru/web compile && concurrently --kill-others \"yarn workspace @gru/web compile -w\" \"yarn workspace @gru/web start\""
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
+  "dependencies": {},
   "devDependencies": {
-    "concurrently": "^4.1.0"
+    "concurrently": "^4.1.0",
+    "cross-env": "^5.2.0",
+    "lint-staged": "^8.1.5",
+    "now": "*",
+    "patch-package": "^5.1.1",
+    "postinstall-prepare": "^1.0.1",
+    "prettier": "1.16.4",
+    "shx": "0.3.2",
+    "tslint": "5.13.1",
+    "tslint-config-prettier": "1.18.0",
+    "tslint-react": "3.6.0",
+    "typescript": "3.3.3333"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "tslint --fix",
+      "prettier --write",
+      "git add"
+    ]
   }
 }

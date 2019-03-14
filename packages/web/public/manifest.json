@@ -1,15 +1,39 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "name": "DevHub",
+  "short_name": "DevHub",
+  "description": "TweetDeck for GitHub",
+  "lang": "en-US",
+  "start_url": "./?utm_source=web_app_manifest",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#49d3b4",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "static/media/logo.png",
+      "sizes": "100x100",
+      "type": "image/png"
+    },
+    {
+      "src": "static/media/logo.png",
+      "sizes": "200x200",
+      "type": "image/png"
+    },
+    {
+      "src": "static/media/logo.png",
+      "sizes": "300x300",
+      "type": "image/png"
+    },
+    {
+      "src": "static/media/logo@2x.png",
+      "sizes": "600x600",
+      "type": "image/png"
+    },
+    {
+      "src": "static/media/logo@3x.png",
+      "sizes": "900x900",
+      "type": "image/png"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#1c1c1c",
+  "prefer_related_applications": true
 }
