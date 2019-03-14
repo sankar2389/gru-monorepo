@@ -3,12 +3,11 @@
   "version": "0.47.4",
   "private": true,
   "author": {
-    "name": "Bruno Lemos",
-    "email": "bruno@devhubapp.com",
-    "url": "https://twitter.com/brunolemos"
+    "name": "0mkar",
+    "email": "0mkar@protonmail.com"
   },
-  "description": "TweetDeck for GitHub",
-  "repository": "https://github.com/devhubapp/devhub",
+  "description": "Gru app",
+  "repository": "https://github.com/sankar2389/gru-monorepo",
   "workspaces": {
     "packages": [
       "packages/*"
