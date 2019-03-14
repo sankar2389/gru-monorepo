@@ -1,0 +1,33 @@
+{
+  "name": "@gru/components",
+  "version": "0.0.1",
+  "private": false,
+  "main": "dist",
+  "scripts": {
+    "compile": "tsc -b",
+    "clean": "shx rm -rf dist/*"
+  },
+  "dependencies": {
+    "react": "16.8.4",
+    "react-native": "0.59.0",
+    "react-dom": "16.8.4",
+    "react-native-web": "^0.10.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.2",
+    "@types/react-native": "0.57.19",
+    "@types/react-test-renderer": "^16.8.0",
+    "babel-jest": "^23.6.0",
+    "husky": "^1.2.0",
+    "jest": "^23.6.0",
+    "postinstall-postinstall": "^2.0.0",
+    "prettier": "1.16.4",
+    "react-native-typescript-transformer": "^1.2.12",
+    "ts-jest": "^23.10.5",
+    "tslint": "5.13.1",
+    "tslint-config-airbnb": "5.11.1",
+    "tslint-config-prettier": "1.18.0",
+    "tslint-react": "3.6.0",
+    "typescript": "3.3.3333"
+  }
+}

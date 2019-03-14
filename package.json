@@ -1,7 +1,13 @@
 {
-  "name": "gru-monorepo",
-  "version": "0.0.0",
+  "name": "gru",
+  "version": "0.0.1",
   "private": true,
+  "author": {
+    "name": "0mkar",
+    "email": "0mkar@protonmail.com"
+  },
+  "description": "Gru app",
+  "repository": "https://github.com/sankar2389/gru-monorepo",
   "workspaces": {
     "packages": [
       "packages/*"
@@ -10,27 +16,13 @@
       "**/react-native-firebase"
     ]
   },
-  "dependencies": {
-    "react": "^16.8.4",
-    "react-dom": "^16.8.4",
-    "react-scripts": "2.1.8"
-  },
   "scripts": {
-    "dev:web": "yarn workspace @gru-monorepo/web && concurrently --kill-others \"yarn workspace @gru-monorepo/web start\"",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "clean": "yarn workspaces run clean",
+    "dev:web": "yarn workspace @gru/web compile && concurrently --kill-others \"yarn workspace @gru/web compile -w\" \"yarn workspace @gru/web start\""
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
+  "dependencies": {},
   "devDependencies": {
-    "concurrently": "^4.1.0"
+    "concurrently": "^4.1.0",
+    "typescript": "3.3.3333"
   }
 }
