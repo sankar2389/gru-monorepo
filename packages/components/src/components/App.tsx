@@ -1,22 +1,13 @@
 import React from 'react'
 import './App.css'
+import AppNavigator from './AppNavigator'
+const navWeb = require('@react-navigation/web')
 
 export function App() {
+  const AppContainer = navWeb.createBrowserApp(AppNavigator);
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-          </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Buy/Sell on gru
-          </a>
-      </header>
+      <AppContainer />
     </div>
   )
 }
