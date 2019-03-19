@@ -5,7 +5,7 @@ class HomeScreen extends Component {
     render() {
         return (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-                <Text>Login Screen</Text>
+                <Text style={{ color: 'white' }}>Login Screen</Text>
             </View>
         );
     }
