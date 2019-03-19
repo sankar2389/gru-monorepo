@@ -12,7 +12,6 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": false,
-    "jsx": "preserve",
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,

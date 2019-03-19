@@ -1,12 +1,11 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, TextInput, Button } from "react-native"
+import { NavigationScreenProps } from 'react-navigation'
 
-class HomeScreen extends Component {
+type Props = NavigationScreenProps
+class LoginScreen extends Component<Props> {
     render() {
         const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText } = styles
-        const onLogin = () => {
-            console.log('Logging in...');
-        }
         return (
             <View style={loginViewStyle}>
                 <View style={formView}>
@@ -15,7 +14,7 @@ class HomeScreen extends Component {
                     <TextInput value={''} placeholder={'Password'} style={inputStyle} />
                     <View style={loginBtnCtnr}>
                         <Button
-                            onPress={onLogin}
+                            onPress={() => this.props.navigation.navigate('PublicDashboard')}
                             title="Login"
                             color="#d72b2b"
                             accessibilityLabel="Log in to the user panel"
@@ -27,7 +26,7 @@ class HomeScreen extends Component {
     }
 }
 
-export default HomeScreen;
+export default LoginScreen;
 
 const styles = StyleSheet.create({
     loginViewStyle: {
