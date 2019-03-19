@@ -1,14 +1,26 @@
 import React, { Component } from "react"
-import { View, Text, StyleSheet, TextInput } from "react-native"
+import { View, Text, StyleSheet, TextInput, Button } from "react-native"
 
 class HomeScreen extends Component {
     render() {
-        const { loginViewStyle, textStyle, formView } = styles
+        const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText } = styles
+        const onLogin = () => {
+            console.log('Logging in...');
+        }
         return (
             <View style={loginViewStyle}>
                 <View style={formView}>
-                    <TextInput value={''} placeholder={'Email address'} />
-                    <TextInput value={''} placeholder={'Password'} />
+                    <Text style={headerText}>GRU</Text>
+                    <TextInput value={''} placeholder={'Email address'} style={inputStyle} underlineColorAndroid={'red'} />
+                    <TextInput value={''} placeholder={'Password'} style={inputStyle} />
+                    <View style={loginBtnCtnr}>
+                        <Button
+                            onPress={onLogin}
+                            title="Login"
+                            color="#d72b2b"
+                            accessibilityLabel="Log in to the user panel"
+                        />
+                    </View>
                 </View>
             </View>
         );
@@ -26,12 +38,23 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center"
     },
-    textStyle: {
-        color: '#636b6f'
+    headerText: {
+        color: '#d72b2b'
     },
     formView: {
-        borderColor: 'black',
-        borderWidth: 1
-
+        width: '20vw',
+        height: '40vh',
+        backgroundColor: '#ffffff'
+    },
+    inputStyle: {
+        height: 30,
+        borderColor: '#ededed',
+        borderBottomWidth: 1
+    },
+    loginBtnCtnr: {
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        marginTop: 5
     }
 })
