@@ -2,11 +2,19 @@ import HomeScreen from './HomeScreen'
 import LoginScreen from './LoginScreen'
 const nav = require('@react-navigation/core')
 const AppNavigator = nav.createSwitchNavigator({
-    Login: {
+    UserLogin: {
         screen: LoginScreen,
-        path: '/login',
+        path: '/public/login',
         navigationOptions: () => ({
-            title: `Login`,
+            title: `Public Login`,
+            headerBackTitle: null
+        })
+    },
+    AdminLogin: {
+        screen: LoginScreen,
+        path: '/admin/login',
+        navigationOptions: () => ({
+            title: `Admin Login`,
             headerBackTitle: null
         })
     },

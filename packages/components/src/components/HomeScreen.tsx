@@ -6,16 +6,23 @@ class HomeScreen extends Component {
         return (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
                 <header className="App-header">
-                    <p>
-                        Edit <code>src/App.js</code> and save to reload.
-                    </p>
-                    <a
-                        className="App-link"
-                        href="https://reactjs.org"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Buy/Sell on gru
-                    </a>
+                    <p>GRU</p>
+                    <div className="panel-links">
+                        <a
+                            className="login-link"
+                            href="/public/login"
+                            target="_self"
+                            rel="noopener noreferrer">
+                            User panel
+                        </a>
+                        <a
+                            className="login-link"
+                            href="/admin/login"
+                            target="_self"
+                            rel="noopener noreferrer">
+                            Admin panel
+                        </a>
+                    </div>
                 </header>
             </View>
         );

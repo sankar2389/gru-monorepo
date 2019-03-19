@@ -11,6 +11,7 @@
 
 .App-header {
   min-height: 100vh;
+  min-width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,8 +20,15 @@
   color: white;
 }
 
-.App-link {
+.login-link {
   color: #61dafb;
+  text-decoration: none;
+}
+
+.panel-links {
+  width: 25vw;
+  justify-content: space-around;
+  display: flex;
 }
 
 @keyframes App-logo-spin {
