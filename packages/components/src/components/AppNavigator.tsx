@@ -1,5 +1,5 @@
-import HomeScreen from './HomeScreen'
-import LoginScreen from './LoginScreen'
+import HomeScreen from './Home/HomeScreen'
+import LoginScreen from './Login/LoginScreen'
 const nav = require('@react-navigation/core')
 const AppNavigator = nav.createSwitchNavigator({
     UserLogin: {

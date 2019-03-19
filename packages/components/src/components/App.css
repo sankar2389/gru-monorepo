@@ -1,5 +1,5 @@
 .App {
-  background-color: #282c34;
+  background-color: #f4f5f9;
   text-align: center;
 }
 
@@ -16,12 +16,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-size: calc(20px + 2vmin);
+  color: #636b6f;
 }
 
 .login-link {
-  color: #61dafb;
+  font-size: calc(10px + 2vmin);
+  color: #636b6f;
   text-decoration: none;
 }
 
