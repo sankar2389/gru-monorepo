@@ -1,10 +1,7 @@
-import axios from 'axios'
-interface ISignup {
-    username: string,
-    email: string,
-    password: string
-}
-const signupFail = (dispatch: Function, message: string) => {
+import axios, { AxiosError } from 'axios';
+import { ISignup, ISignupError } from '../types';
+
+const signupFail = (dispatch: Function, message: ISignupError) => {
     dispatch({ type: 'REG_FAIL', payload: message });
 }
 export const signupUser = (payload: ISignup) => {
@@ -22,10 +19,12 @@ export const signupUser = (payload: ISignup) => {
                 console.log('User profile', response.data.user);
                 console.log('User token', response.data.jwt);
             })
-            .catch(error => {
+            .catch((error: AxiosError) => {
                 // axios puts original error response to error.response https://github.com/axios/axios/issues/960#issuecomment-309287911
-                error = error.response;
-                console.error('Error: ', error.data.message);
+                console.log(error.response);
+                const err: ISignupError = error.response!.data
+                console.error('Error: ', err.message);
+                signupFail(dispatch, err);
             });
     }
 }

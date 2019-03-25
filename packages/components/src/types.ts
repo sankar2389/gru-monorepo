@@ -1,12 +1,23 @@
 export interface IAuth {
-    username: string,
-    password: string,
-    email: string,
     authtoken: string | null,
-    error: string | null,
-    loading: boolean
+    error: ISignupError | null
 }
 
 export interface IReduxState {
     auth: IAuth
+}
+
+export interface ISignup {
+    username: string,
+    email: string,
+    password: string
+}
+export interface ISignupError {
+    error: string,
+    message: string,
+    statusCode: number
+}
+
+export interface IRootState {
+    app: IReduxState
 }

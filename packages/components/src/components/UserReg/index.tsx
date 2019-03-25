@@ -14,39 +14,76 @@ interface IState {
     username: string,
     password: string,
     confirmPass: string,
-    email: string
+    email: string,
+    formError: Error | null
 }
 class UserRegScreen extends Component<IProps, IState> {
     state = {
         username: 'Santanu B',
         password: '1234',
         confirmPass: '1234',
-        email: 'santanubarai@mathcody.com'
+        email: 'santanubarai@mathcody.com',
+        formError: null
     }
     constructor(props: IProps) {
         super(props);
-    }
-    componentDidUpdate(prevProps: IProps) {
-        console.log(this.props);
     }
     signup() {
         const { confirmPass, password, username, email } = this.state;
         if(password === confirmPass) {
             this.props.signupUser({ username, email, password });
         } else {
-            throw Error("Password did not match");
+            const vErr: Error = Error("Password did not match")
+            console.log(vErr.message);
+            
+            this.setState({ formError: vErr });
+            console.log(this.state);
+            
         }
     }
     render() {
-        const { username, password, confirmPass, email } = this.state;
-        const { loginViewStyle, formView, signupBtnCtnr, inputStyle } = styles
+        const { username, password, confirmPass, email, formError } = this.state;
+        const { error } = this.props.auth;
+        const { loginViewStyle, formView, signupBtnCtnr, inputStyle, errorMsg } = styles
         return (
             <View style={loginViewStyle}>
                 <View style={formView}>
-                    <TextInput value={username} placeholder={'Name'} style={inputStyle} underlineColorAndroid={'red'} />
-                    <TextInput value={email} placeholder={'Email address'} style={inputStyle} underlineColorAndroid={'red'} />
-                    <TextInput value={password} placeholder={'Password'} secureTextEntry={true} style={inputStyle} />
-                    <TextInput value={confirmPass} placeholder={'Confirm password'} secureTextEntry={true} style={inputStyle} />
+                    <TextInput
+                        value={username}
+                        placeholder={'Name'}
+                        style={inputStyle}
+                        underlineColorAndroid={'red'}
+                        onChangeText={(text) => this.setState({ username: text })}
+                    />
+                    <TextInput
+                        value={email}
+                        placeholder={'Email address'}
+                        style={inputStyle}
+                        underlineColorAndroid={'red'}
+                        onChangeText={(text) => this.setState({ email: text })}
+                    />
+                    <TextInput
+                        value={password}
+                        placeholder={'Password'}
+                        secureTextEntry={true}
+                        style={inputStyle}
+                        onChangeText={(text) => this.setState({ password: text })}
+                    />
+                    <TextInput
+                        value={confirmPass}
+                        placeholder={'Confirm password'}
+                        secureTextEntry={true}
+                        style={inputStyle}
+                        onChangeText={(text) => this.setState({ confirmPass: text })}
+                    />
+                    {
+                        error !== null &&
+                        <Text style={errorMsg}>Error: {error.message}</Text>
+                    }
+                    {
+                        formError !== null &&
+                        <Text style={errorMsg}>Error: {formError.message}</Text>
+                    }
                     <View style={signupBtnCtnr}>
                         <Button
                             onPress={() => this.signup()}
@@ -94,5 +131,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         marginTop: 5
+    },
+    errorMsg: {
+        color: '#fd3b3be8'
     }
 })
