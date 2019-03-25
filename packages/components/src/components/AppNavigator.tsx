@@ -1,6 +1,7 @@
 import HomeScreen from './Home/HomeScreen'
 import LoginScreen from './Login/LoginScreen'
 import Dashboard from './Dashboard/Dashboard'
+import UserRegScreen from './UserReg'
 const nav = require('@react-navigation/core')
 
 const AppNavigator = nav.createSwitchNavigator({
@@ -9,6 +10,14 @@ const AppNavigator = nav.createSwitchNavigator({
         path: 'public/login',
         navigationOptions: () => ({
             title: `Public Login`,
+            headerBackTitle: null
+        })
+    },
+    UserReg: {
+        screen: UserRegScreen,
+        path: 'public/newuser',
+        navigationOptions: () => ({
+            title: `User registration`,
             headerBackTitle: null
         })
     },

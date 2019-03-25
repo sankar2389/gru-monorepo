@@ -20,6 +20,10 @@ class LoginScreen extends Component<Props> {
                             accessibilityLabel="Log in to the user panel"
                         />
                     </View>
+                    <View>
+                        <Text>New user ?</Text>
+                        <Text onPress={() => this.props.navigation.navigate('UserReg')}>Create new account</Text>
+                    </View>
                 </View>
             </View>
         );

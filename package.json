@@ -10,15 +10,14 @@
   "repository": "https://github.com/sankar2389/gru-monorepo",
   "workspaces": {
     "packages": [
-      "packages/*"
-    ],
-    "nohoist": [
-      "**/react-native-firebase"
+      "packages/web",
+      "packages/components"
     ]
   },
   "scripts": {
     "clean": "yarn workspaces run clean",
-    "dev:web": "yarn workspace @gru/web compile && concurrently --kill-others \"yarn workspace @gru/web compile -w\" \"yarn workspace @gru/web start\""
+    "dev:web": "yarn workspace @gru/web compile && concurrently --kill-others \"yarn workspace @gru/web compile -w\" \"yarn workspace @gru/web start\"",
+    "dev:cms": "cd packages/cms && npm start"
   },
   "dependencies": {},
   "devDependencies": {
