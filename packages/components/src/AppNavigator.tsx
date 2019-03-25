@@ -1,7 +1,7 @@
-import HomeScreen from './Home/HomeScreen'
-import LoginScreen from './Login/LoginScreen'
-import Dashboard from './Dashboard/Dashboard'
-import UserRegScreen from './UserReg'
+import HomeScreen from './components/Home/HomeScreen'
+import LoginScreen from './components/Login/LoginScreen'
+import Dashboard from './components/Dashboard/Dashboard'
+import UserRegScreen from './components/UserReg'
 const nav = require('@react-navigation/core')
 
 const AppNavigator = nav.createSwitchNavigator({

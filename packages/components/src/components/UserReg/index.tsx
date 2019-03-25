@@ -1,20 +1,52 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, TextInput, Button } from "react-native"
 import { NavigationScreenProps } from 'react-navigation'
+import { connect } from 'react-redux';
+import { signupUser } from '../../actions';
+import { IAuth, IReduxState } from '../../types';
 
-type IProps = NavigationScreenProps
-class UserRegScreen extends Component<IProps> {
+interface IProps {
+    navigation: NavigationScreenProps,
+    signupUser: Function,
+    auth: IAuth
+}
+interface IState {
+    username: string,
+    password: string,
+    confirmPass: string,
+    email: string
+}
+class UserRegScreen extends Component<IProps, IState> {
+    state = {
+        username: 'Santanu B',
+        password: '1234',
+        confirmPass: '1234',
+        email: 'santanubarai@mathcody.com'
+    }
+    constructor(props: IProps) {
+        super(props);
+    }
+    componentDidUpdate(prevProps: IProps) {
+        console.log(this.props);
+    }
     signup() {
+        const { confirmPass, password, username, email } = this.state;
+        if(password === confirmPass) {
+            this.props.signupUser({ username, email, password });
+        } else {
+            throw Error("Password did not match");
+        }
     }
     render() {
+        const { username, password, confirmPass, email } = this.state;
         const { loginViewStyle, formView, signupBtnCtnr, inputStyle } = styles
         return (
             <View style={loginViewStyle}>
                 <View style={formView}>
-                    <TextInput value={''} placeholder={'Name'} style={inputStyle} underlineColorAndroid={'red'} />
-                    <TextInput value={''} placeholder={'Email address'} style={inputStyle} underlineColorAndroid={'red'} />
-                    <TextInput value={''} placeholder={'Password'} style={inputStyle} />
-                    <TextInput value={''} placeholder={'Confirm password'} style={inputStyle} />
+                    <TextInput value={username} placeholder={'Name'} style={inputStyle} underlineColorAndroid={'red'} />
+                    <TextInput value={email} placeholder={'Email address'} style={inputStyle} underlineColorAndroid={'red'} />
+                    <TextInput value={password} placeholder={'Password'} secureTextEntry={true} style={inputStyle} />
+                    <TextInput value={confirmPass} placeholder={'Confirm password'} secureTextEntry={true} style={inputStyle} />
                     <View style={signupBtnCtnr}>
                         <Button
                             onPress={() => this.signup()}
@@ -29,7 +61,11 @@ class UserRegScreen extends Component<IProps> {
     }
 }
 
-export default UserRegScreen;
+const mapStateToProps = ({ auth }: any): IReduxState => {
+    return { auth };
+};
+
+export default connect<IReduxState>(mapStateToProps, { signupUser })(UserRegScreen);
 
 const styles = StyleSheet.create({
     loginViewStyle: {
