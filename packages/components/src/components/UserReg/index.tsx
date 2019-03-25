@@ -15,7 +15,7 @@ interface IState {
     password: string,
     confirmPass: string,
     email: string,
-    formError: Error | null
+    formError?: Error
 }
 class UserRegScreen extends Component<IProps, IState> {
     state = {
@@ -23,7 +23,7 @@ class UserRegScreen extends Component<IProps, IState> {
         password: '1234',
         confirmPass: '1234',
         email: 'santanubarai@mathcody.com',
-        formError: null
+        formError: undefined
     }
     constructor(props: IProps) {
         super(props);
@@ -34,11 +34,7 @@ class UserRegScreen extends Component<IProps, IState> {
             this.props.signupUser({ username, email, password });
         } else {
             const vErr: Error = Error("Password did not match")
-            console.log(vErr.message);
-            
             this.setState({ formError: vErr });
-            console.log(this.state);
-            
         }
     }
     render() {
@@ -81,7 +77,7 @@ class UserRegScreen extends Component<IProps, IState> {
                         <Text style={errorMsg}>Error: {error.message}</Text>
                     }
                     {
-                        formError !== null &&
+                        formError !== undefined &&
                         <Text style={errorMsg}>Error: {formError.message}</Text>
                     }
                     <View style={signupBtnCtnr}>
