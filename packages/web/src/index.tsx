@@ -1,7 +1,7 @@
 import { ComponentType } from 'react';
 import { AppRegistry } from 'react-native';
 import './index.css';
-import { App } from '@gru/components/src/components/App';
+import { App } from '@gru/components/src/App';
 import * as serviceWorker from './serviceWorker';
 
 const render = (AppComponent: ComponentType) => {
