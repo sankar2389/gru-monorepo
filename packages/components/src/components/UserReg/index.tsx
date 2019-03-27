@@ -1,12 +1,11 @@
-import React, { Component } from "react"
-import { View, Text, StyleSheet, TextInput, Button } from "react-native"
-import { NavigationScreenProps } from 'react-navigation'
+import React, { Component } from "react";
+import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 import { signupUser } from '../../actions';
 import { IAuth, IReduxState } from '../../types';
 
-interface IProps {
-    navigation: NavigationScreenProps,
+interface IProps extends NavigationScreenProps {
     signupUser: Function,
     auth: IAuth
 }
@@ -18,7 +17,7 @@ interface IState {
     formError?: Error
 }
 class UserRegScreen extends Component<IProps, IState> {
-    state = {
+    state: IState = {
         username: 'Santanu B',
         password: '1234',
         confirmPass: '1234',
@@ -35,6 +34,12 @@ class UserRegScreen extends Component<IProps, IState> {
         } else {
             const vErr: Error = Error("Password did not match")
             this.setState({ formError: vErr });
+        }
+    }
+    componentDidUpdate(prevProps: IProps) {
+        const { authtoken } = this.props.auth;
+        if(authtoken) {
+            this.props.navigation.navigate('UserLogin');
         }
     }
     render() {

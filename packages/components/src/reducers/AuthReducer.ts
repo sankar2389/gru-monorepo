@@ -7,7 +7,7 @@ const initState: IAuth = {
 }
 export default (state: IAuth = initState, action: AnyAction): IAuth => {
     switch (action.type) {
-        case 'REG_USER':
+        case 'REG_SUCCESS':
             return { ...state, ...initState, authtoken: action.payload };
         case 'REG_FAIL':
             return { ...state, ...initState, error: action.payload };

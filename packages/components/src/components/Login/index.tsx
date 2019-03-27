@@ -1,9 +1,26 @@
-import React, { Component } from "react"
-import { View, Text, StyleSheet, TextInput, Button } from "react-native"
-import { NavigationScreenProps } from 'react-navigation'
+import React, { Component } from "react";
+import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { NavigationScreenProps } from 'react-navigation';
+import { IReduxState, IAuth } from '../../types';
+import { connect } from 'react-redux';
 
-type Props = NavigationScreenProps
-class LoginScreen extends Component<Props> {
+interface IProps extends NavigationScreenProps{
+    auth: IAuth
+}
+interface IState {
+    authtoken: string | null
+}
+class LoginScreen extends Component<IProps, IState> {
+    state: IState = {
+        authtoken: null
+    }
+    constructor(props: IProps) {
+        super(props);
+        const { authtoken } = props.auth;
+        if(authtoken) {
+            this.props.navigation.navigate('PublicDashboard')
+        }
+    }
     render() {
         const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText } = styles
         return (
@@ -30,7 +47,11 @@ class LoginScreen extends Component<Props> {
     }
 }
 
-export default LoginScreen;
+const mapStateToProps = ({ auth }: any): IReduxState => {
+    return { auth };
+};
+
+export default connect<IReduxState>(mapStateToProps, {})(LoginScreen);
 
 const styles = StyleSheet.create({
     loginViewStyle: {

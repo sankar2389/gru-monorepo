@@ -1,5 +1,5 @@
 import HomeScreen from './components/Home/HomeScreen'
-import LoginScreen from './components/Login/LoginScreen'
+import LoginScreen from './components/Login'
 import Dashboard from './components/Dashboard/Dashboard'
 import UserRegScreen from './components/UserReg'
 const nav = require('@react-navigation/core')
