@@ -1,14 +1,14 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, TextInput, Button } from "react-native"
+import {Navbar, Sidebar} from "../common";
 
 class Dashboard extends Component {
     render() {
-        const { loginViewStyle, formView, headerText } = styles
+        const {container } = styles
         return (
-            <View style={loginViewStyle}>
-                <View style={formView}>
-                    <Text style={headerText}>GRU Public dashboard</Text>
-                </View>
+            <View style={ container }>
+                <Sidebar></Sidebar>
+                <Navbar></Navbar>
             </View>
         );
     }
@@ -17,20 +17,7 @@ class Dashboard extends Component {
 export default Dashboard;
 
 const styles = StyleSheet.create({
-    loginViewStyle: {
-        minHeight: '100vh',
-        minWidth: '100vw',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    headerText: {
-        color: '#d72b2b'
-    },
-    formView: {
-        width: '20vw',
-        height: '40vh',
-        backgroundColor: '#ffffff'
+    container: {
+        height: "100%"
     }
 })
