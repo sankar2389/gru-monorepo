@@ -39,7 +39,7 @@ class UserRegScreen extends Component<IProps, IState> {
     componentDidUpdate(prevProps: IProps) {
         const { authtoken } = this.props.auth;
         if(authtoken) {
-            this.props.navigation.navigate('UserLogin');
+            this.props.navigation.navigate('App');
         }
     }
     render() {
