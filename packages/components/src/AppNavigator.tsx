@@ -9,14 +9,6 @@ import { createSwitchNavigator, createNavigator, SwitchRouter } from "@react-nav
 import { createStackNavigator } from "@react-navigation/web";
 
 const AuthStack = createSwitchNavigator({
-    PublicDashboard: {
-        screen: Dashboard,
-        path: 'public/dashboard',
-        navigationOptions: () => ({
-            title: `Dashboard`,
-            headerBackTitle: null
-        })
-    },
     AdminLogin: {
         screen: LoginScreen,
         path: 'admin/login',
@@ -43,6 +35,19 @@ const AuthStack = createSwitchNavigator({
     }
 })
 
+const AppStack = createSwitchNavigator(
+    {
+        PublicDashboard: {
+            screen: Dashboard,
+            path: 'public/dashboard',
+            navigationOptions: () => ({
+                title: `Dashboard`,
+                headerBackTitle: null
+            })
+        }
+    }
+);
+
 const AppNavigator = createSwitchNavigator(
     {
         Home: {
@@ -54,7 +59,8 @@ const AppNavigator = createSwitchNavigator(
             })
         },
         AuthLoading: AuthLoadingScreen,
-        Auth: AuthStack
+        Auth: AuthStack,
+        App: AppStack
     },
     {
         initialRouteName: 'Home',

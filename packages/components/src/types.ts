@@ -12,6 +12,11 @@ export interface ISignup {
     email: string,
     password: string
 }
+export interface ILogin {
+    email: string,
+    password: string
+}
+
 export interface ISignupError {
     error: string,
     message: string,

@@ -8,8 +8,12 @@ const initState: IAuth = {
 export default (state: IAuth = initState, action: AnyAction): IAuth => {
     switch (action.type) {
         case 'REG_SUCCESS':
-            return { ...state, ...initState, authtoken: action.payload };
+            return { ...state, authtoken: action.payload };
         case 'REG_FAIL':
+            return { ...state, ...initState, error: action.payload };
+        case 'LOGIN_SUCCESS':
+            return { ...state, authtoken: action.payload };
+        case 'LOGIN_FAIL':
             return { ...state, ...initState, error: action.payload };
         default:
             return state;

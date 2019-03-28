@@ -3,35 +3,57 @@ import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 import { NavigationScreenProps } from 'react-navigation';
 import { IReduxState, IAuth } from '../../types';
 import { connect } from 'react-redux';
+import { loginUser } from '../../actions';
 
 interface IProps extends NavigationScreenProps{
+    loginUser: Function,
     auth: IAuth
 }
 interface IState {
-    authtoken: string | null
+    email: string,
+    password: string
 }
 class LoginScreen extends Component<IProps, IState> {
     state: IState = {
-        authtoken: null
+        email: 'santanubarai@test.com',
+        password: '1234'
     }
     constructor(props: IProps) {
         super(props);
-        const { authtoken } = props.auth;
+    }
+    login() {
+        const { email, password } = this.state;
+        this.props.loginUser({ email, password });
+    }
+    componentDidUpdate() {
+        const { authtoken } = this.props.auth;
         if(authtoken) {
-            props.navigation.navigate('PublicDashboard')
+            this.props.navigation.navigate('App')
         }
     }
     render() {
+        const { email, password } = this.state;
         const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText } = styles
         return (
             <View style={loginViewStyle}>
                 <View style={formView}>
                     <Text style={headerText}>GRU</Text>
-                    <TextInput value={''} placeholder={'Email address'} style={inputStyle} underlineColorAndroid={'red'} />
-                    <TextInput value={''} placeholder={'Password'} style={inputStyle} />
+                    <TextInput
+                        value={email}
+                        placeholder={'Email address'}
+                        style={inputStyle}
+                        onChangeText={(text) => this.setState({ email: text })}
+                    />
+                    <TextInput
+                        value={password}
+                        placeholder={'Password'}
+                        secureTextEntry={true}
+                        style={inputStyle}
+                        onChangeText={(text) => this.setState({ password: text })}
+                    />
                     <View style={loginBtnCtnr}>
                         <Button
-                            onPress={() => this.props.navigation.navigate('PublicDashboard')}
+                            onPress={() => this.login()}
                             title="Login"
                             color="#d72b2b"
                             accessibilityLabel="Log in to the user panel"
@@ -51,7 +73,7 @@ const mapStateToProps = ({ auth }: any): IReduxState => {
     return { auth };
 };
 
-export default connect<IReduxState>(mapStateToProps, {})(LoginScreen);
+export default connect<IReduxState>(mapStateToProps, { loginUser })(LoginScreen);
 
 const styles = StyleSheet.create({
     loginViewStyle: {
