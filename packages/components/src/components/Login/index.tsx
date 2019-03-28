@@ -18,7 +18,7 @@ class LoginScreen extends Component<IProps, IState> {
         super(props);
         const { authtoken } = props.auth;
         if(authtoken) {
-            this.props.navigation.navigate('PublicDashboard')
+            props.navigation.navigate('PublicDashboard')
         }
     }
     render() {

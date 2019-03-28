@@ -1,7 +1,12 @@
-import React, { Component } from "react"
-import { View } from "react-native"
+import React, { Component } from "react";
+import { View } from "react-native";
+import { NavigationScreenProps } from 'react-navigation';
 
-class HomeScreen extends Component {
+interface IProps extends NavigationScreenProps {}
+class HomeScreen extends Component<IProps> {
+    static navigationOptions = {
+        title: 'Home'
+    }
     render() {
         return (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -10,14 +15,14 @@ class HomeScreen extends Component {
                     <div className="panel-links">
                         <a
                             className="login-link"
-                            href="/public/login"
+                            href="AuthLoading"
                             target="_self"
                             rel="noopener noreferrer">
                             User panel
                         </a>
                         <a
                             className="login-link"
-                            href="/admin/login"
+                            href="AuthLoading"
                             target="_self"
                             rel="noopener noreferrer">
                             Admin panel
