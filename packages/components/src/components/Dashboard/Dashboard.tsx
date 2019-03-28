@@ -7,7 +7,7 @@ class Dashboard extends Component {
         return (
             <View style={loginViewStyle}>
                 <View style={formView}>
-                    <Text style={headerText}>ICICI Payment Gateway</Text>
+                    <Text style={headerText}>GRU Public dashboard</Text>
                 </View>
             </View>
         );

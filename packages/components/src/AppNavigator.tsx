@@ -1,10 +1,22 @@
-import HomeScreen from './components/Home/HomeScreen'
-import LoginScreen from './components/Login/LoginScreen'
-import Dashboard from './components/Dashboard/Dashboard'
-import UserRegScreen from './components/UserReg'
-const nav = require('@react-navigation/core')
+import HomeScreen from './components/Home/HomeScreen';
+import LoginScreen from './components/Login';
+import Dashboard from './components/Dashboard/Dashboard';
+import UserRegScreen from './components/UserReg';
+import AuthLoadingScreen from './components/AuthLoading';
+// @ts-ignore
+import { createSwitchNavigator, createNavigator, SwitchRouter } from "@react-navigation/core";
+// @ts-ignore
+import { createStackNavigator } from "@react-navigation/web";
 
-const AppNavigator = nav.createSwitchNavigator({
+const AuthStack = createSwitchNavigator({
+    AdminLogin: {
+        screen: LoginScreen,
+        path: 'admin/login',
+        navigationOptions: () => ({
+            title: `Admin Login`,
+            headerBackTitle: null
+        })
+    },
     UserLogin: {
         screen: LoginScreen,
         path: 'public/login',
@@ -20,31 +32,39 @@ const AppNavigator = nav.createSwitchNavigator({
             title: `User registration`,
             headerBackTitle: null
         })
-    },
-    AdminLogin: {
-        screen: LoginScreen,
-        path: 'admin/login',
-        navigationOptions: () => ({
-            title: `Admin Login`,
-            headerBackTitle: null
-        })
-    },
-    PublicDashboard: {
-        screen: Dashboard,
-        path: 'public/dashboard',
-        navigationOptions: () => ({
-            title: `Dashboard`,
-            headerBackTitle: null
-        })
-    },
-    Home: {
-        screen: HomeScreen,
-        path: '/',
-        navigationOptions: () => ({
-            title: `Home`,
-            headerBackTitle: null
-        })
     }
-    });
+})
+
+const AppStack = createSwitchNavigator(
+    {
+        PublicDashboard: {
+            screen: Dashboard,
+            path: 'public/dashboard',
+            navigationOptions: () => ({
+                title: `Dashboard`,
+                headerBackTitle: null
+            })
+        }
+    }
+);
+
+const AppNavigator = createSwitchNavigator(
+    {
+        Home: {
+            screen: HomeScreen,
+            path: '/',
+            navigationOptions: () => ({
+                title: `Home`,
+                headerBackTitle: null
+            })
+        },
+        AuthLoading: AuthLoadingScreen,
+        Auth: AuthStack,
+        App: AppStack
+    },
+    {
+        initialRouteName: 'Home',
+    }
+);
 
 export default AppNavigator;
