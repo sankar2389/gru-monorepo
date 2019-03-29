@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { View, Text, StyleSheet, TextInput, Button } from "react-native"
+import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native"
 
 interface IProps {
     price: string,
@@ -17,7 +17,8 @@ class UserRatesCard extends Component<IProps> {
         return (
             <View style={ container }>
                 <View style={logoCtnr}>
-                    <View style={avatarStyle}>
+                    <View>
+                        <Image style={avatarStyle} source={{uri:avatar}}></Image>
                     </View>
                     <Text style={nameStyle}>{name}</Text>
                     <View style={logo}></View>
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     nameStyle: {
         textAlign: "center",
         fontSize: 20,
-        fintWeight: "bold",
+        fontWeight: "bold",
         marginTop: 5,
         marginBottom: 5,
     },

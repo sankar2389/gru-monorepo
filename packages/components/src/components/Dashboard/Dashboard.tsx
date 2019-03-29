@@ -63,16 +63,15 @@ const styles = StyleSheet.create({
     bullion: {
         display: "flex",
         flexDirection: "column",
-        textAlign: "left",
         paddingTop: 30
     },
     heading: {
         fontSize: 30,
+        textAlign: "left",
     },
     calculateRateContainer: {
         display: "flex",
         flexDirection: "column",
-        textAlign: "left",
         paddingTop: 30
     }
 })
