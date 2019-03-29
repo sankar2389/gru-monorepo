@@ -57,10 +57,10 @@ const styles = StyleSheet.create({
     sidebar: {
         width: 70,
         backgroundColor: "#d72b2b",
-        height: "100%",
         position: "absolute",
         top: 70,
-        left: 0
+        left: 0,
+        bottom: 0
     },
     sidebarButtonCtnr: {
         display: 'flex',
