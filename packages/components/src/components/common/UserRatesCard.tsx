@@ -1,26 +1,19 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, TextInput, Button } from "react-native"
 
-class UserRatesCard extends Component {
-    constructor(props: any) {
+interface IProps {
+    price: string,
+    name: string
+    avatar: string
+}
+
+class UserRatesCard extends Component<IProps> {
+    constructor(props: IProps) {
         super(props);
-        console.log(props)
-        this.state={
-            price:"",
-            name:"",
-            avatar:""
-        };
-    }
-    componentDidMount(){
-        this.setState({
-            price: this.props.price,
-            name: this.props.name,
-            avatar: this.props.avatar
-        });
     }
     render() {
         const { container, priceStyle, materialStyle, logoCtnr, labelCtnr, logo, nameStyle, avatarStyle } = styles
-        const { price, name, avatar } = this.state
+        const { price, name, avatar } = this.props
         return (
             <View style={ container }>
                 <View style={logoCtnr}>
@@ -42,9 +35,9 @@ export { UserRatesCard };
 const styles = StyleSheet.create({
     container: {
         height: 300,
-        width: "10%",
+        width: "12%",
         backgroundColor: "#ffffff",
-        margin: 15,
+        marginRight: 40,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -75,7 +68,11 @@ const styles = StyleSheet.create({
         flexDirection: "column"
     },
     nameStyle: {
-
+        textAlign: "center",
+        fontSize: 20,
+        fintWeight: "bold",
+        marginTop: 5,
+        marginBottom: 5,
     },
     avatarStyle: {
         height: 100,

@@ -1,24 +1,18 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, TextInput, Button } from "react-native"
 
-class RateCard extends Component {
-    constructor(props: any) {
+interface IProps {
+    price: string,
+    material: string
+}
+
+class RateCard extends Component<IProps> {
+    constructor(props: IProps) {
         super(props);
-        console.log(props)
-        this.state={
-            price:"",
-            material:""
-        };
-    }
-    componentDidMount(){
-        this.setState({
-            price: this.props.price,
-            material:this.props.material
-        });
     }
     render() {
         const { container, priceStyle, materialStyle, logoCtnr, labelCtnr, logo } = styles
-        const { price, material } = this.state
+        const { price, material } = this.props
         return (
             <View style={ container }>
                 <View style={logoCtnr}>
@@ -40,7 +34,9 @@ const styles = StyleSheet.create({
         height: "100%",
         width: "25%",
         backgroundColor: "#ffffff",
-        margin: 15,
+        marginRight: 30,
+        margintop: 30,
+        marginBottom: 30,
         display: "flex",
         justifyContent: "center",
         flexDirection: "row"

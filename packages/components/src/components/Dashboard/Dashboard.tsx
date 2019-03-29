@@ -1,10 +1,10 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, TextInput, Button } from "react-native"
-import {Navbar, Sidebar, RateCard, UserRatesCard} from "../common";
+import {Navbar, Sidebar, RateCard, UserRatesCard, CalculateRate} from "../common";
 
 class Dashboard extends Component {
     render() {
-        const { container, innerContainer, rateCardsContainer, userRateCardsContainer } = styles
+        const { container, innerContainer, rateCardsContainer, userRateCardsContainer, bullion, heading, calculateRateContainer } = styles
         return (
             <View style={ container }>
                 <Sidebar></Sidebar>
@@ -15,14 +15,20 @@ class Dashboard extends Component {
                         <RateCard price={"$1303.44"} material={"Silver"}></RateCard>
                         <RateCard price={"$1303.44"} material={"USD"}></RateCard>
                     </View>
-
-                    <View style={userRateCardsContainer}>
-                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                    <View style={calculateRateContainer}>
+                        <Text style={heading}>Calculate your gold rates</Text>
+                        <CalculateRate></CalculateRate>
+                    </View>
+                    <View style={bullion}>
+                        <Text style={heading}>Bullion user gold rates</Text>
+                        <View style={userRateCardsContainer}>
+                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -46,11 +52,27 @@ const styles = StyleSheet.create({
     rateCardsContainer: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "center"
+        justifyContent: "space-between"
     },
     userRateCardsContainer: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "center"
+        paddingTop: 20,
+        justifyContent: "space-between"
+    },
+    bullion: {
+        display: "flex",
+        flexDirection: "column",
+        textAlign: "left",
+        paddingTop: 30
+    },
+    heading: {
+        fontSize: 30,
+    },
+    calculateRateContainer: {
+        display: "flex",
+        flexDirection: "column",
+        textAlign: "left",
+        paddingTop: 30
     }
 })
