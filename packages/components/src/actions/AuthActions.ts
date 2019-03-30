@@ -13,6 +13,9 @@ const loginSuccess = (dispatch: Function, message: string) => {
 const loginFail = (dispatch: Function, message: ISignupError) => {
     dispatch({ type: 'LOGIN_FAIL', payload: message });
 }
+const logout = (dispatch: Function) => {
+    dispatch({ type: 'LOGOUT' });
+}
 
 export const loginUser = (payload: ILogin) => {
     const { email, password } = payload;
@@ -55,5 +58,11 @@ export const signupUser = (payload: ISignup) => {
                 console.error('Error: ', err.message);
                 signupFail(dispatch, err);
             });
+    }
+}
+
+export const logoutUser = () => {
+    return(dispatch: Function) => {
+        logout(dispatch);
     }
 }
