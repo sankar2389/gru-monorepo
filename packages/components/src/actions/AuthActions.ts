@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { ISignup, ISignupError, ILogin } from '../types';
+import { ISignup, ISignupError, ILogin, IForgotPass } from '../types';
 
 const regSuccess = (dispatch: Function, message: string) => {
     dispatch({ type: 'REG_SUCCESS', payload: message });
@@ -15,6 +15,12 @@ const loginFail = (dispatch: Function, message: ISignupError) => {
 }
 const logout = (dispatch: Function) => {
     dispatch({ type: 'LOGOUT' });
+}
+const resetSuccess = (dispatch: Function, response: any) => {
+    dispatch({ type: 'RESET_SUCCESS', payload: response })
+}
+const resetError = (dispatch: Function, error: any) => {
+    dispatch({ type: 'RESET_FAIL', payload: error });
 }
 
 export const loginUser = (payload: ILogin) => {
@@ -64,5 +70,24 @@ export const signupUser = (payload: ISignup) => {
 export const logoutUser = () => {
     return(dispatch: Function) => {
         logout(dispatch);
+    }
+}
+
+export const forgotPass = (payload: IForgotPass) => {
+    const { email } = payload;
+    return (dispatch: Function) => {
+        axios
+            .post('http://localhost:1337/auth/forgot-password', {
+                email,
+                url: 'http:/localhost:1337/admin/plugins/users-permissions/auth/reset-password'
+            })
+            .then( response => {
+                resetSuccess(dispatch, response);
+            })
+            .catch((error: AxiosError) => {
+                console.log(error.response);
+                const err: any = error.response!.data
+                resetError(dispatch, err);
+            })
     }
 }

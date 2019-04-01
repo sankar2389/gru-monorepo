@@ -17,6 +17,10 @@ export interface ILogin {
     password: string
 }
 
+export interface IForgotPass {
+    email: string
+}
+
 export interface ISignupError {
     error: string,
     message: string,
