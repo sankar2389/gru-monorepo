@@ -12,6 +12,7 @@ class AuthLoadingScreen extends Component<IProps> {
     constructor(props: IProps) {
         super(props);
         const { authtoken } = props.auth;
+        console.log(authtoken);
         if(authtoken !== undefined && authtoken !== null && authtoken !== '') {
             // authtoken exists => validate authtoken => goto dashboard
             // TODO: validate auth token

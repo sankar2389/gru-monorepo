@@ -15,7 +15,7 @@ interface IState {
 }
 class LoginScreen extends Component<IProps, IState> {
     state: IState = {
-        email: 'santanubarai@mathcody.com',
+        email: 'santanubarai@test.com',
         password: '1234'
     }
     constructor(props: IProps) {

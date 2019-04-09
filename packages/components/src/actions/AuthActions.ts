@@ -14,7 +14,6 @@ const loginFail = (dispatch: Function, message: ISignupError) => {
     dispatch({ type: 'LOGIN_FAIL', payload: message });
 }
 const logout = (dispatch: Function, message: string) => {
-    console.log("Logging out...");
     dispatch({ type: 'LOGOUT_USER', payload: message });
 }
 const resetSuccess = (dispatch: Function, response: any) => {
@@ -69,7 +68,6 @@ export const signupUser = (payload: ISignup) => {
 }
 
 export const logoutUser = () => {
-    console.log("Logging out");
     return (dispatch: Function) => {
         logout(dispatch, 'Logout success')
     }

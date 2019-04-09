@@ -4,8 +4,9 @@ import { Navbar, Sidebar, RateCard, UserRatesCard, CalculateRate} from "../commo
 import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
 import { IReduxState } from "../../types";
+import { NavigationScreenProps } from "react-navigation";
 
-interface IProps {
+interface IProps extends NavigationScreenProps {
     logoutUser: Function
 }
 class Dashboard extends Component<IProps> {
@@ -18,6 +19,7 @@ class Dashboard extends Component<IProps> {
     }
     handleLogout() {
         this.props.logoutUser();
+        this.props.navigation.navigate('Auth')
     }
     render() {
         const { container, innerContainer, rateCardsContainer, userRateCardsContainer, bullion, heading, calculateRateContainer } = styles
