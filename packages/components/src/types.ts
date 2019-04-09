@@ -30,3 +30,15 @@ export interface ISignupError {
 export interface IRootState {
     app: IReduxState
 }
+
+export interface IGroup {
+    groups: IGroupsInfo[],
+    error: Error | null
+}
+
+export interface IGroupsInfo {
+    groupName: string,
+    users: string[]
+}
+
+export interface ICreateGrpError extends Error {}
