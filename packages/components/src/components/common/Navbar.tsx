@@ -1,70 +1,62 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, TextInput, Button } from "react-native";
-import {NavigationScreenProps} from "react-navigation";
-import {IAuth} from "../../types";
+import { IReduxState } from "../../types";
 
+interface IProps {
+    handleLogout: () => void
+    search: string
+    clicked: () => void
+}
 interface IState {
     search: string
 }
-class Navbar extends Component {
-    state: IState = {
-        search: '',
-    }
-    clicked() {
-        console.log("clicked")
-    }
-    render() {
-        const { search } = this.state;
-        const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup } = styles;
-        return (
-            <View style={ navbar }>
-                <Text style={headerText}>GRU</Text>
-                <TextInput
-                    value={search}
-                    placeholder={'Search'}
-                    style={inputStyle}
-                    onChangeText={(text) => this.setState({ email: text })}
-                />
-                <View style={ navButtonGroup }>
-                    <View style={navButtonCtnr}>
-                        <Button
-                            onPress={() => this.clicked()}
-                            title="Add"
-                            color="#d72b2b"
-                            accessibilityLabel="Add"
-                        />
-                    </View>
-                    <View style={navButtonCtnr}>
-                        <Button
-                            onPress={() => this.clicked()}
-                            title="Buy/Sell"
-                            color="#d72b2b"
-                            accessibilityLabel="Buy or sell"
-                        />
-                    </View>
-                    <View style={navButtonCtnr}>
-                        <Button
-                            onPress={() => this.clicked()}
-                            title="Help"
-                            color="#d72b2b"
-                            accessibilityLabel="Get help"
-                        />
-                    </View>
-                    <View style={navButtonCtnr}>
-                        <Button
-                            onPress={() => this.clicked()}
-                            title="Logout"
-                            color="#d72b2b"
-                            accessibilityLabel="Logout"
-                        />
-                    </View>
+export const Navbar = (props: IProps) => {
+    const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup } = styles;
+    return (
+        <View style={navbar}>
+            <Text style={headerText}>GRU</Text>
+            <TextInput
+                value={props.search}
+                placeholder={'Search'}
+                style={inputStyle}
+            />
+            <View style={navButtonGroup}>
+                <View style={navButtonCtnr}>
+                    <Button
+                        onPress={props.clicked}
+                        title="Add"
+                        color="#d72b2b"
+                        accessibilityLabel="Add"
+                    />
+                </View>
+                <View style={navButtonCtnr}>
+                    <Button
+                        onPress={props.clicked}
+                        title="Buy/Sell"
+                        color="#d72b2b"
+                        accessibilityLabel="Buy or sell"
+                    />
+                </View>
+                <View style={navButtonCtnr}>
+                    <Button
+                        onPress={props.clicked}
+                        title="Help"
+                        color="#d72b2b"
+                        accessibilityLabel="Get help"
+                    />
+                </View>
+                <View style={navButtonCtnr}>
+                    <Button
+                        onPress={props.handleLogout}
+                        title="Logout"
+                        color="#d72b2b"
+                        accessibilityLabel="Logout"
+                    />
                 </View>
             </View>
-        )
-    }
+        </View>
+    )
 }
-
-export { Navbar }
 
 
 const styles = StyleSheet.create({

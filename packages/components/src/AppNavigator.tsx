@@ -1,6 +1,6 @@
 import HomeScreen from './components/Home/HomeScreen';
 import LoginScreen from './components/Login';
-import Dashboard from './components/Dashboard/Dashboard';
+import Dashboard from './components/Dashboard';
 import UserRegScreen from './components/UserReg';
 import AuthLoadingScreen from './components/AuthLoading';
 // @ts-ignore

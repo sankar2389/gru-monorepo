@@ -13,8 +13,9 @@ const loginSuccess = (dispatch: Function, message: string) => {
 const loginFail = (dispatch: Function, message: ISignupError) => {
     dispatch({ type: 'LOGIN_FAIL', payload: message });
 }
-const logout = (dispatch: Function) => {
-    dispatch({ type: 'LOGOUT' });
+const logout = (dispatch: Function, message: string) => {
+    console.log("Logging out...");
+    dispatch({ type: 'LOGOUT_USER', payload: message });
 }
 const resetSuccess = (dispatch: Function, response: any) => {
     dispatch({ type: 'RESET_SUCCESS', payload: response })
@@ -68,8 +69,9 @@ export const signupUser = (payload: ISignup) => {
 }
 
 export const logoutUser = () => {
-    return(dispatch: Function) => {
-        logout(dispatch);
+    console.log("Logging out");
+    return (dispatch: Function) => {
+        logout(dispatch, 'Logout success')
     }
 }
 

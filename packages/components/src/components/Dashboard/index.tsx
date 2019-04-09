@@ -1,14 +1,30 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, TextInput, Button } from "react-native"
-import {Navbar, Sidebar, RateCard, UserRatesCard, CalculateRate} from "../common";
+import { Navbar, Sidebar, RateCard, UserRatesCard, CalculateRate} from "../common";
+import { logoutUser } from '../../actions';
+import { connect } from "react-redux";
+import { IReduxState } from "../../types";
 
-class Dashboard extends Component {
+interface IProps {
+    logoutUser: Function
+}
+class Dashboard extends Component<IProps> {
+    constructor(props: IProps) {
+        super(props);
+        this.handleLogout = this.handleLogout.bind(this);
+    }
+    handleClicked() {
+        console.log("Button clicked");
+    }
+    handleLogout() {
+        this.props.logoutUser();
+    }
     render() {
         const { container, innerContainer, rateCardsContainer, userRateCardsContainer, bullion, heading, calculateRateContainer } = styles
         return (
             <View style={ container }>
                 <Sidebar></Sidebar>
-                <Navbar></Navbar>
+                <Navbar handleLogout={this.handleLogout} clicked={this.handleClicked} search=""></Navbar>
                 <View style={innerContainer}>
                     <View style={rateCardsContainer}>
                         <RateCard price={"$1303.44"} material={"Gold"}></RateCard>
@@ -36,7 +52,11 @@ class Dashboard extends Component {
     }
 }
 
-export default Dashboard;
+const mapStateToProps = ({ auth }: any): IReduxState => {
+    return { auth };
+};
+
+export default connect<IReduxState>(mapStateToProps, { logoutUser })(Dashboard);
 
 const styles = StyleSheet.create({
     container: {
