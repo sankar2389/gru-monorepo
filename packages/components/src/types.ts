@@ -17,6 +17,10 @@ export interface ILogin {
     password: string
 }
 
+export interface IForgotPass {
+    email: string
+}
+
 export interface ISignupError {
     error: string,
     message: string,
@@ -26,3 +30,15 @@ export interface ISignupError {
 export interface IRootState {
     app: IReduxState
 }
+
+export interface IGroup {
+    groups: IGroupsInfo[],
+    error: Error | null
+}
+
+export interface IGroupsInfo {
+    groupName: string,
+    users: string[]
+}
+
+export interface ICreateGrpError extends Error {}
