@@ -15,6 +15,12 @@ export default (state: IAuth = initState, action: AnyAction): IAuth => {
             return { ...state, authtoken: action.payload };
         case 'LOGIN_FAIL':
             return { ...state, ...initState, error: action.payload };
+        case 'LOGOUT_USER':
+            return { ...initState };
+        case 'RESET_SUCCESS':
+            return { ...initState };
+        case 'RESET_FAIL':
+            return { ...initState, error: action.payload };
         default:
             return state;
     }

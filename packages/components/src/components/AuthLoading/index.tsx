@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import React, { Component } from "react";
 import { IReduxState, IAuth } from '../../types';
 import { NavigationScreenProps } from "react-navigation";
-import { View, Text } from "react-native";
+import { View, Text, AsyncStorage } from "react-native";
 
 interface IProps extends NavigationScreenProps {
     auth: IAuth
@@ -12,15 +12,17 @@ class AuthLoadingScreen extends Component<IProps> {
     constructor(props: IProps) {
         super(props);
         const { authtoken } = props.auth;
-        if(authtoken !== undefined && authtoken !== null && authtoken !== '') {
-            // authtoken exists => validate authtoken => goto dashboard
-            // TODO: validate auth token
-            props.navigation.navigate('App')
-        } else {
-            // authtoken does not exists => goto login
-            props.navigation.navigate('Auth')
-        }
+        console.log(authtoken);
+        this._bootstrapAsync();
     }
+    // Fetch the token from storage then navigate to our appropriate place
+    _bootstrapAsync = async () => {
+        const userToken = await AsyncStorage.getItem('token');
+        console.log(userToken);
+        // This will switch to the App screen or Auth screen and this loading
+        // screen will be unmounted and thrown away.
+        this.props.navigation.navigate(userToken ? 'App' : 'Auth')
+    };
     render() {
         return(
             <View>

@@ -33,35 +33,41 @@ class LoginScreen extends Component<IProps, IState> {
     }
     render() {
         const { email, password } = this.state;
-        const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText } = styles
+        const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText, loginViewStyleFtr, h3, a, or } = styles
         return (
             <View style={loginViewStyle}>
                 <View style={formView}>
-                    <Text style={headerText}>GRU</Text>
-                    <TextInput
-                        value={email}
-                        placeholder={'Email address'}
-                        style={inputStyle}
-                        onChangeText={(text) => this.setState({ email: text })}
-                    />
-                    <TextInput
-                        value={password}
-                        placeholder={'Password'}
-                        secureTextEntry={true}
-                        style={inputStyle}
-                        onChangeText={(text) => this.setState({ password: text })}
-                    />
-                    <View style={loginBtnCtnr}>
-                        <Button
-                            onPress={() => this.login()}
-                            title="Login"
-                            color="#d72b2b"
-                            accessibilityLabel="Log in to the user panel"
-                        />
-                    </View>
                     <View>
-                        <Text>New user ?</Text>
-                        <Text onPress={() => this.props.navigation.navigate('UserReg')}>Create new account</Text>
+                        <Text style={headerText}>GRU</Text>
+                        <TextInput
+                            value={email}
+                            placeholder={'Email address'}
+                            style={inputStyle}
+                            onChangeText={(text) => this.setState({ email: text })}
+                        />
+                        <TextInput
+                            value={password}
+                            placeholder={'Password'}
+                            secureTextEntry={true}
+                            style={inputStyle}
+                            onChangeText={(text) => this.setState({ password: text })}
+                        />
+                        <View style={loginBtnCtnr}>
+                            <Button
+                                onPress={() => this.login()}
+                                title="Login"
+                                color="#d72b2b"
+                                accessibilityLabel="Log in to the user panel"
+                            />
+                        </View>
+                        <Text style={a} onPress={() => this.props.navigation.navigate('Forget')}>Forget Password</Text>
+                    </View>
+                    <View style={loginViewStyleFtr}>
+                        <Text style={or}>or</Text>
+                        <View>
+                            <Text style={h3}>New user ?</Text>
+                            <Text style={a} onPress={() => this.props.navigation.navigate('UserReg')}>Create new account</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -84,23 +90,53 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center"
     },
+    loginViewStyleFtr: {
+        width: '100%',
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 30,
+        backgroundColor: "#FFF9EA"
+    },
     headerText: {
-        color: '#d72b2b'
+        color: '#d72b2b',
+        margin: 20,
+        fontSize: 40
+    },
+    h3: {
+        margin: 8
+    },
+    a: {
+        textDecorationLine: "underline",
+        textDecorationStyle: "solid",
+        textDecorationColor: "#13b0ff",
+        color: "#13b0ff"
+    },
+    or: {
+        position: 'absolute',
+        top: -8,
+        color: '#878787',
     },
     formView: {
         width: '20vw',
-        height: '40vh',
-        backgroundColor: '#ffffff'
+        height: '50vh',
+        backgroundColor: '#ffffff',
+        padding: 25
     },
     inputStyle: {
         height: 30,
         borderColor: '#ededed',
-        borderBottomWidth: 1
+        borderBottomWidth: 1,
+        margin: 15,
     },
     loginBtnCtnr: {
         display: 'flex',
-        alignItems: 'center',
         width: '100%',
-        marginTop: 5
+        marginTop: 5,
+        marginBottom: 20
     }
 })
