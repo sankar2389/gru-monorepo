@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { View, Text, StyleSheet, TextInput, Button } from "react-native"
+import { View, Text, StyleSheet, TextInput, Button, AsyncStorage } from "react-native"
 import { Navbar, Sidebar, RateCard, UserRatesCard, CalculateRate} from "../common";
 import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
@@ -14,6 +14,7 @@ class Dashboard extends Component<IProps> {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
     }
+    
     handleClicked() {
         console.log("Button clicked");
     }
@@ -29,9 +30,9 @@ class Dashboard extends Component<IProps> {
                 <Navbar handleLogout={this.handleLogout} clicked={this.handleClicked} search=""></Navbar>
                 <View style={innerContainer}>
                     <View style={rateCardsContainer}>
-                        <RateCard price={"$1303.44"} material={"Gold"}></RateCard>
-                        <RateCard price={"$1303.44"} material={"Silver"}></RateCard>
-                        <RateCard price={"$1303.44"} material={"USD"}></RateCard>
+                        <RateCard price={"$1303.44"} material={"Gold"} icon={"gold"}></RateCard>
+                        <RateCard price={"$1303.44"} material={"Silver"} icon={"silver"}></RateCard>
+                        <RateCard price={"$1303.44"} material={"USD"} icon={"usd"}></RateCard>
                     </View>
                     <View style={calculateRateContainer}>
                         <Text style={heading}>Calculate your gold rates</Text>

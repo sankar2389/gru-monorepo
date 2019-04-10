@@ -1,48 +1,53 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { View, Text, StyleSheet, TextInput, Button, Image, NativeAppEventEmitter } from "react-native";
 import {NavigationScreenProps} from "react-navigation";
 import {IAuth} from "../../types";
+import { url } from "inspector";
 
 class Sidebar extends Component {
     clicked() {
         console.log("clicked")
     }
     render() {
-        const { sidebar, sidebarButtonGroup, sidebarButtonCtnr } = styles;
+        const { sidebar, sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
         return (
             <View style={ sidebar }>
                 <View style={ sidebarButtonGroup }>
                     <View style={sidebarButtonCtnr}>
-                        <Button
-                            onPress={() => this.clicked()}
-                            title="Add"
-                            color="#d72b2b"
-                            accessibilityLabel="Add"
-                        />
+                        <div onClick={this.clicked}>
+                            <Image
+                                source={require('../../assets/images/dashboard-white-logo.png')}
+                                style={sidebarButton}
+                                resizeMode={'contain'}></Image>
+                        </div>
                     </View>
                     <View style={sidebarButtonCtnr}>
-                        <Button
-                            onPress={() => this.clicked()}
-                            title="Buy/Sell"
-                            color="#d72b2b"
-                            accessibilityLabel="Buy or sell"
-                        />
+                        <div onClick={this.clicked}>
+                            <Image
+                                source={require('../../assets/images/home.png')}
+                                style={sidebarButton}></Image>
+                        </div>
                     </View>
                     <View style={sidebarButtonCtnr}>
-                        <Button
-                            onPress={() => this.clicked()}
-                            title="Help"
-                            color="#d72b2b"
-                            accessibilityLabel="Get help"
-                        />
+                        <div onClick={this.clicked}>
+                            <Image
+                                source={require('../../assets/images/card.png')}
+                                style={sidebarButton}></Image>
+                        </div>
                     </View>
                     <View style={sidebarButtonCtnr}>
-                        <Button
-                            onPress={() => this.clicked()}
-                            title="Logout"
-                            color="#d72b2b"
-                            accessibilityLabel="Logout"
-                        />
+                        <div onClick={this.clicked}>
+                            <Image
+                                source={require('../../assets/images/group.png')}
+                                style={sidebarButton}></Image>
+                        </div>
+                    </View>
+                    <View style={sidebarButtonCtnr}>
+                        <div onClick={this.clicked}>
+                            <Image
+                                source={require('../../assets/images/buy-sell-white.png')}
+                                style={sidebarButton}></Image>
+                        </div>
                     </View>
                 </View>
             </View>
@@ -67,6 +72,8 @@ const styles = StyleSheet.create({
         width: 70,
         backgroundColor: "#d72b2b",
         height: 70,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     sidebarButtonGroup: {
         display: "flex",
@@ -74,5 +81,9 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 0,
         right: 0
+    },
+    sidebarButton: {
+        width: 30, 
+        height: 30
     }
 })

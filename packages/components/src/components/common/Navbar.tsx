@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native";
 import { IReduxState } from "../../types";
 
 interface IProps {
@@ -11,7 +11,8 @@ interface IState {
     search: string
 }
 export const Navbar = (props: IProps) => {
-    const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup } = styles;
+    const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
+        navButtonCtnrAdd, navButtonText } = styles;
     return (
         <View style={navbar}>
             <Text style={headerText}>GRU</Text>
@@ -21,37 +22,37 @@ export const Navbar = (props: IProps) => {
                 style={inputStyle}
             />
             <View style={navButtonGroup}>
-                <View style={navButtonCtnr}>
-                    <Button
-                        onPress={props.clicked}
-                        title="Add"
-                        color="#d72b2b"
-                        accessibilityLabel="Add"
-                    />
+                <View style={navButtonCtnrAdd}>
+                    <div onClick={props.clicked}>
+                        <Image
+                            source={require('../../assets/images/add-icon.png')}
+                            style={navButton}></Image>
+                    </div>
+                    <Text style={navButtonText}>Add</Text>
                 </View>
                 <View style={navButtonCtnr}>
-                    <Button
-                        onPress={props.clicked}
-                        title="Buy/Sell"
-                        color="#d72b2b"
-                        accessibilityLabel="Buy or sell"
-                    />
+                    <div onClick={props.clicked}>
+                        <Image
+                            source={require('../../assets/images/buy-sell-icon.png')}
+                            style={navButton}></Image>
+                    </div>
+                    <Text style={navButtonText}>Buy/Sell</Text>
                 </View>
                 <View style={navButtonCtnr}>
-                    <Button
-                        onPress={props.clicked}
-                        title="Help"
-                        color="#d72b2b"
-                        accessibilityLabel="Get help"
-                    />
+                    <div onClick={props.clicked}>
+                        <Image
+                            source={require('../../assets/images/info.png')}
+                            style={navButton}></Image>
+                            <Text style={navButtonText}>Help</Text>
+                    </div>
                 </View>
                 <View style={navButtonCtnr}>
-                    <Button
-                        onPress={props.handleLogout}
-                        title="Logout"
-                        color="#d72b2b"
-                        accessibilityLabel="Logout"
-                    />
+                <div onClick={props.clicked}>
+                        <Image
+                            source={require('../../assets/images/logout.png')}
+                            style={navButton}></Image>
+                            <Text style={navButtonText}>Logout</Text>
+                    </div>
                 </View>
             </View>
         </View>
@@ -92,10 +93,21 @@ const styles = StyleSheet.create({
     navButtonCtnr: {
         display: 'flex',
         width: 60,
-        backgroundColor: "#d72b2b",
         height: 70,
         marginLeft: 7,
-        marginRight: 7
+        marginRight: 7,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    navButtonCtnrAdd: {
+        display: 'flex',
+        width: 60,
+        backgroundColor: "#FFC44A",
+        height: 70,
+        marginLeft: 7,
+        marginRight: 7,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     navButtonGroup: {
         display: "flex",
@@ -103,5 +115,13 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 0,
         right: 0
+    },
+    navButton: {
+        width: 30, 
+        height: 30
+    },
+    navButtonText: {
+        fontSize: 15,
+        marginTop: 5,
     }
 })

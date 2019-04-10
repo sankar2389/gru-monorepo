@@ -21,7 +21,9 @@ class UserRatesCard extends Component<IProps> {
                         <Image style={avatarStyle} source={{uri:avatar}}></Image>
                     </View>
                     <Text style={nameStyle}>{name}</Text>
-                    <View style={logo}></View>
+                    <Image
+                            source={require(`../../assets/images/gold.png`)}
+                            style={logo}></Image>
                 </View>
                 <View style={labelCtnr}>
                     <Text style={priceStyle}>{price}</Text>
@@ -60,8 +62,7 @@ const styles = StyleSheet.create({
     },
     logo: {
         height: 100,
-        width: 100,
-        backgroundColor: "#bfbfbf"
+        width: 100
     },
     labelCtnr: {
         display: "flex",

@@ -1,5 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { ISignup, ISignupError, ILogin, IForgotPass } from '../types';
+import {
+    AsyncStorage
+} from 'react-native';
 
 const regSuccess = (dispatch: Function, message: string) => {
     dispatch({ type: 'REG_SUCCESS', payload: message });
@@ -31,7 +34,8 @@ export const loginUser = (payload: ILogin) => {
                 identifier: email,
                 password
             })
-            .then(response => {
+            .then(async (response) => {
+                await AsyncStorage.setItem('token', response.data.jwt);
                 loginSuccess(dispatch, response.data.jwt);
             })
             .catch((error: AxiosError) => {
@@ -68,8 +72,9 @@ export const signupUser = (payload: ISignup) => {
 }
 
 export const logoutUser = () => {
-    return (dispatch: Function) => {
-        logout(dispatch, 'Logout success')
+    return async (dispatch: Function) => {
+        await AsyncStorage.clear();
+        logout(dispatch, '')
     }
 }
 

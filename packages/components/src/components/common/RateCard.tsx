@@ -1,9 +1,10 @@
 import React, { Component } from "react"
-import { View, Text, StyleSheet, TextInput, Button } from "react-native"
+import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native"
 
 interface IProps {
     price: string,
-    material: string
+    material: string,
+    icon: string
 }
 
 class RateCard extends Component<IProps> {
@@ -12,11 +13,13 @@ class RateCard extends Component<IProps> {
     }
     render() {
         const { container, priceStyle, materialStyle, logoCtnr, labelCtnr, logo } = styles
-        const { price, material } = this.props
+        const { price, material, icon } = this.props
         return (
             <View style={ container }>
                 <View style={logoCtnr}>
-                    <View style={logo}></View>
+                    <Image
+                            source={require(`../../assets/images/${icon}.png`)}
+                            style={logo}></Image>
                 </View>
                 <View style={labelCtnr}>
                     <Text style={priceStyle}>{price}</Text>
@@ -53,12 +56,12 @@ const styles = StyleSheet.create({
     logoCtnr: {
         display: "flex",
         justifyContent: "center",
-        flexDirection: "column"
+        flexDirection: "column",
+        marginRight: 40
     },
     logo: {
         height: 100,
-        width: 100,
-        backgroundColor: "#bfbfbf"
+        width: 100
     },
     labelCtnr: {
         display: "flex",
