@@ -5,15 +5,31 @@ import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
 import { IReduxState } from "../../types";
 import { NavigationScreenProps } from "react-navigation";
+import createApolloClient from '../../apollo';
+import gql from 'graphql-tag';
 
 interface IProps extends NavigationScreenProps {
     logoutUser: Function
 }
 class Dashboard extends Component<IProps> {
+    
     constructor(props: IProps) {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
     }
+    async componentDidMount() {
+        const client = createApolloClient('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTU1NTg5MTkzLCJleHAiOjE1NTgxODExOTN9.DkdcPF0yek5FaHiDNrZOAqJhUMnZpLu_hi1Sg-83yho');
+        await client.query({
+          query: gql`
+          query {
+            groups {
+                groupName
+              }
+          }`        
+        }).then( res => {
+            console.log('res :',res.data);
+        });
+      }
     
     handleClicked() {
         console.log("Button clicked");
@@ -36,7 +52,7 @@ class Dashboard extends Component<IProps> {
                     </View>
                     <View style={calculateRateContainer}>
                         <Text style={heading}>Calculate your gold rates</Text>
-                        <CalculateRate></CalculateRate>
+                        {/* <CalculateRate></CalculateRate> */}
                     </View>
                     <View style={bullion}>
                         <Text style={heading}>Bullion user gold rates</Text>
