@@ -4,9 +4,9 @@ import { Navbar, Sidebar, RateCard, UserRatesCard, CalculateRate} from "../commo
 import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
 import { IReduxState } from "../../types";
-import { NavigationScreenProps } from "react-navigation";
+import { RouteComponentProps } from "react-router";
 
-interface IProps extends NavigationScreenProps {
+interface IProps extends RouteComponentProps {
     logoutUser: Function
 }
 class Dashboard extends Component<IProps> {
@@ -20,7 +20,7 @@ class Dashboard extends Component<IProps> {
     }
     handleLogout() {
         this.props.logoutUser();
-        this.props.navigation.navigate('Auth')
+        this.props.history.push('/public');
     }
     render() {
         const { container, innerContainer, rateCardsContainer, userRateCardsContainer, bullion, heading, calculateRateContainer } = styles
@@ -36,7 +36,6 @@ class Dashboard extends Component<IProps> {
                     </View>
                     <View style={calculateRateContainer}>
                         <Text style={heading}>Calculate your gold rates</Text>
-                        <CalculateRate></CalculateRate>
                     </View>
                     <View style={bullion}>
                         <Text style={heading}>Bullion user gold rates</Text>
