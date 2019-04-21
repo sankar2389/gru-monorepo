@@ -1,64 +1,83 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native";
 import { IReduxState } from "../../types";
+import { RouteComponentProps } from "react-router";
+import { logoutUser } from '../../actions';
+import { connect } from "react-redux";
 
-interface IProps {
-    handleLogout: () => void
+interface IProps extends RouteComponentProps {
     search: string
     clicked: () => void,
+    logoutUser: () => void
 }
 interface IState {
     search: string
 }
-export const Navbar = (props: IProps) => {
-    const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
-        navButtonCtnrAdd, navButtonText } = styles;
-    return (
-        <View style={navbar}>
-            <Text style={headerText}>GRU</Text>
-            <TextInput
-                value={props.search}
-                placeholder={'Search'}
-                style={inputStyle}
-            />
-            <View style={navButtonGroup}>
-                <View style={navButtonCtnrAdd}>
-                    <div onClick={props.clicked}>
-                        <Image
-                            source={require('../../assets/images/add-icon.png')}
-                            style={navButton}></Image>
-                    </div>
-                    <Text style={navButtonText}>Add</Text>
-                </View>
-                <View style={navButtonCtnr}>
-                    <div onClick={props.clicked}>
-                        <Image
-                            source={require('../../assets/images/buy-sell-icon.png')}
-                            style={navButton}></Image>
-                    </div>
-                    <Text style={navButtonText}>Buy/Sell</Text>
-                </View>
-                <View style={navButtonCtnr}>
-                    <div onClick={props.clicked}>
-                        <Image
-                            source={require('../../assets/images/info.png')}
-                            style={navButton}></Image>
+
+class NavbarComponent extends Component<IProps> {
+    constructor(props: IProps) {
+        super(props);
+        this.handleLogout = this.handleLogout.bind(this);
+    }
+    handleLogout() {
+        this.props.logoutUser();
+        this.props.history.push('/login');
+    }
+    render() {
+        const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
+            navButtonCtnrAdd, navButtonText } = styles;
+        return(
+            <View style={navbar}>
+                <Text style={headerText}>GRU</Text>
+                <TextInput
+                    value={this.props.search}
+                    placeholder={'Search'}
+                    style={inputStyle}
+                />
+                <View style={navButtonGroup}>
+                    <View style={navButtonCtnrAdd}>
+                        <div onClick={this.props.clicked}>
+                            <Image
+                                source={require('../../assets/images/add-icon.png')}
+                                style={navButton}></Image>
+                        </div>
+                        <Text style={navButtonText}>Add</Text>
+                    </View>
+                    <View style={navButtonCtnr}>
+                        <div onClick={this.props.clicked}>
+                            <Image
+                                source={require('../../assets/images/buy-sell-icon.png')}
+                                style={navButton}></Image>
+                        </div>
+                        <Text style={navButtonText}>Buy/Sell</Text>
+                    </View>
+                    <View style={navButtonCtnr}>
+                        <div onClick={this.props.clicked}>
+                            <Image
+                                source={require('../../assets/images/info.png')}
+                                style={navButton}></Image>
                             <Text style={navButtonText}>Help</Text>
-                    </div>
-                </View>
-                <View style={navButtonCtnr}>
-                    <div onClick={props.handleLogout}>
-                        <Image
-                            source={require('../../assets/images/logout.png')}
-                            style={navButton}></Image>
+                        </div>
+                    </View>
+                    <View style={navButtonCtnr}>
+                        <div onClick={this.handleLogout}>
+                            <Image
+                                source={require('../../assets/images/logout.png')}
+                                style={navButton}></Image>
                             <Text style={navButtonText}>Logout</Text>
-                    </div>
+                        </div>
+                    </View>
                 </View>
             </View>
-        </View>
-    )
+        );
+    }
 }
 
+const mapStateToProps = ({ auth }: any): IReduxState => {
+    return { auth };
+};
+
+export const Navbar = connect<IReduxState>(mapStateToProps, { logoutUser })(NavbarComponent);
 
 const styles = StyleSheet.create({
     navbar: {

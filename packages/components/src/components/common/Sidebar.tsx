@@ -1,12 +1,27 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Button, Image, NativeAppEventEmitter } from "react-native";
-import {NavigationScreenProps} from "react-navigation";
-import {IAuth} from "../../types";
-import { url } from "inspector";
+import { View, Text, StyleSheet, AsyncStorage, Image } from "react-native";
+import { RouteComponentProps } from "react-router";
 
-class Sidebar extends Component {
+interface IProps extends RouteComponentProps {}
+
+class Sidebar extends Component<IProps> {
+    constructor(props: IProps) {
+        super(props)
+        this._gotoBuySell = this._gotoBuySell.bind(this);
+    }
     clicked() {
         console.log("clicked")
+    }
+    _gotoBuySell() {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/buysell',
+                        state: { authtoken }
+                    });
+                }
+            })
     }
     render() {
         const { sidebar, sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
@@ -43,7 +58,7 @@ class Sidebar extends Component {
                         </div>
                     </View>
                     <View style={sidebarButtonCtnr}>
-                        <div onClick={this.clicked}>
+                        <div onClick={this._gotoBuySell}>
                             <Image
                                 source={require('../../assets/images/buy-sell-white.png')}
                                 style={sidebarButton}></Image>

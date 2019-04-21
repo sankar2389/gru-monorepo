@@ -1,4 +1,4 @@
-import React, { ComponentType } from 'react'
+import React, { ComponentType } from 'react';
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
@@ -6,7 +6,11 @@ import LoginScreen from './components/Login';
 import HomeScreen from './components/Home/HomeScreen';
 import UserRegScreen from './components/UserReg';
 import Dashboard from './components/Dashboard';
+import BuySell from './components/BuySell';
+import { View, StyleSheet } from 'react-native';
+
 import './App.css';
+import Navigation from './components/Navigation';
 export function App() {
   const store = configureStore();
   return (
@@ -17,8 +21,9 @@ export function App() {
           <Route path="/login" component={LoginScreen} />
           <Route path="/newuser" component={UserRegScreen} />
           <Route path="/admin" component={LoginScreen} />
-          <PrivateRoute path="/secure" component={Dashboard} />
-          <PrivateRoute path="/secure/:securePath" component={Dashboard} />
+          <PrivateRoute path="/secure" component={Dashboard} exact />
+          <PrivateRoute path="/secure/dashboard" component={Dashboard} />
+          <PrivateRoute path="/secure/buysell" component={BuySell} />
         </Router>
       </div>
     </Provider>
@@ -27,7 +32,7 @@ export function App() {
 
 const PrivateRoute: any = ({ component: PrivateComponent, auth, ...rest }: { component: ComponentType, auth: any }) => (
 <Route {...rest} render={(props: any) => (
-    isAuthenticated(props) === true ? <PrivateComponent {...props} /> : <Redirect to='/login' />
+    isAuthenticated(props) === true ? <View style={styles.container}><Navigation {...props} /><PrivateComponent {...props} /></View> : <Redirect to='/login' />
   )} />
 )
 
@@ -44,3 +49,9 @@ function isAuthenticated(props: any): boolean {
   }
   return false
 }
+
+const styles = StyleSheet.create({
+  container: {
+    height: "100%"
+  }
+})
