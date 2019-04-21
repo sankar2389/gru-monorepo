@@ -42,3 +42,12 @@ export interface IGroupsInfo {
 }
 
 export interface ICreateGrpError extends Error {}
+
+export interface InterfaceGRC {
+    goldRate: number,
+    duty: number,
+    vat: number,
+    profit: number,
+    fiatRate: number,
+    goldOunce: number
+}

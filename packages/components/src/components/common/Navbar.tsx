@@ -5,7 +5,7 @@ import { IReduxState } from "../../types";
 interface IProps {
     handleLogout: () => void
     search: string
-    clicked: () => void
+    clicked: () => void,
 }
 interface IState {
     search: string
@@ -47,7 +47,7 @@ export const Navbar = (props: IProps) => {
                     </div>
                 </View>
                 <View style={navButtonCtnr}>
-                <div onClick={props.clicked}>
+                    <div onClick={props.handleLogout}>
                         <Image
                             source={require('../../assets/images/logout.png')}
                             style={navButton}></Image>

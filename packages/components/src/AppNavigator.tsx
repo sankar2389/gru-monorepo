@@ -4,6 +4,8 @@ import Dashboard from './components/Dashboard';
 import UserRegScreen from './components/UserReg';
 import AuthLoadingScreen from './components/AuthLoading';
 // @ts-ignore
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+// @ts-ignore
 import { createSwitchNavigator, createNavigator, SwitchRouter } from "@react-navigation/core";
 // @ts-ignore
 import { createStackNavigator } from "@react-navigation/web";
@@ -14,7 +16,8 @@ const AuthStack = createSwitchNavigator({
         path: 'admin/login',
         navigationOptions: () => ({
             title: `Admin Login`,
-            headerBackTitle: null
+            headerBackTitle: null,
+            gesturesEnabled: false
         })
     },
     UserLogin: {

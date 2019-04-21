@@ -4,9 +4,6 @@ import { NavigationScreenProps } from 'react-navigation';
 
 interface IProps extends NavigationScreenProps {}
 class HomeScreen extends Component<IProps> {
-    static navigationOptions = {
-        title: 'Home'
-    }
     render() {
         return (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -15,14 +12,14 @@ class HomeScreen extends Component<IProps> {
                     <div className="panel-links">
                         <a
                             className="login-link"
-                            href="AuthLoading"
+                            href="/login"
                             target="_self"
                             rel="noopener noreferrer">
                             User panel
                         </a>
                         <a
                             className="login-link"
-                            href="AuthLoading"
+                            href="/admin"
                             target="_self"
                             rel="noopener noreferrer">
                             Admin panel
