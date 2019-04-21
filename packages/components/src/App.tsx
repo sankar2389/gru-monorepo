@@ -32,6 +32,12 @@ const PrivateRoute: any = ({ component: PrivateComponent, auth, ...rest }: { com
 )
 
 function isAuthenticated(props: any): boolean {
+  // TODO: authentication token restores if stored in redux
+  // Fetching authtoken from store can follow following workflow
+  // props.getAuthToken()
+  // props.didUpdate() [on store update]
+  // read authtoken
+  // return true/false
   const { state } = props.location;
   if (state && state.authtoken) {
     return true
