@@ -1,19 +1,12 @@
 import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
-import { View, StyleSheet } from "react-native";
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
-import TabView from "../common/TabView";
+import { View, StyleSheet } from "react-native";
 
 interface IProps extends RouteComponentProps { };
-class BuySell extends Component<IProps> {
-    state = {
-        index: 0,
-        routes: [
-            { key: 'first', title: 'First' },
-            { key: 'second', title: 'Second' },
-        ],
-    };
+
+class GroupView extends Component<IProps> {
     constructor(props: IProps) {
         super(props);
     }
@@ -21,25 +14,17 @@ class BuySell extends Component<IProps> {
         const { innerContainer } = styles;
         return (
             <View style={innerContainer}>
-                <h1>Buy / Sell</h1>
-                <h6>Bullion user gold rates</h6>
-                <TabView />
+                <h1>List of Groups</h1>
             </View>
         );
     }
 }
+
 const mapStateToProps = ({ auth }: any): IReduxState => {
     return { auth };
 };
 
-export default connect<IReduxState>(mapStateToProps, {})(BuySell);
-
-const BuyList = () => (
-    <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
-);
-const SellList = () => (
-    <View style={[styles.scene, { backgroundColor: '#673ab7' }]} />
-);
+export default connect<IReduxState>(mapStateToProps, {})(GroupView);
 
 const styles = StyleSheet.create({
     innerContainer: {

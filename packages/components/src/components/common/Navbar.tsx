@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native";
+import { View, Text, StyleSheet, TextInput, Modal, Image } from "react-native";
 import { IReduxState } from "../../types";
 import { RouteComponentProps } from "react-router";
 import { logoutUser } from '../../actions';
@@ -11,10 +11,15 @@ interface IProps extends RouteComponentProps {
     logoutUser: () => void
 }
 interface IState {
-    search: string
+    search: string | null,
+    viewBuySell: boolean
 }
 
-class NavbarComponent extends Component<IProps> {
+class NavbarComponent extends Component<IProps, IState> {
+    state: IState = {
+        search: null,
+        viewBuySell: false
+    }
     constructor(props: IProps) {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
@@ -22,6 +27,9 @@ class NavbarComponent extends Component<IProps> {
     handleLogout() {
         this.props.logoutUser();
         this.props.history.push('/login');
+    }
+    showBuySell() {
+        this.setState({ viewBuySell: true });
     }
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
@@ -36,7 +44,7 @@ class NavbarComponent extends Component<IProps> {
                 />
                 <View style={navButtonGroup}>
                     <View style={navButtonCtnrAdd}>
-                        <div onClick={this.props.clicked}>
+                        <div onClick={this.showBuySell}>
                             <Image
                                 source={require('../../assets/images/add-icon.png')}
                                 style={navButton}></Image>
