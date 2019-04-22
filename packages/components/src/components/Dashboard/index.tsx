@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, TextInput, Button, AsyncStorage } from "react-native"
-import { Navbar, Sidebar, RateCard, UserRatesCard, CalculateRate} from "../common";
+import { RateCard, UserRatesCard, CalculateRate} from "../common";
 import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
 import { IReduxState, InterfaceGRC } from "../../types";
@@ -13,46 +13,36 @@ interface IProps extends RouteComponentProps {
 class Dashboard extends Component<IProps> {
     constructor(props: IProps) {
         super(props);
-        this.handleLogout = this.handleLogout.bind(this);
     }
-    
     handleClicked() {
         console.log("Button clicked");
-    }
-    handleLogout() {
-        this.props.logoutUser();
-        this.props.history.push('/login');
     }
     _handleCalc(values: InterfaceGRC) {
         const { goldRate, fiatRate, goldOunce, duty, vat } = values;
         console.log("will handle gold rate calculation");
     }
     render() {
-        const { container, innerContainer, rateCardsContainer, userRateCardsContainer, bullion, heading, calculateRateContainer } = styles
+        const { innerContainer, rateCardsContainer, userRateCardsContainer, bullion, heading, calculateRateContainer } = styles
         return (
-            <View style={ container }>
-                <Sidebar></Sidebar>
-                <Navbar handleLogout={this.handleLogout} clicked={this.handleClicked} search=""></Navbar>
-                <View style={innerContainer}>
-                    <View style={rateCardsContainer}>
-                        <RateCard price={"$1303.44"} material={"Gold"} icon={"gold"}></RateCard>
-                        <RateCard price={"$1303.44"} material={"Silver"} icon={"silver"}></RateCard>
-                        <RateCard price={"$1303.44"} material={"USD"} icon={"usd"}></RateCard>
-                    </View>
-                    <View style={calculateRateContainer}>
-                        <Text style={heading}>Calculate your gold rates</Text>
-                    </View>
-                    <CalculateRate onSubmit={this._handleCalc} />
-                    <View style={bullion}>
-                        <Text style={heading}>Bullion user gold rates</Text>
-                        <View style={userRateCardsContainer}>
-                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                            <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
-                        </View>
+            <View style={innerContainer}>
+                <View style={rateCardsContainer}>
+                    <RateCard price={"$1303.44"} material={"Gold"} icon={"gold"}></RateCard>
+                    <RateCard price={"$1303.44"} material={"Silver"} icon={"silver"}></RateCard>
+                    <RateCard price={"$1303.44"} material={"USD"} icon={"usd"}></RateCard>
+                </View>
+                <View style={calculateRateContainer}>
+                    <Text style={heading}>Calculate your gold rates</Text>
+                </View>
+                <CalculateRate onSubmit={this._handleCalc} />
+                <View style={bullion}>
+                    <Text style={heading}>Bullion user gold rates</Text>
+                    <View style={userRateCardsContainer}>
+                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
+                        <UserRatesCard price={"$1303.44"} name={"Colin Roy"} avatar={"http://i.pravatar.cc/300"}></UserRatesCard>
                     </View>
                 </View>
             </View>
@@ -67,9 +57,6 @@ const mapStateToProps = ({ auth }: any): IReduxState => {
 export default connect<IReduxState>(mapStateToProps, { logoutUser })(Dashboard);
 
 const styles = StyleSheet.create({
-    container: {
-        height: "100%"
-    },
     innerContainer: {
         width: "95%",
         marginTop: 70,

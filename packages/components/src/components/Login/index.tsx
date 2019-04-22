@@ -33,7 +33,6 @@ class LoginScreen extends Component<IProps, IState> {
         AsyncStorage.getItem('token')
             .then(authtoken => {
                 if (authtoken) {
-                    console.log(authtoken);
                     this.props.history.push({
                         pathname: '/secure/dashboard',
                         state: { authtoken }
