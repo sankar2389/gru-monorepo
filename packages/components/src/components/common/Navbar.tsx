@@ -2,22 +2,20 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, TextInput, Modal, Image } from "react-native";
 import { IReduxState } from "../../types";
 import { RouteComponentProps } from "react-router";
-import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
 
 interface IProps extends RouteComponentProps {
-    search: string
-    clicked: () => void,
-    logoutUser: () => void
-}
+    logoutUser: () => void,
+    clicked?: () => void
+};
 interface IState {
-    search: string | null,
+    search: string | undefined,
     viewBuySell: boolean
 }
 
 class NavbarComponent extends Component<IProps, IState> {
     state: IState = {
-        search: null,
+        search: undefined,
         viewBuySell: false
     }
     constructor(props: IProps) {
@@ -34,11 +32,11 @@ class NavbarComponent extends Component<IProps, IState> {
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
             navButtonCtnrAdd, navButtonText } = styles;
-        return(
+        return (
             <View style={navbar}>
                 <Text style={headerText}>GRU</Text>
                 <TextInput
-                    value={this.props.search}
+                    value={this.state.search}
                     placeholder={'Search'}
                     style={inputStyle}
                 />
@@ -85,7 +83,7 @@ const mapStateToProps = ({ auth }: any): IReduxState => {
     return { auth };
 };
 
-export const Navbar = connect<IReduxState>(mapStateToProps, { logoutUser })(NavbarComponent);
+export const Navbar = connect<IReduxState>(mapStateToProps, { })(NavbarComponent);
 
 const styles = StyleSheet.create({
     navbar: {
@@ -98,7 +96,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        paddingLeft:150
+        paddingLeft: 150
     },
     headerText: {
         color: '#d72b2b',
@@ -144,7 +142,7 @@ const styles = StyleSheet.create({
         right: 0
     },
     navButton: {
-        width: 30, 
+        width: 30,
         height: 30
     },
     navButtonText: {
