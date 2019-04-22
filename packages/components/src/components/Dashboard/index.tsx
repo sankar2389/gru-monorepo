@@ -3,7 +3,10 @@ import { View, Text, StyleSheet, TextInput, Button, AsyncStorage } from "react-n
 import { Navbar, Sidebar, RateCard, UserRatesCard, CalculateRate} from "../common";
 import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
-import { IReduxState, InterfaceGRC } from "../../types";
+import { IReduxState } from "../../types";
+import { NavigationScreenProps } from "react-navigation";
+import createApolloClient from '../../apollo';
+import gql from 'graphql-tag';
 import { RouteComponentProps } from "react-router";
 
 interface IProps extends RouteComponentProps {
@@ -11,10 +14,24 @@ interface IProps extends RouteComponentProps {
 }
 
 class Dashboard extends Component<IProps> {
+    
     constructor(props: IProps) {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
     }
+    async componentDidMount() {
+        const client = createApolloClient('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTU1NTg5MTkzLCJleHAiOjE1NTgxODExOTN9.DkdcPF0yek5FaHiDNrZOAqJhUMnZpLu_hi1Sg-83yho');
+        await client.query({
+          query: gql`
+          query {
+            groups {
+                groupName
+              }
+          }`        
+        }).then( res => {
+            console.log('res :',res.data);
+        });
+      }
     
     handleClicked() {
         console.log("Button clicked");
