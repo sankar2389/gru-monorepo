@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
-import { NavigationScreenProps } from 'react-navigation';
+import { View, Text, StyleSheet, TextInput, Button, AsyncStorage } from "react-native";
 import { IReduxState, IAuth } from '../../types';
 import { connect } from 'react-redux';
+// @ts-ignore
+import { Router, RouteComponentProps } from 'react-router-dom';
 import { loginUser } from '../../actions';
 
-interface IProps extends NavigationScreenProps{
+interface IProps extends RouteComponentProps {
     loginUser: Function,
     auth: IAuth
 }
@@ -14,6 +15,9 @@ interface IState {
     password: string
 }
 class LoginScreen extends Component<IProps, IState> {
+    static navigationOptions = {
+        title: 'Login',
+    };
     state: IState = {
         email: 'santanubarai@test.com',
         password: '1234'
@@ -26,14 +30,20 @@ class LoginScreen extends Component<IProps, IState> {
         this.props.loginUser({ email, password });
     }
     componentDidUpdate() {
-        const { authtoken } = this.props.auth;
-        if(authtoken) {
-            this.props.navigation.navigate('App')
-        }
+        AsyncStorage.getItem('token')
+            .then(authtoken => {
+                if (authtoken) {
+                    console.log(authtoken);
+                    this.props.history.push({
+                        pathname: '/secure/dashboard',
+                        state: { authtoken }
+                    });
+                }
+            })
     }
     render() {
         const { email, password } = this.state;
-        const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText, loginViewStyleFtr, h3, a, or } = styles
+        const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText, loginViewStyleFtr, h3, a, or } = styles;
         return (
             <View style={loginViewStyle}>
                 <View style={formView}>
@@ -60,13 +70,13 @@ class LoginScreen extends Component<IProps, IState> {
                                 accessibilityLabel="Log in to the user panel"
                             />
                         </View>
-                        <Text style={a} onPress={() => this.props.navigation.navigate('Forget')}>Forget Password</Text>
+                        <Text style={a} onPress={() => this.props.history.push('/forget')}>Forget Password</Text>
                     </View>
                     <View style={loginViewStyleFtr}>
                         <Text style={or}>or</Text>
                         <View>
                             <Text style={h3}>New user ?</Text>
-                            <Text style={a} onPress={() => this.props.navigation.navigate('UserReg')}>Create new account</Text>
+                            <Text style={a} onPress={() => this.props.history.push('/newuser')}>Create new account</Text>
                         </View>
                     </View>
                 </View>
