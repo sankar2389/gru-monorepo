@@ -1,12 +1,51 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Button, Image, NativeAppEventEmitter } from "react-native";
-import {NavigationScreenProps} from "react-navigation";
-import {IAuth} from "../../types";
-import { url } from "inspector";
+import { View, Text, StyleSheet, AsyncStorage, Image } from "react-native";
+import { RouteComponentProps } from "react-router";
 
-class Sidebar extends Component {
+interface IProps extends RouteComponentProps {};
+
+class Sidebar extends Component<IProps> {
+    constructor(props: IProps) {
+        super(props)
+        this._gotoBuySell = this._gotoBuySell.bind(this);
+        this._gotoGroups = this._gotoGroups.bind(this);
+        this._gotoDash = this._gotoDash.bind(this);
+    }
     clicked() {
         console.log("clicked")
+    }
+    _gotoBuySell() {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/buysell',
+                        state: { authtoken }
+                    });
+                }
+            })
+    }
+    _gotoGroups() {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/groups',
+                        state: { authtoken }
+                    });
+                }
+            })
+    }
+    _gotoDash() {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/dashboard',
+                        state: { authtoken }
+                    });
+                }
+            })
     }
     render() {
         const { sidebar, sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
@@ -14,39 +53,39 @@ class Sidebar extends Component {
             <View style={ sidebar }>
                 <View style={ sidebarButtonGroup }>
                     <View style={sidebarButtonCtnr}>
-                        <div onClick={this.clicked}>
+                        <div onClick={this._gotoDash}>
                             <Image
                                 source={require('../../assets/images/dashboard-white-logo.png')}
                                 style={sidebarButton}
-                                resizeMode={'contain'}></Image>
+                                resizeMode={'contain'} />
                         </div>
                     </View>
                     <View style={sidebarButtonCtnr}>
                         <div onClick={this.clicked}>
                             <Image
                                 source={require('../../assets/images/home.png')}
-                                style={sidebarButton}></Image>
+                                style={sidebarButton} />
                         </div>
                     </View>
                     <View style={sidebarButtonCtnr}>
                         <div onClick={this.clicked}>
                             <Image
                                 source={require('../../assets/images/card.png')}
-                                style={sidebarButton}></Image>
+                                style={sidebarButton} />
                         </div>
                     </View>
                     <View style={sidebarButtonCtnr}>
-                        <div onClick={this.clicked}>
+                        <div onClick={this._gotoGroups}>
                             <Image
                                 source={require('../../assets/images/group.png')}
-                                style={sidebarButton}></Image>
+                                style={sidebarButton} />
                         </div>
                     </View>
                     <View style={sidebarButtonCtnr}>
-                        <div onClick={this.clicked}>
+                        <div onClick={this._gotoBuySell}>
                             <Image
                                 source={require('../../assets/images/buy-sell-white.png')}
-                                style={sidebarButton}></Image>
+                                style={sidebarButton} />
                         </div>
                     </View>
                 </View>

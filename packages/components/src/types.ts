@@ -4,7 +4,8 @@ export interface IAuth {
 }
 
 export interface IReduxState {
-    auth: IAuth
+    auth: IAuth,
+    group?: IGroup
 }
 
 export interface ISignup {
@@ -42,3 +43,12 @@ export interface IGroupsInfo {
 }
 
 export interface ICreateGrpError extends Error {}
+
+export interface InterfaceGRC {
+    goldRate: number,
+    duty: number,
+    gst: number,
+    profit: number,
+    fiatRate: number,
+    goldOunce: number
+}

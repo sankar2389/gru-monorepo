@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { ISignup, ISignupError, ILogin, IForgotPass } from '../types';
-import {
-    AsyncStorage
-} from 'react-native';
+import { AsyncStorage } from 'react-native';
+import createApolloClient from '../apollo';
+import gql from 'graphql-tag';
 
 const regSuccess = (dispatch: Function, message: string) => {
     dispatch({ type: 'REG_SUCCESS', payload: message });
@@ -74,7 +74,7 @@ export const signupUser = (payload: ISignup) => {
 export const logoutUser = () => {
     return async (dispatch: Function) => {
         await AsyncStorage.clear();
-        logout(dispatch, '')
+        logout(dispatch, '');
     }
 }
 

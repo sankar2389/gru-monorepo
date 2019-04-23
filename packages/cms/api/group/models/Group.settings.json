@@ -3,7 +3,7 @@
   "collectionName": "groups",
   "info": {
     "name": "group",
-    "description": "Groups for users"
+    "description": "(user groups type)"
   },
   "options": {
     "increments": true,
@@ -11,17 +11,15 @@
     "comment": ""
   },
   "attributes": {
-    "users": {
+    "creator": {
       "default": "",
-      "type": "json"
+      "type": "string",
+      "required": true
     },
     "groupName": {
       "default": "",
-      "type": "string"
-    },
-    "creator": {
-      "default": "",
-      "type": "string"
+      "type": "string",
+      "required": true
     }
   }
 }
