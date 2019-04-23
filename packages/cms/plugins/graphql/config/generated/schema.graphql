@@ -65,9 +65,8 @@ input editFileInput {
 }
 
 input editGroupInput {
-  users: JSON
-  groupName: String
   creator: String
+  groupName: String
 }
 
 input editRoleInput {
@@ -102,20 +101,18 @@ input FileInput {
   related: [ID]
 }
 
-"""Groups for users"""
+"""(user groups type)"""
 type Group {
   id: ID!
   created_at: DateTime!
   updated_at: DateTime!
-  users: JSON
-  groupName: String
-  creator: String
+  creator: String!
+  groupName: String!
 }
 
 input GroupInput {
-  users: JSON
-  groupName: String
-  creator: String
+  creator: String!
+  groupName: String!
 }
 
 input InputID {

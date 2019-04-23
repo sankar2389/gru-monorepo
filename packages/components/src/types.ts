@@ -4,7 +4,8 @@ export interface IAuth {
 }
 
 export interface IReduxState {
-    auth: IAuth
+    auth: IAuth,
+    group?: IGroup
 }
 
 export interface ISignup {

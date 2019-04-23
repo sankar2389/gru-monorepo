@@ -6,7 +6,6 @@ const initState: IGroup = {
     error: null
 }
 export default (state: IGroup = initState, action: AnyAction): IGroup => {
-    const { groupName, users } = action.payload;
     switch (action.type) {
         case 'GRP_CREATE_SUCCESS':
             return { ...state };
@@ -16,6 +15,8 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
             return { ...state };
         case 'GET_GRP_FAIL':
             return { ...state, ...initState, error: action.payload };
+        case 'GRPS_LST':
+            return { ...state, ...initState, ...action.payload };
         default:
             return state;
     }
