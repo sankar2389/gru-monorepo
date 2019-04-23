@@ -47,7 +47,7 @@ export interface ICreateGrpError extends Error {}
 export interface InterfaceGRC {
     goldRate: number,
     duty: number,
-    vat: number,
+    gst: number,
     profit: number,
     fiatRate: number,
     goldOunce: number

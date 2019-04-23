@@ -35,7 +35,7 @@ class Dashboard extends Component<IProps> {
         console.log("Button clicked");
     }
     _handleCalc(values: InterfaceGRC) {
-        const { goldRate, fiatRate, goldOunce, duty, vat } = values;
+        const { goldRate, fiatRate, goldOunce, duty, gst } = values;
         console.log("will handle gold rate calculation");
     }
     render() {

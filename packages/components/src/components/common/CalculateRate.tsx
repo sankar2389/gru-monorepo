@@ -8,7 +8,7 @@ interface IProps {
 interface IState {
     goldRate: string,
     duty: string,
-    vat: string,
+    gst: string,
     profit: string,
     fiatRate: string,
     goldOunce: string
@@ -18,7 +18,7 @@ class CalculateRate extends Component<IProps, IState> {
     state: IState = {
         goldRate: '',
         duty: '',
-        vat: '',
+        gst: '',
         profit: '',
         fiatRate: '',
         goldOunce: ''
@@ -27,18 +27,18 @@ class CalculateRate extends Component<IProps, IState> {
         super(props);
     }
     _handleCalculation() {
-        const { goldRate, fiatRate, goldOunce, duty, vat } = this.state;
+        const { goldRate, fiatRate, goldOunce, duty, gst } = this.state;
         const gr = parseFloat(goldRate);
         const fr = parseFloat(fiatRate);
         const ga = parseFloat(goldRate);
         const dt = parseFloat(duty);
-        const vt = parseFloat(vat);
+        const vt = parseFloat(gst);
 
         this.props.onSubmit({ gr, fr, ga, dt, vt });
     }
     render() {
         const { container, inputStyle, calculateButtonContainer } = styles
-        const { goldRate, fiatRate, goldOunce, profit, duty, vat } = this.state;
+        const { goldRate, fiatRate, goldOunce, profit, duty, gst } = this.state;
         return (
             <View style={ container }>
                 <TextInput
@@ -66,8 +66,8 @@ class CalculateRate extends Component<IProps, IState> {
                     onChangeText={(text) => this.setState({ goldRate: text })}
                 />
                 <TextInput
-                    value={vat}
-                    placeholder={'Vat'}
+                    value={gst}
+                    placeholder={'GST'}
                     style={inputStyle}
                     onChangeText={(text) => this.setState({ goldRate: text })}
                 />
