@@ -1,21 +1,22 @@
 import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
-import { IReduxState, IGroup, IAuth } from "../../types";
+import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, AsyncStorage } from "react-native";
 import { getGroupsList } from '../../actions';
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
-    getGroupsList: () => void
+    getGroupsList: (creator: string) => void
 };
 
 class GroupView extends Component<IProps> {
     constructor(props: IProps) {
         super(props);
     }
-    componentDidMount() {
-        this.props.getGroupsList();
+    async componentDidMount() {
+        const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
+        this.props.getGroupsList(user.email);
     }
     render() {
         const { groups } = this.props.group;

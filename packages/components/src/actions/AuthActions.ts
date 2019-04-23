@@ -36,6 +36,7 @@ export const loginUser = (payload: ILogin) => {
             })
             .then(async (response) => {
                 await AsyncStorage.setItem('token', response.data.jwt);
+                await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
                 loginSuccess(dispatch, response.data.jwt);
             })
             .catch((error: AxiosError) => {

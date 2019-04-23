@@ -52,3 +52,11 @@ export interface InterfaceGRC {
     fiatRate: number,
     goldOunce: number
 }
+
+export interface IStrapiUser {
+    blocked?: string | null,
+    confirmed: number,
+    email: string,
+    id: number,
+    username: string
+}

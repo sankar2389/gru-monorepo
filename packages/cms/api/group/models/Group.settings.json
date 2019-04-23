@@ -3,7 +3,7 @@
   "collectionName": "groups",
   "info": {
     "name": "group",
-    "description": "(user groups type)"
+    "description": ""
   },
   "options": {
     "increments": true,
