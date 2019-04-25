@@ -10,6 +10,9 @@ class Sidebar extends Component<IProps> {
         this._gotoBuySell = this._gotoBuySell.bind(this);
         this._gotoGroups = this._gotoGroups.bind(this);
         this._gotoDash = this._gotoDash.bind(this);
+        this.state ={
+            sideBarBackgroundColor:"gotoDash"
+        }
     }
     clicked() {
         console.log("clicked")
@@ -22,12 +25,14 @@ class Sidebar extends Component<IProps> {
                         pathname: '/secure/buysell',
                         state: { authtoken }
                     });
+                    this.setState({sideBarBackgroundColor:"gotoBuySell"})
                 }
             })
     }
-    _gotoGroups() {
+    _gotoGroups = ()=> {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
+                this.setState({sideBarBackgroundColor:'gotoGroups'})
                 if (authtoken) {
                     this.props.history.push({
                         pathname: '/secure/groups',
@@ -48,11 +53,12 @@ class Sidebar extends Component<IProps> {
             })
     }
     render() {
+        console.log("color", this.state.sideBarBackgroundColor)
         const { sidebar, sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
         return (
             <View style={ sidebar }>
-                <View style={ sidebarButtonGroup }>
-                    <View style={sidebarButtonCtnr}>
+                <View style={sidebarButtonGroup}>
+                    <View style={this.state.sideBarBackgroundColor === "gotoDash"?[sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor]:sidebarButtonCtnr}>
                         <div onClick={this._gotoDash}>
                             <Image
                                 source={require('../../assets/images/dashboard-white-logo.png')}
@@ -60,6 +66,7 @@ class Sidebar extends Component<IProps> {
                                 resizeMode={'contain'} />
                         </div>
                     </View>
+                   
                     <View style={sidebarButtonCtnr}>
                         <div onClick={this.clicked}>
                             <Image
@@ -74,14 +81,14 @@ class Sidebar extends Component<IProps> {
                                 style={sidebarButton} />
                         </div>
                     </View>
-                    <View style={sidebarButtonCtnr}>
-                        <div onClick={this._gotoGroups}>
+                    <View style={this.state.sideBarBackgroundColor==="gotoGroups"?[sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor]:sidebarButtonCtnr}>
+                        <div onClick={()=>this._gotoGroups()}>
                             <Image
                                 source={require('../../assets/images/group.png')}
                                 style={sidebarButton} />
                         </div>
                     </View>
-                    <View style={sidebarButtonCtnr}>
+                    <View  style={this.state.sideBarBackgroundColor==="gotoBuySell"?[sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor]:sidebarButtonCtnr}>
                         <div onClick={this._gotoBuySell}>
                             <Image
                                 source={require('../../assets/images/buy-sell-white.png')}
@@ -101,7 +108,7 @@ const styles = StyleSheet.create({
     sidebar: {
         width: 70,
         backgroundColor: "#d72b2b",
-        position: "absolute",
+        position: "fixed",
         top: 70,
         left: 0,
         bottom: 0
@@ -109,7 +116,6 @@ const styles = StyleSheet.create({
     sidebarButtonCtnr: {
         display: 'flex',
         width: 70,
-        backgroundColor: "#d72b2b",
         height: 70,
         alignItems: 'center',
         justifyContent: 'center'
@@ -119,10 +125,14 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         position: "absolute",
         top: 0,
-        right: 0
+        right: 0,
     },
     sidebarButton: {
         width: 30, 
         height: 30
+    },
+
+    sideBarNavigationBackgroundColor:{
+        backgroundColor: "#787878",
     }
 })

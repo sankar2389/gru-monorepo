@@ -28,7 +28,7 @@ class GroupView extends Component<IProps> {
                  <View style={styles.groupListMainContainer}>
                     <View style={styles.nestedGroupListView} >
                     <Text>
-
+Hello
                     </Text>
                     </View>
                     <View style={styles.nestedGroupListView} />
@@ -61,6 +61,7 @@ export default connect<IReduxState>(mapStateToProps, { getGroupsList })(GroupVie
 
 const styles = StyleSheet.create({
     innerContainer: {
+        backgroundColor: '#f0f0f0', 
         width: "95%",
         marginTop: 70,
         marginLeft: 70,
@@ -71,7 +72,10 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     groupListMainContainer:{
-        flex: 1, flexDirection: 'row',  justifyContent: 'space-between', flexWrap: "wrap"
+        flex: 1, 
+        flexDirection: 'row',  
+        justifyContent: 'space-between', 
+        flexWrap: "wrap"
     },
     nestedGroupListView:{
         width: 500, 
