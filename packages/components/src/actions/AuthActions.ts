@@ -30,7 +30,7 @@ export const loginUser = (payload: ILogin) => {
     const { email, password } = payload;
     return (dispatch: Function) => {
         axios
-            .post('http://localhost:1337/auth/local', {
+            .post('http://192.168.0.13:1337/auth/local', {
                 identifier: email,
                 password
             })
@@ -51,7 +51,7 @@ export const signupUser = (payload: ISignup) => {
     const { username, email, password } = payload;
     return (dispatch: Function) => {
         axios
-            .post('http://localhost:1337/auth/local/register', {
+            .post('http://192.168.0.13:1337/auth/local/register', {
                 username: username,
                 email: email,
                 password: password

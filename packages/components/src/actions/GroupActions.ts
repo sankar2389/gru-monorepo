@@ -28,7 +28,7 @@ export const createGroup = (payload: IGroupsInfo) => {
     const { groupName, users } = payload;
     return (dispatch: Function) => {
         axios
-            .post('http://localhost:1337/groups', {
+            .post('http://192.168.0.13:1337/groups', {
                 groupName,
                 users
             })
