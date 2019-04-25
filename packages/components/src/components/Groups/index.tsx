@@ -23,50 +23,50 @@ class GroupView extends Component<IProps> {
         console.log(groups);
         const { innerContainer } = styles;
         return (
-             <View style={innerContainer}>
-             <View style={styles.headerView}>
-             <View>
-                 <text style={{fontSize:30}}>List of Groups</text>
-                 <Text>No of groups - 10</Text>
-             </View>
-             <View>
-                 <TouchableOpacity style={styles.addButtom}> 
-                     <Text style={{color:"#ffffff"}}>+ Add Group</Text>
-                     </TouchableOpacity>
-                     </View>
-        
-             </View>
-                
-                 <View style={styles.groupListMainContainer}>
-                    <View style={styles.nestedGroupListView} >
-                    <View style={styles.groupListMainContainer}>
-                    <View style={styles.textView }>
-                    <Text style={{marginLeft:50}}>
-                      {/* Logo */}
-                    </Text>
+            <View style={innerContainer}>
+                <View style={styles.headerView}>
+                    <View>
+                        <Text style={{ fontSize: 30 }}>List of Groups</Text>
+                        <Text>No of groups - 10</Text>
                     </View>
-
-                    <View style={styles.textView }>
-                        <Text style={{marginBottom:10}}>
-                            Group Name
-                        </Text>
-                        <Text style={{marginBottom:10}}>
-                            Date, time  | Total Member
-                        </Text>
-                        <Text>
-                            {/* Image */}
-                        </Text>
-                    </View>
-
-                    <View style={{marginTop:50, marginRight:20}}>
-                        <TouchableOpacity>
-                        <Text style={{fontSize:20, marginRight:30}}>
-                            ...
-                            </Text>
+                    <View>
+                        <TouchableOpacity style={styles.addButtom}>
+                            <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
                         </TouchableOpacity>
                     </View>
+
+                </View>
+
+                <View style={styles.groupListMainContainer}>
+                    <View style={styles.nestedGroupListView} >
+                        <View style={styles.groupListMainContainer}>
+                            <View style={styles.textView}>
+                                <Text style={{ marginLeft: 50 }}>
+                                    {/* Logo */}
+                                </Text>
+                            </View>
+
+                            <View style={styles.textView}>
+                                <Text style={{ marginBottom: 10 }}>
+                                    Group Name
+                        </Text>
+                                <Text style={{ marginBottom: 10 }}>
+                                    Date, time  | Total Member
+                        </Text>
+                                <Text>
+                                    {/* Image */}
+                                </Text>
+                            </View>
+
+                            <View style={{ marginTop: 50, marginRight: 20 }}>
+                                <TouchableOpacity>
+                                    <Text style={{ fontSize: 20, marginRight: 30 }}>
+                                        ...
+                            </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                     </View>
-                    </View>
                     <View style={styles.nestedGroupListView} />
 
                     <View style={styles.nestedGroupListView} />
@@ -80,11 +80,11 @@ class GroupView extends Component<IProps> {
                     <View style={styles.nestedGroupListView} />
                     <View style={styles.nestedGroupListView} />
 
-                </View> 
+                </View>
 
-             </View>
+            </View>
 
-             
+
         );
     }
 }
@@ -97,7 +97,7 @@ export default connect<IReduxState>(mapStateToProps, { getGroupsList })(GroupVie
 
 const styles = StyleSheet.create({
     innerContainer: {
-        backgroundColor: '#f0f0f0', 
+        backgroundColor: '#f0f0f0',
         width: "95%",
         marginTop: 70,
         marginLeft: 70,
@@ -107,22 +107,22 @@ const styles = StyleSheet.create({
     scene: {
         flex: 1,
     },
-    groupListMainContainer:{
-        flex: 1, 
-        flexDirection: 'row',  
-        justifyContent: 'space-between', 
+    groupListMainContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         flexWrap: "wrap"
     },
-    nestedGroupListView:{
-        width: 500, 
-        height: 200, 
-        backgroundColor: '#ffffff', 
-        marginBottom:100, 
-        borderRadius:5
+    nestedGroupListView: {
+        width: 500,
+        height: 200,
+        backgroundColor: '#ffffff',
+        marginBottom: 100,
+        borderRadius: 5
     },
-    textView:{
-        marginTop:60,
+    textView: {
+        marginTop: 60,
     },
-    headerView:{flexDirection:'row', justifyContent:"space-between", marginBottom:20},
-    addButtom:{backgroundColor:'#ff4d4d', padding:10,borderRadius:5},
+    headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
+    addButtom: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5 },
 });
