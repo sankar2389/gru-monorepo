@@ -24,7 +24,19 @@ class GroupView extends Component<IProps> {
         const { innerContainer } = styles;
         return (
              <View style={innerContainer}>
-                 <h1>List of Groups</h1>
+             <View style={styles.headerView}>
+             <View>
+                 <text style={{fontSize:30}}>List of Groups</text>
+                 <Text>No of groups - 10</Text>
+             </View>
+             <View>
+                 <TouchableOpacity style={styles.addButtom}> 
+                     <Text style={{color:"#ffffff"}}>+ Add Group</Text>
+                     </TouchableOpacity>
+                     </View>
+        
+             </View>
+                
                  <View style={styles.groupListMainContainer}>
                     <View style={styles.nestedGroupListView} >
                     <View style={styles.groupListMainContainer}>
@@ -110,6 +122,7 @@ const styles = StyleSheet.create({
     },
     textView:{
         marginTop:60,
-
-    }
+    },
+    headerView:{flexDirection:'row', justifyContent:"space-between", marginBottom:20},
+    addButtom:{backgroundColor:'#ff4d4d', padding:10,borderRadius:5},
 });
