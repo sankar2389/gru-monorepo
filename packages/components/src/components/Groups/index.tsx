@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { View, StyleSheet, AsyncStorage } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text } from "react-native";
 import { getGroupsList } from '../../actions';
 
 interface IProps extends RouteComponentProps {
@@ -23,12 +23,32 @@ class GroupView extends Component<IProps> {
         console.log(groups);
         const { innerContainer } = styles;
         return (
-            <View style={innerContainer}>
-                <h1>List of Groups</h1>
-                {
-                    groups.map((grp, i) => (<p key={i}>{grp.groupName}</p>))
-                }
-            </View>
+             <View style={innerContainer}>
+                 <h1>List of Groups</h1>
+                 <View style={styles.groupListMainContainer}>
+                    <View style={styles.nestedGroupListView} >
+                    <Text>
+
+                    </Text>
+                    </View>
+                    <View style={styles.nestedGroupListView} />
+
+                    <View style={styles.nestedGroupListView} />
+
+                    <View style={styles.nestedGroupListView} />
+
+                    <View style={styles.nestedGroupListView} />
+
+                    <View style={styles.nestedGroupListView} />
+                    <View style={styles.nestedGroupListView} />
+                    <View style={styles.nestedGroupListView} />
+                    <View style={styles.nestedGroupListView} />
+
+                </View> 
+
+             </View>
+
+             
         );
     }
 }
@@ -49,5 +69,15 @@ const styles = StyleSheet.create({
     },
     scene: {
         flex: 1,
+    },
+    groupListMainContainer:{
+        flex: 1, flexDirection: 'row',  justifyContent: 'space-between', flexWrap: "wrap"
+    },
+    nestedGroupListView:{
+        width: 500, 
+        height: 250, 
+        backgroundColor: '#ffffff', 
+        marginBottom:100, 
+        borderRadius:5
     }
 });
