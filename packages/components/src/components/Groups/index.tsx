@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { View, StyleSheet, AsyncStorage, Text } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity } from "react-native";
 import { getGroupsList } from '../../actions';
 
 interface IProps extends RouteComponentProps {
@@ -27,9 +27,33 @@ class GroupView extends Component<IProps> {
                  <h1>List of Groups</h1>
                  <View style={styles.groupListMainContainer}>
                     <View style={styles.nestedGroupListView} >
-                    <Text>
-Hello
+                    <View style={styles.groupListMainContainer}>
+                    <View style={styles.textView }>
+                    <Text style={{marginLeft:50}}>
+                      Logo
                     </Text>
+                    </View>
+
+                    <View style={styles.textView }>
+                        <Text style={{marginBottom:10}}>
+                            Group Name
+                        </Text>
+                        <Text style={{marginBottom:10}}>
+                            Date, time  | Total Member
+                        </Text>
+                        <Text>
+                            Image
+                        </Text>
+                    </View>
+
+                    <View style={{marginTop:50, marginRight:20}}>
+                        <TouchableOpacity>
+                        <Text style={{fontSize:20, marginRight:30}}>
+                            ...
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    </View>
                     </View>
                     <View style={styles.nestedGroupListView} />
 
@@ -79,9 +103,13 @@ const styles = StyleSheet.create({
     },
     nestedGroupListView:{
         width: 500, 
-        height: 250, 
+        height: 200, 
         backgroundColor: '#ffffff', 
         marginBottom:100, 
         borderRadius:5
+    },
+    textView:{
+        marginTop:60,
+
     }
 });
