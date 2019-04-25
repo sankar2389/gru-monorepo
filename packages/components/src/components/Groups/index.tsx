@@ -30,7 +30,7 @@ class GroupView extends Component<IProps> {
                     <View style={styles.groupListMainContainer}>
                     <View style={styles.textView }>
                     <Text style={{marginLeft:50}}>
-                      Logo
+                      {/* Logo */}
                     </Text>
                     </View>
 
@@ -42,7 +42,7 @@ class GroupView extends Component<IProps> {
                             Date, time  | Total Member
                         </Text>
                         <Text>
-                            Image
+                            {/* Image */}
                         </Text>
                     </View>
 
