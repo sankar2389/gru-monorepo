@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, AsyncStorage, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, AsyncStorage, Image, TouchableOpacity } from "react-native";
 import { RouteComponentProps } from "react-router";
 
 interface IProps extends RouteComponentProps { };
@@ -111,6 +111,7 @@ class Sidebar extends Component<IProps, IState> {
                         </TouchableOpacity>
                     </View>
                 </View>
+
             </View>
         )
     }
