@@ -32,9 +32,8 @@ class NavbarComponent extends Component<IProps, IState> {
         this.setState({ viewBuySell: true });
     }
 
-    onMouseEnterHandler = (bySel: string) => {
-        console.log('enter');
-        this.setState({ mouseEvent: bySel })
+    onMouseEnterHandler = (eventString: string) => {
+        this.setState({ mouseEvent: eventString })
     }
     onMouseLeaveHandler() {
         this.setState({ mouseEvent: " " })
@@ -61,8 +60,8 @@ class NavbarComponent extends Component<IProps, IState> {
                         </TouchableOpacity>
                         <Text style={navButtonText}>Add</Text>
                     </View>
-                    <View style={navButtonCtnr}>
-                        <div id="bySel" onMouseEnter={() => this.onMouseEnterHandler("bySel")}
+                    <View style={this.state.mouseEvent === "bySel" ? [navButtonCtnr, mouseOverBackgroundColor] : navButtonCtnr}>
+                        <div onMouseEnter={() => this.onMouseEnterHandler("bySel")}
                             onMouseLeave={() => this.onMouseLeaveHandler()}
                         >
                             <TouchableOpacity onPress={this.props.clicked} >
@@ -73,21 +72,30 @@ class NavbarComponent extends Component<IProps, IState> {
                             <Text style={navButtonText}>Buy/Sell</Text>
                         </div>
                     </View>
-                    <View style={navButtonCtnr}>
-                        <TouchableOpacity onPress={this.props.clicked}>
-                            <Image
-                                source={require('../../assets/images/info.png')}
-                                style={navButton}></Image>
-                            <Text style={navButtonText}>Help</Text>
-                        </TouchableOpacity>
+                    <View style={this.state.mouseEvent === "help" ? [navButtonCtnr, mouseOverBackgroundColor] : navButtonCtnr}>
+                        <div onMouseEnter={() => this.onMouseEnterHandler("help")}
+                            onMouseLeave={() => this.onMouseLeaveHandler()}
+                        >
+                            <TouchableOpacity onPress={this.props.clicked}>
+                                <Image
+                                    source={require('../../assets/images/info.png')}
+                                    style={navButton}></Image>
+                                <Text style={navButtonText}>Help</Text>
+                            </TouchableOpacity>
+                        </div>
                     </View>
-                    <View style={navButtonCtnr}>
-                        <TouchableOpacity onPress={this.handleLogout}>
-                            <Image
-                                source={require('../../assets/images/logout.png')}
-                                style={navButton}></Image>
-                            <Text style={navButtonText}>Logout</Text>
-                        </TouchableOpacity>
+                    <View style={this.state.mouseEvent === "logout" ? [navButtonCtnr, mouseOverBackgroundColor] : navButtonCtnr}>
+                        <div onMouseEnter={() => this.onMouseEnterHandler("logout")}
+                            onMouseLeave={() => this.onMouseLeaveHandler()}
+                        >
+                            <TouchableOpacity onPress={this.handleLogout}>
+                                <Image
+                                    source={require('../../assets/images/logout.png')}
+                                    style={navButton}></Image>
+                                <Text style={navButtonText}>Logout</Text>
+                            </TouchableOpacity>
+
+                        </div>
                     </View>
                 </View>
             </View >
@@ -138,7 +146,8 @@ const styles = StyleSheet.create({
         marginLeft: 7,
         marginRight: 7,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+
     },
     navButtonCtnrAdd: {
         display: 'flex',
@@ -166,7 +175,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     mouseOverBackgroundColor: {
-        backgroundColor: "yellow"
+        backgroundColor: "tomato"
     },
     noBackgroundColor: {}
 })
