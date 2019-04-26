@@ -63,12 +63,12 @@ class NavbarComponent extends Component<IProps, IState> {
                         <div onMouseEnter={() => this.onMouseEnterHandler("bySel")}
                             onMouseLeave={() => this.onMouseLeaveHandler()}
                         >
-                            <TouchableOpacity onPress={this.props.clicked} >
+                            <TouchableOpacity onPress={this.props.clicked}>
                                 <Image
                                     source={require('../../assets/images/buy-sell-icon.png')}
                                     style={navButton}></Image>
+                                <Text style={navButtonText}>Buy/Sell</Text>
                             </TouchableOpacity>
-                            <Text style={navButtonText}>Buy/Sell</Text>
                         </div>
                     </View>
                     <View style={this.state.mouseEvent === "help" ? [navButtonCtnr, mouseOverBackgroundColor] : navButtonCtnr}>

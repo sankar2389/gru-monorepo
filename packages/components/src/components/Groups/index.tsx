@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, Modal } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, Modal } from "react-native";
 import { getGroupsList } from '../../actions';
 
 
@@ -74,8 +74,8 @@ class GroupView extends Component<IProps, IState> {
 
     }
 
-    setModalVisible(visible: boolean) {
-        this.setState({ modalVisible: visible });
+    toggleModal(visible: string) {
+
     }
 
 
@@ -91,12 +91,13 @@ class GroupView extends Component<IProps, IState> {
                         <Text>No of groups - 10</Text>
                     </View>
                     <View>
-                        <TouchableOpacity style={styles.addButtom} >
+                        <TouchableOpacity style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
                             <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
                         </TouchableOpacity>
                     </View>
 
                 </View>
+
                 <View style={styles.groupListMainContainer}>
                     {this.state.groupList.map((group, index) => {
                         return (
@@ -162,36 +163,42 @@ class GroupView extends Component<IProps, IState> {
 
 
                 {/* ADD GROUP MODAL START */}
+                {this.state.modalVisible ?
+                    <View style={styles.modalView}>
+                        <View style={{ backgroundColor: "red", alignItems: 'center', justifyContent: "center" }}>
+                            <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Groups</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", marginTop: 15 }}>
+                            <Text style={{ color: "#ffffff", marginTop: 10 }}>Enter Group Name: </Text>
+                            <TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1, borderRadius: 5, backgroundColor: "#ffffff" }} />
+                        </View>
+                        <View style={{ flexDirection: "row", alignItems: "flex-end", position: "absolute", top: 450, left: 300 }}>
+                            <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
+                                style={{ backgroundColor: "red", padding: 10, borderRadius: 5, marginRight: 10 }}><Text style={{ color: "#ffffff", }}>Cancel</Text></TouchableOpacity>
+                            <TouchableOpacity style={{ backgroundColor: "green", padding: 10, borderRadius: 5 }}><Text style={{ color: "#ffffff", }}>Submit</Text></TouchableOpacity>
+
+                        </View>
+
+                    </View> : <Text />}
+
+                {/* ADD GROUP MODAL END */}
                 <View style={{ marginTop: 22 }}>
                     <Modal
                         animationType="slide"
                         transparent={false}
-                        visible={this.state.modalVisible}
+                        visible={false}
                         onRequestClose={() => {
                             Alert.alert('Modal has been closed.');
                         }}>
                         <View style={{ marginTop: 22 }}>
                             <View>
                                 <Text>Hello World!</Text>
-
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        this.setModalVisible(!this.state.modalVisible);
-                                    }}>
-                                    <Text>Hide Modal</Text>
-                                </TouchableOpacity>
                             </View>
                         </View>
                     </Modal>
-
-                    <TouchableOpacity
-                        onPress={() => {
-                            this.setModalVisible(true);
-                        }}>
-                        <Text>Show Modal</Text>
-                    </TouchableOpacity>
                 </View>
-                {/* ADD GROUP MODAL END */}
+
+
 
             </View >
 
@@ -252,5 +259,19 @@ const styles = StyleSheet.create({
         width: 100,
         backgroundColor: "#bfbfbf",
         borderRadius: 50
+    },
+    button: {
+        flex: 1,
+        backgroundColor: "#cccccc"
+    },
+    modalView: {
+        backgroundColor: "black",
+        opacity: 0.7,
+        width: 500,
+        height: 500,
+        position: "absolute",
+        left: 600
+
+
     }
 });

@@ -35,6 +35,7 @@ export const loginUser = (payload: ILogin) => {
                 password
             })
             .then(async (response) => {
+                console.log("response", response)
                 await AsyncStorage.setItem('token', response.data.jwt);
                 await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
                 loginSuccess(dispatch, response.data.jwt);
@@ -87,7 +88,7 @@ export const forgotPass = (payload: IForgotPass) => {
                 email,
                 url: 'http:/localhost:1337/admin/plugins/users-permissions/auth/reset-password'
             })
-            .then( response => {
+            .then(response => {
                 resetSuccess(dispatch, response);
             })
             .catch((error: AxiosError) => {
