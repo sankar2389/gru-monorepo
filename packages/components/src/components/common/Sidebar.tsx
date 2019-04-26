@@ -1,21 +1,28 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, AsyncStorage, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, AsyncStorage, Image, TouchableOpacity, ScrollView } from "react-native";
 import { RouteComponentProps } from "react-router";
 
 interface IProps extends RouteComponentProps { };
 
-class Sidebar extends Component<IProps> {
+interface IState {
+    sideBarBackgroundColor: string | undefined,
+
+}
+
+class Sidebar extends Component<IProps, IState> {
+    state: IState = {
+        sideBarBackgroundColor: undefined,
+
+    }
     constructor(props: IProps) {
         super(props)
         this._gotoBuySell = this._gotoBuySell.bind(this);
         this._gotoGroups = this._gotoGroups.bind(this);
         this._gotoDash = this._gotoDash.bind(this);
-        this.state = {
-            sideBarBackgroundColor: "gotoDash"
-        }
+
     }
     componentDidMount() {
-        console.log(this.props.history.location.pathname);
+        // console.log(this.props.history.location.pathname);
         if (this.props.history.location.pathname) {
             this.setState({
                 sideBarBackgroundColor: this.props.history.location.pathname
@@ -41,7 +48,6 @@ class Sidebar extends Component<IProps> {
     _gotoGroups = () => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
-                this.setState({ sideBarBackgroundColor: 'gotoGroups' })
                 if (authtoken) {
                     this.props.history.push({
                         pathname: '/secure/groups',
@@ -68,7 +74,7 @@ class Sidebar extends Component<IProps> {
             <View style={sidebar}>
                 <View style={sidebarButtonGroup}>
                     <View style={this.state.sideBarBackgroundColor === "/secure/dashboard" ? [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
-                        <TouchableOpacity onClick={this._gotoDash}>
+                        <TouchableOpacity onPress={() => this._gotoDash()}>
                             <Image
                                 source={require('../../assets/images/dashboard-white-logo.png')}
                                 style={sidebarButton}
@@ -77,28 +83,28 @@ class Sidebar extends Component<IProps> {
                     </View>
 
                     <View style={sidebarButtonCtnr}>
-                        <TouchableOpacity onClick={this.clicked}>
+                        <TouchableOpacity onPress={() => this.clicked()}>
                             <Image
                                 source={require('../../assets/images/home.png')}
                                 style={sidebarButton} />
                         </TouchableOpacity>
                     </View>
                     <View style={sidebarButtonCtnr}>
-                        <TouchableOpacity onClick={this.clicked}>
+                        <TouchableOpacity onPress={() => this.clicked()}>
                             <Image
                                 source={require('../../assets/images/card.png')}
                                 style={sidebarButton} />
                         </TouchableOpacity>
                     </View>
                     <View style={this.state.sideBarBackgroundColor === "/secure/groups" ? [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
-                        <TouchableOpacity onClick={() => this._gotoGroups()}>
+                        <TouchableOpacity onPress={() => this._gotoGroups()}>
                             <Image
                                 source={require('../../assets/images/group.png')}
                                 style={sidebarButton} />
                         </TouchableOpacity>
                     </View>
                     <View style={this.state.sideBarBackgroundColor === "/secure/buysell" ? [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
-                        <TouchableOpacity onClick={() => this._gotoBuySell()}>
+                        <TouchableOpacity onPress={() => this._gotoBuySell()}>
                             <Image
                                 source={require('../../assets/images/buy-sell-white.png')}
                                 style={sidebarButton} />
@@ -117,12 +123,13 @@ const styles = StyleSheet.create({
     sidebar: {
         width: 70,
         backgroundColor: "#d72b2b",
-        position: "fixed",
+        position: "absolute",
         top: 70,
         left: 0,
         bottom: 0
     },
     sidebarButtonCtnr: {
+        backgroundColor: "#d72b2b",
         display: 'flex',
         width: 70,
         height: 70,
