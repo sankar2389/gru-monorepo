@@ -3,8 +3,9 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, Modal } from "react-native";
 import { getGroupsList } from '../../actions';
+
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
@@ -14,12 +15,15 @@ interface IProps extends RouteComponentProps {
 interface IState {
     groupList: any[],
     groupPageCount: any[],
+    modalVisible: boolean,
+
 }
 
 class GroupView extends Component<IProps, IState> {
     state: IState = {
         groupList: [1, 2, 3, 4, 5, 6],
-        groupPageCount: [1, 2, 3]
+        groupPageCount: [1, 2, 3],
+        modalVisible: false
     }
     constructor(props: IProps) {
         super(props);
@@ -70,6 +74,11 @@ class GroupView extends Component<IProps, IState> {
 
     }
 
+    setModalVisible(visible: boolean) {
+        this.setState({ modalVisible: visible });
+    }
+
+
     render() {
         const { groups } = this.props.group;
         console.log(groups);
@@ -82,7 +91,7 @@ class GroupView extends Component<IProps, IState> {
                         <Text>No of groups - 10</Text>
                     </View>
                     <View>
-                        <TouchableOpacity style={styles.addButtom}>
+                        <TouchableOpacity style={styles.addButtom} >
                             <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
                         </TouchableOpacity>
                     </View>
@@ -125,8 +134,9 @@ class GroupView extends Component<IProps, IState> {
 
                         )
                     })}
-
                 </View>
+
+                {/* PAGINATION VIEW START */}
                 <View style={{ flexDirection: "row" }}>
                     <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
                         <Text>{"<"}</Text>
@@ -148,6 +158,40 @@ class GroupView extends Component<IProps, IState> {
                         <Text>{">"}</Text>
                     </TouchableOpacity>
                 </View>
+                {/* PAGINATION VIEW END */}
+
+
+                {/* ADD GROUP MODAL START */}
+                <View style={{ marginTop: 22 }}>
+                    <Modal
+                        animationType="slide"
+                        transparent={false}
+                        visible={this.state.modalVisible}
+                        onRequestClose={() => {
+                            Alert.alert('Modal has been closed.');
+                        }}>
+                        <View style={{ marginTop: 22 }}>
+                            <View>
+                                <Text>Hello World!</Text>
+
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        this.setModalVisible(!this.state.modalVisible);
+                                    }}>
+                                    <Text>Hide Modal</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            this.setModalVisible(true);
+                        }}>
+                        <Text>Show Modal</Text>
+                    </TouchableOpacity>
+                </View>
+                {/* ADD GROUP MODAL END */}
 
             </View >
 

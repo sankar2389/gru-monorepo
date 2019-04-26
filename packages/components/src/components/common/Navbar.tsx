@@ -41,8 +41,7 @@ class NavbarComponent extends Component<IProps, IState> {
 
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
-            navButtonCtnrAdd, navButtonText, mouseOverBackgroundColor, noBackgroundColor } = styles;
-        console.log("mouseEvent", this.state.mouseEvent)
+            navButtonCtnrAdd, navButtonText, mouseOverBackgroundColor } = styles;
         return (
             <View style={navbar}>
                 <Text style={headerText}>GRU</Text>
@@ -175,7 +174,6 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     mouseOverBackgroundColor: {
-        backgroundColor: "tomato"
-    },
-    noBackgroundColor: {}
+        backgroundColor: "tomato",
+    }
 })
