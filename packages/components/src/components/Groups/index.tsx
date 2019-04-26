@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert } from "react-native";
+import { UserRatesCard } from "../common";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image } from "react-native";
 import { getGroupsList } from '../../actions';
 
 interface IProps extends RouteComponentProps {
@@ -95,9 +96,7 @@ class GroupView extends Component<IProps, IState> {
 
                                 <View style={styles.groupListMainContainer}>
                                     <View style={styles.textView}>
-                                        <Text style={{ marginLeft: 50 }}>
-                                            {/* Logo */}{group}
-                                        </Text>
+                                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
                                     </View>
 
                                     <View style={styles.textView}>
@@ -112,7 +111,7 @@ class GroupView extends Component<IProps, IState> {
                                         </Text>
                                     </View>
 
-                                    <View style={{ marginTop: 50, marginRight: 20 }}>
+                                    <View style={{ marginTop: 20, marginRight: 20 }}>
                                         <TouchableOpacity>
                                             <Text style={{ fontSize: 20, marginRight: 30 }}>
                                                 ...
@@ -189,7 +188,8 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     textView: {
-        marginTop: 60,
+        marginTop: 40,
+        marginLeft: 20
     },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
     addButtom: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5 },
@@ -202,5 +202,11 @@ const styles = StyleSheet.create({
         width: 30,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    avatarStyle: {
+        height: 100,
+        width: 100,
+        backgroundColor: "#bfbfbf",
+        borderRadius: 50
     }
 });

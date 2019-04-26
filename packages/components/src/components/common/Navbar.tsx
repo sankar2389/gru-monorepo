@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Modal, Image } from "react-native";
+import { View, Text, StyleSheet, TextInput, Modal, Image, TouchableOpacity } from "react-native";
 import { IReduxState } from "../../types";
 import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
@@ -10,13 +10,15 @@ interface IProps extends RouteComponentProps {
 };
 interface IState {
     search: string | undefined,
-    viewBuySell: boolean
+    viewBuySell: boolean,
+    mouseEvent: string | undefined,
 }
 
 class NavbarComponent extends Component<IProps, IState> {
     state: IState = {
         search: undefined,
-        viewBuySell: false
+        viewBuySell: false,
+        mouseEvent: ""
     }
     constructor(props: IProps) {
         super(props);
@@ -29,9 +31,19 @@ class NavbarComponent extends Component<IProps, IState> {
     showBuySell() {
         this.setState({ viewBuySell: true });
     }
+
+    onMouseEnterHandler = (bySel: string) => {
+        console.log('enter');
+        this.setState({ mouseEvent: bySel })
+    }
+    onMouseLeaveHandler() {
+        this.setState({ mouseEvent: " " })
+    }
+
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
-            navButtonCtnrAdd, navButtonText } = styles;
+            navButtonCtnrAdd, navButtonText, mouseOverBackgroundColor, noBackgroundColor } = styles;
+        console.log("mouseEvent", this.state.mouseEvent)
         return (
             <View style={navbar}>
                 <Text style={headerText}>GRU</Text>
@@ -42,39 +54,43 @@ class NavbarComponent extends Component<IProps, IState> {
                 />
                 <View style={navButtonGroup}>
                     <View style={navButtonCtnrAdd}>
-                        <div onClick={this.showBuySell}>
+                        <TouchableOpacity onPress={this.showBuySell}>
                             <Image
                                 source={require('../../assets/images/add-icon.png')}
                                 style={navButton}></Image>
-                        </div>
+                        </TouchableOpacity>
                         <Text style={navButtonText}>Add</Text>
                     </View>
                     <View style={navButtonCtnr}>
-                        <div onClick={this.props.clicked}>
-                            <Image
-                                source={require('../../assets/images/buy-sell-icon.png')}
-                                style={navButton}></Image>
+                        <div id="bySel" onMouseEnter={() => this.onMouseEnterHandler("bySel")}
+                            onMouseLeave={() => this.onMouseLeaveHandler()}
+                        >
+                            <TouchableOpacity onPress={this.props.clicked} >
+                                <Image
+                                    source={require('../../assets/images/buy-sell-icon.png')}
+                                    style={navButton}></Image>
+                            </TouchableOpacity>
+                            <Text style={navButtonText}>Buy/Sell</Text>
                         </div>
-                        <Text style={navButtonText}>Buy/Sell</Text>
                     </View>
                     <View style={navButtonCtnr}>
-                        <div onClick={this.props.clicked}>
+                        <TouchableOpacity onPress={this.props.clicked}>
                             <Image
                                 source={require('../../assets/images/info.png')}
                                 style={navButton}></Image>
                             <Text style={navButtonText}>Help</Text>
-                        </div>
+                        </TouchableOpacity>
                     </View>
                     <View style={navButtonCtnr}>
-                        <div onClick={this.handleLogout}>
+                        <TouchableOpacity onPress={this.handleLogout}>
                             <Image
                                 source={require('../../assets/images/logout.png')}
                                 style={navButton}></Image>
                             <Text style={navButtonText}>Logout</Text>
-                        </div>
+                        </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </View >
         );
     }
 }
@@ -83,7 +99,7 @@ const mapStateToProps = ({ auth }: any): IReduxState => {
     return { auth };
 };
 
-export const Navbar = connect<IReduxState>(mapStateToProps, { })(NavbarComponent);
+export const Navbar = connect<IReduxState>(mapStateToProps, {})(NavbarComponent);
 
 const styles = StyleSheet.create({
     navbar: {
@@ -148,5 +164,9 @@ const styles = StyleSheet.create({
     navButtonText: {
         fontSize: 15,
         marginTop: 5,
-    }
+    },
+    mouseOverBackgroundColor: {
+        backgroundColor: "yellow"
+    },
+    noBackgroundColor: {}
 })
