@@ -101,13 +101,41 @@ input FileInput {
   related: [ID]
 }
 
-"""(user groups type)"""
 type Group {
-  id: ID!
-  created_at: DateTime!
-  updated_at: DateTime!
+  _id: ID!
   creator: String!
   groupName: String!
+}
+
+type GroupAggregator {
+  count: Int
+}
+
+type GroupConnection {
+  values: [Group]
+  groupBy: GroupGroupBy
+  aggregate: GroupAggregator
+}
+
+type GroupConnection_id {
+  key: ID
+  connection: GroupConnection
+}
+
+type GroupConnectionCreator {
+  key: String
+  connection: GroupConnection
+}
+
+type GroupConnectionGroupName {
+  key: String
+  connection: GroupConnection
+}
+
+type GroupGroupBy {
+  _id: [GroupConnection_id]
+  creator: [GroupConnectionCreator]
+  groupName: [GroupConnectionGroupName]
 }
 
 input GroupInput {
@@ -124,7 +152,7 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
-union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | UploadFile | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload
+union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreator | GroupConnectionGroupName | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole
 
 type Mutation {
   createGroup(input: createGroupInput): createGroupPayload
@@ -154,15 +182,19 @@ type Mutation {
 type Query {
   group(id: ID!): Group
   groups(sort: String, limit: Int, start: Int, where: JSON): [Group]
+  groupsConnection(sort: String, limit: Int, start: Int, where: JSON): GroupConnection
   files(sort: String, limit: Int, start: Int, where: JSON): [UploadFile]
+  filesConnection(sort: String, limit: Int, start: Int, where: JSON): UploadFileConnection
   role(id: ID!): UsersPermissionsRole
 
   """
   Retrieve all the existing roles. You can't apply filters on this query.
   """
   roles(sort: String, limit: Int, start: Int, where: JSON): [UsersPermissionsRole]
+  rolesConnection(sort: String, limit: Int, start: Int, where: JSON): UsersPermissionsRoleConnection
   user(id: ID!): UsersPermissionsUser
   users(sort: String, limit: Int, start: Int, where: JSON): [UsersPermissionsUser]
+  usersConnection(sort: String, limit: Int, start: Int, where: JSON): UsersPermissionsUserConnection
   me: UsersPermissionsMe
 }
 
@@ -205,9 +237,7 @@ type updateUserPayload {
 scalar Upload
 
 type UploadFile {
-  id: ID!
-  created_at: DateTime!
-  updated_at: DateTime!
+  _id: ID!
   name: String!
   hash: String!
   sha256: String
@@ -218,6 +248,79 @@ type UploadFile {
   provider: String!
   public_id: String
   related(sort: String, limit: Int, start: Int, where: JSON): [Morph]
+}
+
+type UploadFileAggregator {
+  count: Int
+}
+
+type UploadFileConnection {
+  values: [UploadFile]
+  groupBy: UploadFileGroupBy
+  aggregate: UploadFileAggregator
+}
+
+type UploadFileConnection_id {
+  key: ID
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionExt {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionHash {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionMime {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionName {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionProvider {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionPublic_id {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionSha256 {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionSize {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionUrl {
+  key: String
+  connection: UploadFileConnection
+}
+
+type UploadFileGroupBy {
+  _id: [UploadFileConnection_id]
+  name: [UploadFileConnectionName]
+  hash: [UploadFileConnectionHash]
+  sha256: [UploadFileConnectionSha256]
+  ext: [UploadFileConnectionExt]
+  mime: [UploadFileConnectionMime]
+  size: [UploadFileConnectionSize]
+  url: [UploadFileConnectionUrl]
+  provider: [UploadFileConnectionProvider]
+  public_id: [UploadFileConnectionPublic_id]
 }
 
 input UserInput {
@@ -248,7 +351,7 @@ type UsersPermissionsMeRole {
 }
 
 type UsersPermissionsPermission {
-  id: ID!
+  _id: ID!
   type: String!
   controller: String!
   action: String!
@@ -258,7 +361,7 @@ type UsersPermissionsPermission {
 }
 
 type UsersPermissionsRole {
-  id: ID!
+  _id: ID!
   name: String!
   description: String
   type: String
@@ -266,12 +369,104 @@ type UsersPermissionsRole {
   users(sort: String, limit: Int, start: Int, where: JSON): [UsersPermissionsUser]
 }
 
+type UsersPermissionsRoleAggregator {
+  count: Int
+}
+
+type UsersPermissionsRoleConnection {
+  values: [UsersPermissionsRole]
+  groupBy: UsersPermissionsRoleGroupBy
+  aggregate: UsersPermissionsRoleAggregator
+}
+
+type UsersPermissionsRoleConnection_id {
+  key: ID
+  connection: UsersPermissionsRoleConnection
+}
+
+type UsersPermissionsRoleConnectionDescription {
+  key: String
+  connection: UsersPermissionsRoleConnection
+}
+
+type UsersPermissionsRoleConnectionName {
+  key: String
+  connection: UsersPermissionsRoleConnection
+}
+
+type UsersPermissionsRoleConnectionType {
+  key: String
+  connection: UsersPermissionsRoleConnection
+}
+
+type UsersPermissionsRoleGroupBy {
+  _id: [UsersPermissionsRoleConnection_id]
+  name: [UsersPermissionsRoleConnectionName]
+  description: [UsersPermissionsRoleConnectionDescription]
+  type: [UsersPermissionsRoleConnectionType]
+}
+
 type UsersPermissionsUser {
-  id: ID!
+  _id: ID!
   username: String!
   email: String!
   provider: String
   confirmed: Boolean
   blocked: Boolean
   role: UsersPermissionsRole
+}
+
+type UsersPermissionsUserAggregator {
+  count: Int
+}
+
+type UsersPermissionsUserConnection {
+  values: [UsersPermissionsUser]
+  groupBy: UsersPermissionsUserGroupBy
+  aggregate: UsersPermissionsUserAggregator
+}
+
+type UsersPermissionsUserConnection_id {
+  key: ID
+  connection: UsersPermissionsUserConnection
+}
+
+type UsersPermissionsUserConnectionBlocked {
+  key: Boolean
+  connection: UsersPermissionsUserConnection
+}
+
+type UsersPermissionsUserConnectionConfirmed {
+  key: Boolean
+  connection: UsersPermissionsUserConnection
+}
+
+type UsersPermissionsUserConnectionEmail {
+  key: String
+  connection: UsersPermissionsUserConnection
+}
+
+type UsersPermissionsUserConnectionProvider {
+  key: String
+  connection: UsersPermissionsUserConnection
+}
+
+type UsersPermissionsUserConnectionRole {
+  key: ID
+  connection: UsersPermissionsUserConnection
+}
+
+type UsersPermissionsUserConnectionUsername {
+  key: String
+  connection: UsersPermissionsUserConnection
+}
+
+type UsersPermissionsUserGroupBy {
+  _id: [UsersPermissionsUserConnection_id]
+  username: [UsersPermissionsUserConnectionUsername]
+  email: [UsersPermissionsUserConnectionEmail]
+  provider: [UsersPermissionsUserConnectionProvider]
+  confirmed: [UsersPermissionsUserConnectionConfirmed]
+  blocked: [UsersPermissionsUserConnectionBlocked]
+  role: [UsersPermissionsUserConnectionRole]
 }
