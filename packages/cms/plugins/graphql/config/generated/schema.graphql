@@ -65,8 +65,9 @@ input editFileInput {
 }
 
 input editGroupInput {
-  creator: String
   groupName: String
+  creator: String
+  members: JSON
 }
 
 input editRoleInput {
@@ -103,8 +104,11 @@ input FileInput {
 
 type Group {
   _id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  groupName: String
   creator: String!
-  groupName: String!
+  members: JSON
 }
 
 type GroupAggregator {
@@ -122,6 +126,11 @@ type GroupConnection_id {
   connection: GroupConnection
 }
 
+type GroupConnectionCreatedAt {
+  key: DateTime
+  connection: GroupConnection
+}
+
 type GroupConnectionCreator {
   key: String
   connection: GroupConnection
@@ -132,15 +141,29 @@ type GroupConnectionGroupName {
   connection: GroupConnection
 }
 
+type GroupConnectionMembers {
+  key: JSON
+  connection: GroupConnection
+}
+
+type GroupConnectionUpdatedAt {
+  key: DateTime
+  connection: GroupConnection
+}
+
 type GroupGroupBy {
   _id: [GroupConnection_id]
-  creator: [GroupConnectionCreator]
+  createdAt: [GroupConnectionCreatedAt]
+  updatedAt: [GroupConnectionUpdatedAt]
   groupName: [GroupConnectionGroupName]
+  creator: [GroupConnectionCreator]
+  members: [GroupConnectionMembers]
 }
 
 input GroupInput {
+  groupName: String
   creator: String!
-  groupName: String!
+  members: JSON
 }
 
 input InputID {
@@ -152,7 +175,7 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
-union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreator | GroupConnectionGroupName | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole
+union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole
 
 type Mutation {
   createGroup(input: createGroupInput): createGroupPayload
@@ -238,6 +261,8 @@ scalar Upload
 
 type UploadFile {
   _id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   hash: String!
   sha256: String
@@ -262,6 +287,11 @@ type UploadFileConnection {
 
 type UploadFileConnection_id {
   key: ID
+  connection: UploadFileConnection
+}
+
+type UploadFileConnectionCreatedAt {
+  key: DateTime
   connection: UploadFileConnection
 }
 
@@ -305,6 +335,11 @@ type UploadFileConnectionSize {
   connection: UploadFileConnection
 }
 
+type UploadFileConnectionUpdatedAt {
+  key: DateTime
+  connection: UploadFileConnection
+}
+
 type UploadFileConnectionUrl {
   key: String
   connection: UploadFileConnection
@@ -312,6 +347,8 @@ type UploadFileConnectionUrl {
 
 type UploadFileGroupBy {
   _id: [UploadFileConnection_id]
+  createdAt: [UploadFileConnectionCreatedAt]
+  updatedAt: [UploadFileConnectionUpdatedAt]
   name: [UploadFileConnectionName]
   hash: [UploadFileConnectionHash]
   sha256: [UploadFileConnectionSha256]
