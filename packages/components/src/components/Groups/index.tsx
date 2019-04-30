@@ -105,6 +105,7 @@ class GroupView extends Component<IProps, IState> {
 
     //Edit group
     onClicEditGroup = (groupId: string) => {
+        console.log("groupId", groupId)
         if (groupId) {
             this.props.onEditGroup(groupId)
         }
@@ -164,8 +165,8 @@ class GroupView extends Component<IProps, IState> {
                                             </TouchableOpacity> */}
                                             <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
                                                 <option >...</option>
-                                                <option onClick={() => this.onClicEditGroup.bind(this, group)}>Edit</option>
-                                                <option onClick={() => this.onClickDeleteGroup.bind(this, group)}>Delete</option>
+                                                <option onClick={() => this.onClicEditGroup(group)}>Edit</option>
+                                                <option onClick={() => this.onClickDeleteGroup(group)}>Delete</option>
                                             </select>
                                         </View>
                                     </View>
