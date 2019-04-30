@@ -4,14 +4,15 @@ import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
-import { getGroupsList, createGroup, onDeleteGroup } from '../../actions';
+import { getGroupsList, createGroup, onDeleteGroup, onEditGroup } from '../../actions';
 
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
     createGroup: (groupData: any) => void,
-    onDeleteGroup: (groupId: string) => void
+    onDeleteGroup: (groupId: string) => void,
+    onEditGroup: (groupId: string) => void
 };
 
 interface IState {
@@ -102,6 +103,15 @@ class GroupView extends Component<IProps, IState> {
         }
     }
 
+    //Edit group
+    onClicEditGroup = (groupId: string) => {
+        if (groupId) {
+            this.props.onEditGroup(groupId)
+        }
+        //console.log("group", groupId)
+
+    }
+
 
 
     render() {
@@ -152,19 +162,13 @@ class GroupView extends Component<IProps, IState> {
                                                     ...
                                             </Text>
                                             </TouchableOpacity> */}
-
-
-
-
                                             <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
                                                 <option >...</option>
-                                                <option value="edit" onClick={() => this.onClickDeleteGroup(group)}>Edit</option>
-                                                <option value="delete" onClick={() => this.onClickDeleteGroup(group)}>Delete</option>
+                                                <option onClick={() => this.onClicEditGroup.bind(this, group)}>Edit</option>
+                                                <option onClick={() => this.onClickDeleteGroup.bind(this, group)}>Delete</option>
                                             </select>
                                         </View>
                                     </View>
-
-
                                 </View>
 
                             )
@@ -240,7 +244,7 @@ const mapStateToProps = ({ auth, group }: any): IReduxState => {
     return { auth, group };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup })(GroupView);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup, onEditGroup })(GroupView);
 
 const styles = StyleSheet.create({
     innerContainer: {

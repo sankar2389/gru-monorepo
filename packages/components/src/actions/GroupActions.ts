@@ -108,3 +108,10 @@ export const onDeleteGroup = (payload: IDeleteGroup) => {
     console.log("IDeleteGroup", groupId)
 }
 
+/** Edit Group */
+export const onEditGroup = (payload: IDeleteGroup) => {
+    const { groupId } = payload;
+    console.log("EditGroupAction", groupId)
+}
+
+
