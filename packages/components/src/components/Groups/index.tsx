@@ -4,18 +4,20 @@ import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, Modal } from "react-native";
-import { getGroupsList } from '../../actions';
+import { getGroupsList, createGroup } from '../../actions';
 
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
-    getGroupsList: (creator: string) => void
+    getGroupsList: (creator: string) => void,
+    createGroup: (groupData: any) => void
 };
 
 interface IState {
     groupList: any[],
     groupPageCount: any[],
     modalVisible: boolean,
+    groupName: string
 
 }
 
@@ -23,7 +25,8 @@ class GroupView extends Component<IProps, IState> {
     state: IState = {
         groupList: [1, 2, 3, 4, 5, 6],
         groupPageCount: [1, 2, 3],
-        modalVisible: false
+        modalVisible: false,
+        groupName: ""
     }
     constructor(props: IProps) {
         super(props);
@@ -74,8 +77,15 @@ class GroupView extends Component<IProps, IState> {
 
     }
 
-    toggleModal(visible: string) {
-
+    onPressCreateGroup = () => {
+        if (this.state.groupName) {
+            const groupData = {
+                groupName: this.state.groupName,
+                creator: "example@example.com"
+            }
+            this.props.createGroup(groupData)
+            this.setState({ groupName: "" })
+        }
     }
 
 
@@ -165,41 +175,35 @@ class GroupView extends Component<IProps, IState> {
                 {/* ADD GROUP MODAL START */}
                 {this.state.modalVisible ?
                     <View style={styles.modalView}>
-                        <View style={{ backgroundColor: "red", alignItems: 'center', justifyContent: "center" }}>
+                        <View style={styles.modalCreateGroupView}>
                             <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Groups</Text>
                         </View>
-                        <View style={{ flexDirection: "row", marginTop: 15 }}>
-                            <Text style={{ color: "#ffffff", marginTop: 10 }}>Enter Group Name: </Text>
-                            <TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1, borderRadius: 5, backgroundColor: "#ffffff" }} />
+                        <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
+                            <Text style={{ color: "#ffffff", marginTop: 25 }}>Enter Group Name : </Text>
+                            <TextInput
+                                value={this.state.groupName}
+                                placeholder={'Group Name'}
+                                style={styles.inputStyle}
+                                onChangeText={groupName => {
+                                    this.setState({ groupName: groupName });
+                                }}
+                            />
                         </View>
-                        <View style={{ flexDirection: "row", alignItems: "flex-end", position: "absolute", top: 450, left: 300 }}>
+                        <View style={styles.buttonView}>
                             <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
-                                style={{ backgroundColor: "red", padding: 10, borderRadius: 5, marginRight: 10 }}><Text style={{ color: "#ffffff", }}>Cancel</Text></TouchableOpacity>
-                            <TouchableOpacity style={{ backgroundColor: "green", padding: 10, borderRadius: 5 }}><Text style={{ color: "#ffffff", }}>Submit</Text></TouchableOpacity>
+                                style={styles.modalCancelButton}>
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.submitButton}
+                                onPress={() => this.onPressCreateGroup()}
+                            >
+                                <Text style={styles.buttonText}>Submit</Text>
+                            </TouchableOpacity>
 
                         </View>
 
                     </View> : <Text />}
-
                 {/* ADD GROUP MODAL END */}
-                <View style={{ marginTop: 22 }}>
-                    <Modal
-                        animationType="slide"
-                        transparent={false}
-                        visible={false}
-                        onRequestClose={() => {
-                            Alert.alert('Modal has been closed.');
-                        }}>
-                        <View style={{ marginTop: 22 }}>
-                            <View>
-                                <Text>Hello World!</Text>
-                            </View>
-                        </View>
-                    </Modal>
-                </View>
-
-
-
             </View >
 
 
@@ -211,7 +215,7 @@ const mapStateToProps = ({ auth, group }: any): IReduxState => {
     return { auth, group };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList })(GroupView);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup })(GroupView);
 
 const styles = StyleSheet.create({
     innerContainer: {
@@ -271,7 +275,42 @@ const styles = StyleSheet.create({
         height: 500,
         position: "absolute",
         left: 600
-
-
+    },
+    modalCreateGroupView: {
+        backgroundColor: "red",
+        alignItems: 'center',
+        justifyContent: "center"
+    },
+    inputStyle: {
+        height: 30,
+        borderBottomWidth: 1,
+        margin: 15,
+        backgroundColor: "rgba(226,226,226,0.41)",
+        color: "#ffffff",
+        borderRadius: 20,
+        padding: 20,
+        width: "50%",
+        position: "absolute",
+        top: 0,
+        left: "30%"
+    },
+    modalCancelButton: {
+        backgroundColor: "red",
+        padding: 10,
+        borderRadius: 5,
+        marginRight: 10
+    },
+    buttonView: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "absolute",
+        top: 450, left: 300
+    },
+    buttonText: {
+        color: "#ffffff"
+    },
+    submitButton: {
+        backgroundColor: "green",
+        padding: 10, borderRadius: 5
     }
 });

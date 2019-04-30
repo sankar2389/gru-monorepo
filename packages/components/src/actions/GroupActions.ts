@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { ICreateGrpError, IGroupsInfo  } from '../types';
+import { ICreateGrpError, IGroupsInfo } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
@@ -26,6 +26,7 @@ const emitGroupsList = (dispatch: Function, response: any) => {
 
 export const createGroup = (payload: IGroupsInfo) => {
     const { groupName, users } = payload;
+    console.log("fff", groupName)
     return (dispatch: Function) => {
         axios
             .post('http://192.168.0.13:1337/groups', {
@@ -47,7 +48,7 @@ export const getGroupsList = (creator: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
-                if(authtoken) {
+                if (authtoken) {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
