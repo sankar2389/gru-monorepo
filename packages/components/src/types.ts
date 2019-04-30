@@ -42,7 +42,7 @@ export interface IGroupsInfo {
     users: string[]
 }
 
-export interface ICreateGrpError extends Error {}
+export interface ICreateGrpError extends Error { }
 
 export interface InterfaceGRC {
     goldRate: number,
@@ -59,4 +59,8 @@ export interface IStrapiUser {
     email: string,
     id: number,
     username: string
+}
+
+export interface IDeleteGroup {
+    groupId: string
 }

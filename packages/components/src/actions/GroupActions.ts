@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { ICreateGrpError, IGroupsInfo } from '../types';
+import { ICreateGrpError, IGroupsInfo, IDeleteGroup } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
@@ -24,24 +24,25 @@ const emitGroupsList = (dispatch: Function, response: any) => {
     dispatch({ type: 'GRPS_LST', payload: response })
 }
 
+/** Create Group */
 export const createGroup = (payload: IGroupsInfo) => {
     const { groupName, users } = payload;
-    console.log("fff", groupName)
-    // return (dispatch: Function) => {
-    //     axios
-    //         .post('http://192.168.0.13:1337/groups', {
-    //             groupName,
-    //             users
-    //         })
-    //         .then(response => {
-    //             createGrpScss(dispatch, response.data);
-    //         })
-    //         .catch((error: AxiosError) => {
-    //             const err: ICreateGrpError = error.response!.data
-    //             console.error('Error: ', err.message);
-    //             createGrpFail(dispatch, err);
-    //         });
-    // }
+    console.log("group name", groupName)
+    return (dispatch: Function) => {
+        axios
+            .post('http://192.168.0.13:1337/groups', {
+                groupName,
+                users
+            })
+            .then(response => {
+                createGrpScss(dispatch, response.data);
+            })
+            .catch((error: AxiosError) => {
+                const err: ICreateGrpError = error.response!.data
+                console.error('Error: ', err.message);
+                createGrpFail(dispatch, err);
+            });
+    }
 }
 
 export const getGroupsList = (creator: string) => {
@@ -99,3 +100,11 @@ export const getGroupInfo = (groupId: number) => {
             })
     }
 }
+
+
+/** Delete Group */
+export const onDeleteGroup = (payload: IDeleteGroup) => {
+    const { groupId } = payload;
+    console.log("IDeleteGroup", groupId)
+}
+
