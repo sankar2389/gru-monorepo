@@ -3,22 +3,22 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, Modal } from "react-native";
-import { getGroupsList, createGroup } from '../../actions';
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
+import { getGroupsList, createGroup, onDeleteGroup } from '../../actions';
 
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
-    createGroup: (groupData: any) => void
+    createGroup: (groupData: any) => void,
+    onDeleteGroup: (groupId: string) => void
 };
 
 interface IState {
     groupList: any[],
     groupPageCount: any[],
     modalVisible: boolean,
-    groupName: string
-
+    groupName: string,
 }
 
 class GroupView extends Component<IProps, IState> {
@@ -49,6 +49,7 @@ class GroupView extends Component<IProps, IState> {
         console.log("groupList", groupList)
     }
 
+    //pagination Next
     onPressPaginateNext() {
         let groupList = []
         let groupFistElement = this.state.groupList[0] + 1
@@ -61,6 +62,7 @@ class GroupView extends Component<IProps, IState> {
 
     }
 
+    //pagination Previous
     onPressPaginatePrevious() {
         let groupList = []
         let groupFistElement = this.state.groupList[0] - 1
@@ -77,6 +79,7 @@ class GroupView extends Component<IProps, IState> {
 
     }
 
+    //Create group 
     onPressCreateGroup = () => {
         if (this.state.groupName) {
             const groupData = {
@@ -87,6 +90,18 @@ class GroupView extends Component<IProps, IState> {
             this.setState({ groupName: "" })
         }
     }
+
+
+    //Delete group
+    onClickDeleteGroup = (groupId: string) => {
+        console.log("groupId", groupId)
+        let confirms = confirm(`Delete confirmation \n Are you want to delete ?`)
+        if (confirms) {
+            console.log("groupId1", groupId)
+            this.props.onDeleteGroup(groupId)
+        }
+    }
+
 
 
     render() {
@@ -106,7 +121,6 @@ class GroupView extends Component<IProps, IState> {
                                 <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
                             </TouchableOpacity>
                         </View>
-
                     </View>
 
                     <View style={styles.groupListMainContainer}>
@@ -133,11 +147,20 @@ class GroupView extends Component<IProps, IState> {
                                         </View>
 
                                         <View style={{ marginTop: 20, marginRight: 20 }}>
-                                            <TouchableOpacity>
+                                            {/* <TouchableOpacity>
                                                 <Text style={{ fontSize: 20, marginRight: 30 }}>
                                                     ...
                                             </Text>
-                                            </TouchableOpacity>
+                                            </TouchableOpacity> */}
+
+
+
+
+                                            <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
+                                                <option >...</option>
+                                                <option value="edit" onClick={() => this.onClickDeleteGroup(group)}>Edit</option>
+                                                <option value="delete" onClick={() => this.onClickDeleteGroup(group)}>Delete</option>
+                                            </select>
                                         </View>
                                     </View>
 
@@ -217,7 +240,7 @@ const mapStateToProps = ({ auth, group }: any): IReduxState => {
     return { auth, group };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup })(GroupView);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup })(GroupView);
 
 const styles = StyleSheet.create({
     innerContainer: {
