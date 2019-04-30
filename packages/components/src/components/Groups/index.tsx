@@ -95,114 +95,116 @@ class GroupView extends Component<IProps, IState> {
         const { innerContainer } = styles;
         return (
             <View style={innerContainer}>
-                <View style={styles.headerView}>
-                    <View>
-                        <Text style={{ fontSize: 30 }}>List of Groups</Text>
-                        <Text>No of groups - 10</Text>
+                <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
+                    <View style={styles.headerView}>
+                        <View>
+                            <Text style={{ fontSize: 30 }}>List of Groups</Text>
+                            <Text>No of groups - 10</Text>
+                        </View>
+                        <View>
+                            <TouchableOpacity style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
+                                <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
+                            </TouchableOpacity>
+                        </View>
+
                     </View>
-                    <View>
-                        <TouchableOpacity style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
-                            <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
-                        </TouchableOpacity>
-                    </View>
 
-                </View>
+                    <View style={styles.groupListMainContainer}>
+                        {this.state.groupList.map((group, index) => {
+                            return (
 
-                <View style={styles.groupListMainContainer}>
-                    {this.state.groupList.map((group, index) => {
-                        return (
+                                <View style={styles.nestedGroupListView} key={index}>
 
-                            <View style={styles.nestedGroupListView} key={index}>
+                                    <View style={styles.groupListMainContainer}>
+                                        <View style={styles.textView}>
+                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                        </View>
 
-                                <View style={styles.groupListMainContainer}>
-                                    <View style={styles.textView}>
-                                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                    </View>
-
-                                    <View style={styles.textView}>
-                                        <Text style={{ marginBottom: 10 }}>
-                                            Group Name
+                                        <View style={styles.textView}>
+                                            <Text style={{ marginBottom: 10 }}>
+                                                Group Name
                                         </Text>
-                                        <Text style={{ marginBottom: 10 }}>
-                                            Date, time  | Total Member
+                                            <Text style={{ marginBottom: 10 }}>
+                                                Date, time  | Total Member
                                         </Text>
-                                        <Text>
-                                            {/* Image */}
-                                        </Text>
-                                    </View>
-
-                                    <View style={{ marginTop: 20, marginRight: 20 }}>
-                                        <TouchableOpacity>
-                                            <Text style={{ fontSize: 20, marginRight: 30 }}>
-                                                ...
+                                            <Text>
+                                                {/* Image */}
                                             </Text>
-                                        </TouchableOpacity>
+                                        </View>
+
+                                        <View style={{ marginTop: 20, marginRight: 20 }}>
+                                            <TouchableOpacity>
+                                                <Text style={{ fontSize: 20, marginRight: 30 }}>
+                                                    ...
+                                            </Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
+
+
                                 </View>
 
+                            )
+                        })}
+                    </View>
+
+                    {/* PAGINATION VIEW START */}
+                    <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
+                            <Text>{"<"}</Text>
+                        </TouchableOpacity>
+                        {this.state.groupPageCount.map(pageCount => {
+                            return (
+                                <TouchableOpacity key={pageCount}
+                                    onPress={this.onPressPaginate.bind(this, pageCount)}
+                                    style={styles.paginationButton}
+                                >
+                                    <Text>{pageCount}</Text>
+                                </TouchableOpacity>
+                            )
+                        })}
+
+                        <TouchableOpacity
+                            onPress={this.onPressPaginateNext.bind(this)}
+                            style={styles.paginationButton}>
+                            <Text>{">"}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {/* PAGINATION VIEW END */}
+                </View>
+
+                {/* ADD GROUP MODAL START */}
+                {
+                    this.state.modalVisible ?
+                        <View style={styles.modalView}>
+                            <View style={styles.modalCreateGroupView}>
+                                <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Groups</Text>
+                            </View>
+                            <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
+                                <TextInput
+                                    value={this.state.groupName}
+                                    placeholder={'Group Name Here'}
+                                    style={styles.inputStyle}
+                                    onChangeText={groupName => {
+                                        this.setState({ groupName: groupName });
+                                    }}
+                                />
+                            </View>
+                            <View style={styles.buttonView}>
+                                <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
+                                    style={styles.modalCancelButton}>
+                                    <Text style={styles.buttonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.submitButton}
+                                    onPress={() => this.onPressCreateGroup()}
+                                >
+                                    <Text style={styles.buttonText}>Submit</Text>
+                                </TouchableOpacity>
 
                             </View>
 
-                        )
-                    })}
-                </View>
-
-                {/* PAGINATION VIEW START */}
-                <View style={{ flexDirection: "row" }}>
-                    <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
-                        <Text>{"<"}</Text>
-                    </TouchableOpacity>
-                    {this.state.groupPageCount.map(pageCount => {
-                        return (
-                            <TouchableOpacity key={pageCount}
-                                onPress={this.onPressPaginate.bind(this, pageCount)}
-                                style={styles.paginationButton}
-                            >
-                                <Text>{pageCount}</Text>
-                            </TouchableOpacity>
-                        )
-                    })}
-
-                    <TouchableOpacity
-                        onPress={this.onPressPaginateNext.bind(this)}
-                        style={styles.paginationButton}>
-                        <Text>{">"}</Text>
-                    </TouchableOpacity>
-                </View>
-                {/* PAGINATION VIEW END */}
-
-
-                {/* ADD GROUP MODAL START */}
-                {this.state.modalVisible ?
-                    <View style={styles.modalView}>
-                        <View style={styles.modalCreateGroupView}>
-                            <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Groups</Text>
-                        </View>
-                        <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
-                            <Text style={{ color: "#ffffff", marginTop: 25 }}>Enter Group Name : </Text>
-                            <TextInput
-                                value={this.state.groupName}
-                                placeholder={'Group Name'}
-                                style={styles.inputStyle}
-                                onChangeText={groupName => {
-                                    this.setState({ groupName: groupName });
-                                }}
-                            />
-                        </View>
-                        <View style={styles.buttonView}>
-                            <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
-                                style={styles.modalCancelButton}>
-                                <Text style={styles.buttonText}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.submitButton}
-                                onPress={() => this.onPressCreateGroup()}
-                            >
-                                <Text style={styles.buttonText}>Submit</Text>
-                            </TouchableOpacity>
-
-                        </View>
-
-                    </View> : <Text />}
+                        </View> : <Text />
+                }
                 {/* ADD GROUP MODAL END */}
             </View >
 
@@ -228,6 +230,12 @@ const styles = StyleSheet.create({
     },
     scene: {
         flex: 1,
+    },
+    pageOpacity: {
+        opacity: 0.2
+    },
+    pageOpacityNone: {
+
     },
     groupListMainContainer: {
         flex: 1,
@@ -269,30 +277,30 @@ const styles = StyleSheet.create({
         backgroundColor: "#cccccc"
     },
     modalView: {
-        backgroundColor: "black",
-        opacity: 0.7,
+        backgroundColor: "#ffffff",
+        //opacity: 0.7,
         width: 500,
-        height: 500,
+        height: 400,
         position: "absolute",
-        left: 600
+        left: 600,
+        //borderWidth: 
     },
     modalCreateGroupView: {
-        backgroundColor: "red",
+        backgroundColor: "gray",
         alignItems: 'center',
         justifyContent: "center"
     },
     inputStyle: {
         height: 30,
-        borderBottomWidth: 1,
+        //borderBottomWidth: 1,
         margin: 15,
-        backgroundColor: "rgba(226,226,226,0.41)",
-        color: "#ffffff",
+        backgroundColor: "rgba(106,106,106,0.41)",
         borderRadius: 20,
         padding: 20,
-        width: "50%",
+        width: "60%",
         position: "absolute",
-        top: 0,
-        left: "30%"
+        top: 100,
+        left: "15%"
     },
     modalCancelButton: {
         backgroundColor: "red",
@@ -304,7 +312,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "flex-end",
         position: "absolute",
-        top: 450, left: 300
+        top: 350, left: 300
     },
     buttonText: {
         color: "#ffffff"

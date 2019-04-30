@@ -27,21 +27,21 @@ const emitGroupsList = (dispatch: Function, response: any) => {
 export const createGroup = (payload: IGroupsInfo) => {
     const { groupName, users } = payload;
     console.log("fff", groupName)
-    return (dispatch: Function) => {
-        axios
-            .post('http://192.168.0.13:1337/groups', {
-                groupName,
-                users
-            })
-            .then(response => {
-                createGrpScss(dispatch, response.data);
-            })
-            .catch((error: AxiosError) => {
-                const err: ICreateGrpError = error.response!.data
-                console.error('Error: ', err.message);
-                createGrpFail(dispatch, err);
-            });
-    }
+    // return (dispatch: Function) => {
+    //     axios
+    //         .post('http://192.168.0.13:1337/groups', {
+    //             groupName,
+    //             users
+    //         })
+    //         .then(response => {
+    //             createGrpScss(dispatch, response.data);
+    //         })
+    //         .catch((error: AxiosError) => {
+    //             const err: ICreateGrpError = error.response!.data
+    //             console.error('Error: ', err.message);
+    //             createGrpFail(dispatch, err);
+    //         });
+    // }
 }
 
 export const getGroupsList = (creator: string) => {
