@@ -27,7 +27,7 @@ const emitGroupsList = (dispatch: Function, response: any) => {
 
 /** Create Group */
 export const createGroup = (payload: IGroupsInfo) => {
-    console.log("payload", payload)
+    //console.log("payload", payload)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -35,29 +35,23 @@ export const createGroup = (payload: IGroupsInfo) => {
                     const client = createApolloClient(authtoken);
                     client.mutate({
                         mutation: gql`
-                            mutation($groupName: String, $creator: String, $createdAt: String){
-                                createGroup(input: {
-                                  data: {
-                                    groupName: $groupName,
-                                    creator: $creator,
-                                    createdAt: $createdAt,
-                                    members: []
-                                    }
-                                }) {
-                                    group {
-                                      groupName
-                                      creator
-                                      members
-                                    }
-                                }
+                        mutation($input: createGroupInput) {
+                            createGroup(input: $input) {
+                              group {
+                                groupName,
+                                creator
+                              }
                             }
+                          }
                         `,
                         variables: {
-                            groupName: payload.groupName,
-                            creator: payload.creator,
-                            createdAt: payload.createdAt
+                            "input": {
+                                "data": {
+                                    "groupName": payload.groupName,
+                                    "creator": payload.creator
+                                }
+                            }
                         }
-
                     }).then((res: any) => {
                         console.log(res)
                         console.log('res: ', res.data);

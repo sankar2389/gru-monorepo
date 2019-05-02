@@ -119,7 +119,6 @@ class GroupView extends Component<IProps, IState> {
 
     render() {
         const { groups } = this.props.group;
-        console.log("groups", groups);
         const { innerContainer } = styles;
         return (
             <View style={innerContainer}>
@@ -167,8 +166,8 @@ class GroupView extends Component<IProps, IState> {
                                             </TouchableOpacity> */}
                                                 <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
                                                     <option >...</option>
-                                                    <option onClick={() => this.onClicEditGroup(group)}>Edit</option>
-                                                    <option onClick={() => this.onClickDeleteGroup(group)}>Delete</option>
+                                                    <option onClick={() => this.onClicEditGroup(group.groupName)}>Edit</option>
+                                                    <option onClick={() => this.onClickDeleteGroup(group.groupName)}>Delete</option>
                                                 </select>
                                             </View>
                                         </View>
@@ -214,6 +213,7 @@ class GroupView extends Component<IProps, IState> {
                             </View>
                             <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
                                 <TextInput
+                                    autoFocus={true}
                                     value={this.state.groupName}
                                     placeholder={'Group Name Here'}
                                     style={styles.inputStyle}
