@@ -11,7 +11,7 @@ interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
     createGroup: (groupData: any) => void,
-    onDeleteGroup: (groupId: string) => void,
+    onDeleteGroup: (groupCreator: any) => void,
     onEditGroup: (groupId: string) => void
 };
 
@@ -96,12 +96,12 @@ class GroupView extends Component<IProps, IState> {
 
 
     //Delete group
-    onClickDeleteGroup = (groupId: string) => {
-        console.log("groupId", groupId)
+    onClickDeleteGroup = (groupCreator: string) => {
+        console.log("groupId", groupCreator)
         let confirms = confirm(`Delete confirmation \n Are you want to delete ?`)
         if (confirms) {
-            console.log("groupId1", groupId)
-            this.props.onDeleteGroup(groupId)
+            console.log("groupId", groupCreator)
+            this.props.onDeleteGroup(groupCreator)
         }
     }
 
@@ -166,8 +166,8 @@ class GroupView extends Component<IProps, IState> {
                                             </TouchableOpacity> */}
                                                 <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
                                                     <option >...</option>
-                                                    <option onClick={() => this.onClicEditGroup(group.groupName)}>Edit</option>
-                                                    <option onClick={() => this.onClickDeleteGroup(group.groupName)}>Delete</option>
+                                                    <option onClick={() => this.onClicEditGroup(group.creator)}>Edit</option>
+                                                    <option onClick={() => this.onClickDeleteGroup(group.creator)}>Delete</option>
                                                 </select>
                                             </View>
                                         </View>

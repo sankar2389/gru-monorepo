@@ -64,5 +64,5 @@ export interface IStrapiUser {
 }
 
 export interface IDeleteGroup {
-    groupId: string
+    groupCreator: any
 }

@@ -79,7 +79,9 @@ export const getGroupsList = (creator: string) => {
                         query: gql`
                             query($creator: String) {
                                 groups(where: { creator: $creator }) {
-                                    groupName
+                                    _id,
+                                    groupName,
+                                    creator
                                 }
                             }
                         `,
@@ -88,6 +90,7 @@ export const getGroupsList = (creator: string) => {
                         }
                     }).then((res: any) => {
 
+                        console.log("resssssssssssss", res)
                         console.log('res: ', res.data);
                         emitGroupsList(dispatch, res.data);
                     }).catch(e => {
@@ -128,14 +131,42 @@ export const getGroupInfo = (groupId: number) => {
 
 /** Delete Group */
 export const onDeleteGroup = (payload: IDeleteGroup) => {
-    const { groupId } = payload;
-    console.log("IDeleteGroup", groupId)
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation {
+                            deleteGroup(where:{}) {
+                              group {
+                                groupName,
+                                creator
+                              }
+                            }
+                          }
+                        `
+                    }).then((res: any) => {
+                        console.log(res)
+                        console.log('res: ', res.data);
+                        getGrpScss(dispatch, res.data);
+                    }).catch(e => {
+                        console.log("first error", e)
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                console.log("last error", e)
+                throw e;
+            })
+    }
+
 }
 
 /** Edit Group */
 export const onEditGroup = (payload: IDeleteGroup) => {
-
-
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
