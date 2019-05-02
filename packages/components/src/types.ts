@@ -39,6 +39,8 @@ export interface IGroup {
 
 export interface IGroupsInfo {
     groupName: string,
+    creator: string,
+    createdAt: any,
     users: string[]
 }
 

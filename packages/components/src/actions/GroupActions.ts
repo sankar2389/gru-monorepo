@@ -3,6 +3,7 @@ import { ICreateGrpError, IGroupsInfo, IDeleteGroup } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
+import { string } from 'prop-types';
 
 const createGrpScss = (dispatch: Function, response: any) => {
     dispatch({ type: 'GRP_CREATE_SUCCESS', payload: response });
@@ -26,22 +27,51 @@ const emitGroupsList = (dispatch: Function, response: any) => {
 
 /** Create Group */
 export const createGroup = (payload: IGroupsInfo) => {
-    const { groupName, users } = payload;
-    console.log("group name", groupName)
+    console.log("payload", payload)
     return (dispatch: Function) => {
-        axios
-            .post('http://192.168.0.13:1337/groups', {
-                groupName,
-                users
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                            mutation($groupName: String, $creator: String, $createdAt: String){
+                                createGroup(input: {
+                                  data: {
+                                    groupName: $groupName,
+                                    creator: $creator,
+                                    createdAt: $createdAt,
+                                    members: []
+                                    }
+                                }) {
+                                    group {
+                                      groupName
+                                      creator
+                                      members
+                                    }
+                                }
+                            }
+                        `,
+                        variables: {
+                            groupName: payload.groupName,
+                            creator: payload.creator,
+                            createdAt: payload.createdAt
+                        }
+
+                    }).then((res: any) => {
+                        console.log(res)
+                        console.log('res: ', res.data);
+                        getGrpScss(dispatch, res.data);
+                    }).catch(e => {
+                        console.log("first error", e)
+                        throw e;
+                    });
+                }
             })
-            .then(response => {
-                createGrpScss(dispatch, response.data);
+            .catch(e => {
+                console.log("last error", e)
+                throw e;
             })
-            .catch((error: AxiosError) => {
-                const err: ICreateGrpError = error.response!.data
-                console.error('Error: ', err.message);
-                createGrpFail(dispatch, err);
-            });
     }
 }
 
@@ -63,6 +93,7 @@ export const getGroupsList = (creator: string) => {
                             creator
                         }
                     }).then((res: any) => {
+
                         console.log('res: ', res.data);
                         emitGroupsList(dispatch, res.data);
                     }).catch(e => {
@@ -101,7 +132,6 @@ export const getGroupInfo = (groupId: number) => {
     }
 }
 
-
 /** Delete Group */
 export const onDeleteGroup = (payload: IDeleteGroup) => {
     const { groupId } = payload;
@@ -110,8 +140,49 @@ export const onDeleteGroup = (payload: IDeleteGroup) => {
 
 /** Edit Group */
 export const onEditGroup = (payload: IDeleteGroup) => {
-    const { groupId } = payload;
-    console.log("EditGroupAction", groupId)
+
+
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                console.log("authtoken", authtoken)
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+
+                    console.log("client", client)
+                    client.mutate({
+                        mutation: gql`
+                        mutation {
+                            createGroup(input: {
+                              data: {
+                                groupName: "My1 second group",
+                                creator: "santanubaraijjjjjj@mathcody.com",
+
+                              }
+                            }) {
+                              group {
+                                groupName
+                                creator
+                                members
+                              }
+                            }
+                          }
+                        `
+                    }).then((res: any) => {
+                        console.log(res)
+                        console.log('res: ', res.data);
+                        getGrpScss(dispatch, res.data);
+                    }).catch(e => {
+                        console.log("first error", e)
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                console.log("last error", e.message)
+                throw e;
+            })
+    }
 }
 
 

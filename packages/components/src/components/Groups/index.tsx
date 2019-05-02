@@ -24,7 +24,7 @@ interface IState {
 
 class GroupView extends Component<IProps, IState> {
     state: IState = {
-        groupList: [1, 2, 3, 4, 5, 6],
+        groupList: [],
         groupPageCount: [1, 2, 3],
         modalVisible: false,
         groupName: ""
@@ -72,7 +72,6 @@ class GroupView extends Component<IProps, IState> {
             for (let i = groupFistElement; i <= groupFistElement + 5; i++) {
                 groupList.push(i)
             }
-
             this.setState({ groupList: groupList })
         } else {
             Alert.alert("BOF", "You are begning of the group")
@@ -81,11 +80,14 @@ class GroupView extends Component<IProps, IState> {
     }
 
     //Create group 
-    onPressCreateGroup = () => {
-        if (this.state.groupName) {
+    async onPressCreateGroup() {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+
+        if (this.state.groupName && user.email) {
             const groupData = {
                 groupName: this.state.groupName,
-                creator: "example@example.com"
+                creator: user.email,
+                createdAt: new Date()
             }
             this.props.createGroup(groupData)
             this.setState({ groupName: "" })
@@ -117,7 +119,7 @@ class GroupView extends Component<IProps, IState> {
 
     render() {
         const { groups } = this.props.group;
-        console.log(groups);
+        console.log("groups", groups);
         const { innerContainer } = styles;
         return (
             <View style={innerContainer}>
@@ -125,7 +127,7 @@ class GroupView extends Component<IProps, IState> {
                     <View style={styles.headerView}>
                         <View>
                             <Text style={{ fontSize: 30 }}>List of Groups</Text>
-                            <Text>No of groups - 10</Text>
+                            <Text>No of groups - {groups.length}</Text>
                         </View>
                         <View>
                             <TouchableOpacity style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
@@ -133,49 +135,51 @@ class GroupView extends Component<IProps, IState> {
                             </TouchableOpacity>
                         </View>
                     </View>
+                    {groups.length > 0 ?
+                        <View style={styles.groupListMainContainer}>
+                            {groups.map((group, index) => {
+                                return (
 
-                    <View style={styles.groupListMainContainer}>
-                        {this.state.groupList.map((group, index) => {
-                            return (
+                                    <View style={styles.nestedGroupListView} key={index}>
 
-                                <View style={styles.nestedGroupListView} key={index}>
+                                        <View style={styles.groupListMainContainer}>
+                                            <View style={styles.textView}>
+                                                <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                            </View>
 
-                                    <View style={styles.groupListMainContainer}>
-                                        <View style={styles.textView}>
-                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                        </View>
-
-                                        <View style={styles.textView}>
-                                            <Text style={{ marginBottom: 10 }}>
-                                                Group Name
-                                        </Text>
-                                            <Text style={{ marginBottom: 10 }}>
-                                                Date, time  | Total Member
-                                        </Text>
-                                            <Text>
-                                                {/* Image */}
+                                            <View style={styles.textView}>
+                                                <Text style={{ marginBottom: 10 }}>
+                                                    {group.groupName}
+                                                </Text>
+                                                <Text style={{ marginBottom: 10 }}>
+                                                    Date, time  | Total Member
                                             </Text>
-                                        </View>
+                                                <Text>
+                                                    {/* Image */}
+                                                </Text>
+                                            </View>
 
-                                        <View style={{ marginTop: 20, marginRight: 20 }}>
-                                            {/* <TouchableOpacity>
+                                            <View style={{ marginTop: 20, marginRight: 20 }}>
+                                                {/* <TouchableOpacity>
                                                 <Text style={{ fontSize: 20, marginRight: 30 }}>
                                                     ...
                                             </Text>
                                             </TouchableOpacity> */}
-                                            <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
-                                                <option >...</option>
-                                                <option onClick={() => this.onClicEditGroup(group)}>Edit</option>
-                                                <option onClick={() => this.onClickDeleteGroup(group)}>Delete</option>
-                                            </select>
+                                                <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
+                                                    <option >...</option>
+                                                    <option onClick={() => this.onClicEditGroup(group)}>Edit</option>
+                                                    <option onClick={() => this.onClickDeleteGroup(group)}>Delete</option>
+                                                </select>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
 
-                            )
-                        })}
-                    </View>
-
+                                )
+                            })}
+                        </View>
+                        :
+                        <Text />
+                    }
                     {/* PAGINATION VIEW START */}
                     <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
