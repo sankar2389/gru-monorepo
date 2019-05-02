@@ -90,7 +90,7 @@ class GroupView extends Component<IProps, IState> {
                 createdAt: new Date()
             }
             this.props.createGroup(groupData)
-            this.setState({ groupName: "" })
+            this.setState({ groupName: "", modalVisible: false })
         }
     }
 
