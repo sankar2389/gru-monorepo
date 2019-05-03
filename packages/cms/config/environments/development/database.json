@@ -2,10 +2,13 @@
   "defaultConnection": "default",
   "connections": {
     "default": {
-      "connector": "strapi-hook-bookshelf",
+      "connector": "strapi-hook-mongoose",
       "settings": {
-        "client": "sqlite",
-        "filename": ".tmp/data.db"
+        "client": "mongo",
+        "database": "gru",
+        "host": "192.168.0.13",
+        "username": "",
+        "password": ""
       },
       "options": {
         "useNullAsDefault": true

@@ -1,25 +1,26 @@
 {
   "connection": "default",
-  "collectionName": "groups",
+  "collectionName": "group",
   "info": {
     "name": "group",
     "description": ""
   },
   "options": {
-    "increments": true,
-    "timestamps": true,
-    "comment": ""
+    "timestamps": true
   },
   "attributes": {
+    "groupName": {
+      "default": "",
+      "type": "string"
+    },
     "creator": {
       "default": "",
       "type": "string",
       "required": true
     },
-    "groupName": {
+    "members": {
       "default": "",
-      "type": "string",
-      "required": true
+      "type": "json"
     }
   }
 }

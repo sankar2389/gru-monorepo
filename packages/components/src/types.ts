@@ -38,8 +38,12 @@ export interface IGroup {
 }
 
 export interface IGroupsInfo {
+    _id: string,
     groupName: string,
-    users: string[]
+    creator: string,
+    createdAt: any,
+    users: string[],
+    members: any[]
 }
 
 export interface ICreateGrpError extends Error { }
@@ -61,6 +65,6 @@ export interface IStrapiUser {
     username: string
 }
 
-export interface IDeleteGroup {
-    groupId: string
-}
+// export interface IDeleteGroup {
+//     groupId: string
+// }
