@@ -120,9 +120,11 @@ class GroupView extends Component<IProps, IState> {
     }
 
     updateGroup = (_id: string, groupName: string, creator: string) => {
-        if (_id) {
+        if (_id && groupName) {
             this.props.onUpdateGroup(_id, groupName, creator);
             this.cancelGroupUpdate()
+        } else {
+            alert("Please check group name")
         }
     }
 
