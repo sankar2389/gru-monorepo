@@ -3,6 +3,7 @@ import { ICreateGrpError, IGroupsInfo } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
+import { string } from 'prop-types';
 
 const createGrpScss = (dispatch: Function, response: any) => {
     dispatch({ type: 'GRP_CREATE_SUCCESS', payload: response });
@@ -24,24 +25,65 @@ const emitGroupsList = (dispatch: Function, response: any) => {
     dispatch({ type: 'GRPS_LST', payload: response })
 }
 
+/** Create Group */
 export const createGroup = (payload: IGroupsInfo) => {
-    const { groupName, users } = payload;
-    console.log("fff", groupName)
-    // return (dispatch: Function) => {
-    //     axios
-    //         .post('http://192.168.0.13:1337/groups', {
-    //             groupName,
-    //             users
-    //         })
-    //         .then(response => {
-    //             createGrpScss(dispatch, response.data);
-    //         })
-    //         .catch((error: AxiosError) => {
-    //             const err: ICreateGrpError = error.response!.data
-    //             console.error('Error: ', err.message);
-    //             createGrpFail(dispatch, err);
-    //         });
-    // }
+    //console.log("payload", payload)
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation($input: createGroupInput) {
+                            createGroup(input: $input) {
+                              group {
+                                  _id,
+                                groupName,
+                                creator
+                              }
+                            }
+                          }
+                        `,
+                        variables: {
+                            "input": {
+                                "data": {
+                                    "groupName": payload.groupName,
+                                    "creator": payload.creator,
+                                    "members": []
+                                }
+                            }
+                        }
+                    }).then((res: any) => {
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator,
+                                        members,
+                                        createdAt
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator: payload.creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
 }
 
 export const getGroupsList = (creator: string) => {
@@ -54,7 +96,11 @@ export const getGroupsList = (creator: string) => {
                         query: gql`
                             query($creator: String) {
                                 groups(where: { creator: $creator }) {
-                                    groupName
+                                    _id,
+                                    groupName,
+                                    creator,
+                                    members,
+                                    createdAt
                                 }
                             }
                         `,
@@ -62,7 +108,6 @@ export const getGroupsList = (creator: string) => {
                             creator
                         }
                     }).then((res: any) => {
-                        console.log('res: ', res.data);
                         emitGroupsList(dispatch, res.data);
                     }).catch(e => {
                         throw e;
@@ -87,7 +132,6 @@ export const getGroupInfo = (groupId: number) => {
                             }
                         `
                     }).then((res: any) => {
-                        console.log('res: ', res.data);
                         getGrpScss(dispatch, res.data);
                     }).catch(e => {
                         throw e;
@@ -99,3 +143,126 @@ export const getGroupInfo = (groupId: number) => {
             })
     }
 }
+
+/** Delete Group */
+export const onDeleteGroup = (groupId: string, creator: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: deleteGroupInput) {
+                            deleteGroup(input: $input) {
+                              group {
+                                  _id
+                                groupName
+                                creator
+                              }
+                            }
+                          }
+                          
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": groupId
+                                }
+                            }
+                        }
+                    }).then((res: any) => {
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator,
+                                        members,
+                                        createdAt
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+
+}
+
+/** Edit Group */
+export const onUpdateGroup = (groupId: string, groupName: string, creator: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: updateGroupInput) {
+                            updateGroup(input: $input) {
+                              group {
+                                groupName
+                                creator
+                              }
+                            }
+                          }
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": groupId
+                                },
+                                "data": {
+                                    "groupName": groupName
+                                }
+                            }
+                        }
+                    }).then((res: any) => {
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator,
+                                        members,
+                                        createdAt
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+
+}
+
+

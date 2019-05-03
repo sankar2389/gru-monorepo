@@ -76,6 +76,7 @@ class Sidebar extends Component<IProps, IState> {
                     <View style={this.state.sideBarBackgroundColor === "/secure/dashboard" ? [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
                         <TouchableOpacity onPress={() => this._gotoDash()}>
                             <Image
+                                accessibilityLabel='City'
                                 source={require('../../assets/images/dashboard-white-logo.png')}
                                 style={sidebarButton}
                                 resizeMode={'contain'} />

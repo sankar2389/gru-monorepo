@@ -38,11 +38,15 @@ export interface IGroup {
 }
 
 export interface IGroupsInfo {
+    _id: string,
     groupName: string,
-    users: string[]
+    creator: string,
+    createdAt: any,
+    users: string[],
+    members: any[]
 }
 
-export interface ICreateGrpError extends Error {}
+export interface ICreateGrpError extends Error { }
 
 export interface InterfaceGRC {
     goldRate: number,
@@ -60,3 +64,7 @@ export interface IStrapiUser {
     id: number,
     username: string
 }
+
+// export interface IDeleteGroup {
+//     groupId: string
+// }
