@@ -1,0 +1,12 @@
+# Git
+.gitignore
+
+# Docker configuration
+Dockerfile
+
+# NPM dependencies
+node_modules
+
+# Other
+.editorconfig
+.eslintignore

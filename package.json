@@ -19,7 +19,9 @@
     "dev:web": "yarn workspace @gru/web compile && concurrently --kill-others \"yarn workspace @gru/web compile -w\" \"yarn workspace @gru/web start\"",
     "dev:cms": "cd packages/cms && npm start"
   },
-  "dependencies": {},
+  "dependencies": {
+    "moment": "^2.24.0"
+  },
   "devDependencies": {
     "concurrently": "^4.1.0",
     "typescript": "3.3.3333"

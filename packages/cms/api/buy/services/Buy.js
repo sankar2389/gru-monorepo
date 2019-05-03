@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Group.js service
+ * Buy.js service
  *
  * @description: A set of functions similar to controller's actions to avoid code duplication.
  */
@@ -12,21 +12,21 @@ const _ = require('lodash');
 module.exports = {
 
   /**
-   * Promise to fetch all groups.
+   * Promise to fetch all buys.
    *
    * @return {Promise}
    */
 
   fetchAll: (params) => {
     // Convert `params` object to filters compatible with Mongo.
-    const filters = strapi.utils.models.convertParams('group', params);
+    const filters = strapi.utils.models.convertParams('buy', params);
     // Select field to populate.
-    const populate = Group.associations
+    const populate = Buy.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
-    return Group
+    return Buy
       .find()
       .where(filters.where)
       .sort(filters.sort)
@@ -36,90 +36,90 @@ module.exports = {
   },
 
   /**
-   * Promise to fetch a/an group.
+   * Promise to fetch a/an buy.
    *
    * @return {Promise}
    */
 
   fetch: (params) => {
     // Select field to populate.
-    const populate = Group.associations
+    const populate = Buy.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
-    return Group
-      .findOne(_.pick(params, _.keys(Group.schema.paths)))
+    return Buy
+      .findOne(_.pick(params, _.keys(Buy.schema.paths)))
       .populate(populate);
   },
 
   /**
-   * Promise to count groups.
+   * Promise to count buys.
    *
    * @return {Promise}
    */
 
   count: (params) => {
     // Convert `params` object to filters compatible with Mongo.
-    const filters = strapi.utils.models.convertParams('group', params);
+    const filters = strapi.utils.models.convertParams('buy', params);
 
-    return Group
+    return Buy
       .countDocuments()
       .where(filters.where);
   },
 
   /**
-   * Promise to add a/an group.
+   * Promise to add a/an buy.
    *
    * @return {Promise}
    */
 
   add: async (values) => {
     // Extract values related to relational data.
-    const relations = _.pick(values, Group.associations.map(ast => ast.alias));
-    const data = _.omit(values, Group.associations.map(ast => ast.alias));
+    const relations = _.pick(values, Buy.associations.map(ast => ast.alias));
+    const data = _.omit(values, Buy.associations.map(ast => ast.alias));
 
     // Create entry with no-relational data.
-    const entry = await Group.create(data);
+    const entry = await Buy.create(data);
 
     // Create relational data and return the entry.
-    return Group.updateRelations({ _id: entry.id, values: relations });
+    return Buy.updateRelations({ _id: entry.id, values: relations });
   },
 
   /**
-   * Promise to edit a/an group.
+   * Promise to edit a/an buy.
    *
    * @return {Promise}
    */
 
   edit: async (params, values) => {
     // Extract values related to relational data.
-    const relations = _.pick(values, Group.associations.map(a => a.alias));
-    const data = _.omit(values, Group.associations.map(a => a.alias));
+    const relations = _.pick(values, Buy.associations.map(a => a.alias));
+    const data = _.omit(values, Buy.associations.map(a => a.alias));
 
     // Update entry with no-relational data.
-    const entry = await Group.updateOne(params, data, { multi: true });
+    const entry = await Buy.updateOne(params, data, { multi: true });
 
     // Update relational data and return the entry.
-    return Group.updateRelations(Object.assign(params, { values: relations }));
+    return Buy.updateRelations(Object.assign(params, { values: relations }));
   },
 
   /**
-   * Promise to remove a/an group.
+   * Promise to remove a/an buy.
    *
    * @return {Promise}
    */
 
   remove: async params => {
     // Select field to populate.
-    const populate = Group.associations
+    const populate = Buy.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
     // Note: To get the full response of Mongo, use the `remove()` method
     // or add spent the parameter `{ passRawResult: true }` as second argument.
-    const data = await Group
+    const data = await Buy
       .findOneAndRemove(params, {})
       .populate(populate);
 
@@ -128,7 +128,7 @@ module.exports = {
     }
 
     await Promise.all(
-      Group.associations.map(async association => {
+      Buy.associations.map(async association => {
         if (!association.via || !data._id || association.dominant) {
           return true;
         }
@@ -149,22 +149,22 @@ module.exports = {
   },
 
   /**
-   * Promise to search a/an group.
+   * Promise to search a/an buy.
    *
    * @return {Promise}
    */
 
   search: async (params) => {
     // Convert `params` object to filters compatible with Mongo.
-    const filters = strapi.utils.models.convertParams('group', params);
+    const filters = strapi.utils.models.convertParams('buy', params);
     // Select field to populate.
-    const populate = Group.associations
+    const populate = Buy.associations
       .filter(ast => ast.autoPopulate !== false)
       .map(ast => ast.alias)
       .join(' ');
 
-    const $or = Object.keys(Group.attributes).reduce((acc, curr) => {
-      switch (Group.attributes[curr].type) {
+    const $or = Object.keys(Buy.attributes).reduce((acc, curr) => {
+      switch (Buy.attributes[curr].type) {
         case 'integer':
         case 'float':
         case 'decimal':
@@ -188,7 +188,7 @@ module.exports = {
       }
     }, []);
 
-    return Group
+    return Buy
       .find({ $or })
       .sort(filters.sort)
       .skip(filters.start)

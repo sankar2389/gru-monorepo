@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Lifecycle callbacks for the `Group` model.
+ * Lifecycle callbacks for the `Sell` model.
  */
 
 module.exports = {

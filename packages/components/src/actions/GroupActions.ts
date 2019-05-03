@@ -1,8 +1,9 @@
 import axios, { AxiosError } from 'axios';
-import { ICreateGrpError, IGroupsInfo  } from '../types';
+import { ICreateGrpError, IGroupsInfo } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
+import { string } from 'prop-types';
 
 const createGrpScss = (dispatch: Function, response: any) => {
     dispatch({ type: 'GRP_CREATE_SUCCESS', payload: response });
@@ -24,61 +25,56 @@ const emitGroupsList = (dispatch: Function, response: any) => {
     dispatch({ type: 'GRPS_LST', payload: response })
 }
 
+/** Create Group */
 export const createGroup = (payload: IGroupsInfo) => {
-    const { groupName, users } = payload;
-    return (dispatch: Function) => {
-        axios
-            .post('http://localhost:1337/groups', {
-                groupName,
-                users
-            })
-            .then(response => {
-                createGrpScss(dispatch, response.data);
-            })
-            .catch((error: AxiosError) => {
-                const err: ICreateGrpError = error.response!.data
-                console.error('Error: ', err.message);
-                createGrpFail(dispatch, err);
-            });
-    }
-}
-
-export const getGroupsList = (creator: string) => {
-    return (dispatch: Function) => {
-        const client = createApolloClient('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTU1NTg5MTkzLCJleHAiOjE1NTgxODExOTN9.DkdcPF0yek5FaHiDNrZOAqJhUMnZpLu_hi1Sg-83yho');
-        client.query({
-            query: gql`
-                        query {
-                            groups {
-                                groupName
-                            }
-                        }
-                    `
-            }).then((res: any) => {
-                console.log('res: ', res.data);
-                emitGroupsList(dispatch, res.data);
-            }).catch(e => {
-                throw e;
-            });
-    }
-}
-
-export const getGroupInfo = (groupId: number) => {
+    //console.log("payload", payload)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {
-                    const client = createApolloClient('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTU1NTg5MTkzLCJleHAiOjE1NTgxODExOTN9.DkdcPF0yek5FaHiDNrZOAqJhUMnZpLu_hi1Sg-83yho');
-                    client.query({
-                        query: gql`
-                            query {
-                                groups {
-                                    groupName
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation($input: createGroupInput) {
+                            createGroup(input: $input) {
+                              group {
+                                  _id,
+                                groupName,
+                                creator
+                              }
+                            }
+                          }
+                        `,
+                        variables: {
+                            "input": {
+                                "data": {
+                                    "groupName": payload.groupName,
+                                    "creator": payload.creator,
+                                    "members": []
                                 }
                             }
-                        `
+                        }
                     }).then((res: any) => {
-                        console.log('res: ', res.data);
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator,
+                                        members,
+                                        createdAt
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator: payload.creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
                     }).catch(e => {
                         throw e;
                     });
@@ -87,16 +83,186 @@ export const getGroupInfo = (groupId: number) => {
             .catch(e => {
                 throw e;
             })
-        /*axios
-            .get('http://localhost:1337/groups', {
-                params: { groupId }
-            })
-            .then(response => {
-                getGrpScss(dispatch, response.data);
-            })
-            .catch((error: AxiosError) => {
-                getGrpFail(dispatch, error);
-            })
-        */
     }
 }
+
+export const getGroupsList = (creator: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                            query($creator: String) {
+                                groups(where: { creator: $creator }) {
+                                    _id,
+                                    groupName,
+                                    creator,
+                                    members,
+                                    createdAt
+                                }
+                            }
+                        `,
+                        variables: {
+                            creator
+                        }
+                    }).then((res: any) => {
+                        emitGroupsList(dispatch, res.data);
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+    }
+}
+
+export const getGroupInfo = (groupId: number) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                            query {
+                                group(id: $groupId) {
+                                    groupName
+                                }
+                            }
+                        `
+                    }).then((res: any) => {
+                        getGrpScss(dispatch, res.data);
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+}
+
+/** Delete Group */
+export const onDeleteGroup = (groupId: string, creator: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: deleteGroupInput) {
+                            deleteGroup(input: $input) {
+                              group {
+                                  _id
+                                groupName
+                                creator
+                              }
+                            }
+                          }
+                          
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": groupId
+                                }
+                            }
+                        }
+                    }).then((res: any) => {
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator,
+                                        members,
+                                        createdAt
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+
+}
+
+/** Edit Group */
+export const onUpdateGroup = (groupId: string, groupName: string, creator: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: updateGroupInput) {
+                            updateGroup(input: $input) {
+                              group {
+                                groupName
+                                creator
+                              }
+                            }
+                          }
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": groupId
+                                },
+                                "data": {
+                                    "groupName": groupName
+                                }
+                            }
+                        }
+                    }).then((res: any) => {
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator,
+                                        members,
+                                        createdAt
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+
+}
+
+
