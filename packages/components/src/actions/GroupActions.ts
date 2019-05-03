@@ -38,6 +38,7 @@ export const createGroup = (payload: IGroupsInfo) => {
                         mutation($input: createGroupInput) {
                             createGroup(input: $input) {
                               group {
+                                  _id,
                                 groupName,
                                 creator
                               }
@@ -53,17 +54,31 @@ export const createGroup = (payload: IGroupsInfo) => {
                             }
                         }
                     }).then((res: any) => {
-                        console.log(res)
-                        console.log('res: ', res.data);
-                        getGrpScss(dispatch, res.data);
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator
+                                    
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator: payload.creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
                     }).catch(e => {
-                        console.log("first error", e)
                         throw e;
                     });
                 }
             })
             .catch(e => {
-                console.log("last error", e)
                 throw e;
             })
     }
@@ -90,9 +105,6 @@ export const getGroupsList = (creator: string) => {
                             creator
                         }
                     }).then((res: any) => {
-
-                        console.log("resssssssssssss", res.data)
-                        console.log('res: ', res.data);
                         emitGroupsList(dispatch, res.data);
                     }).catch(e => {
                         throw e;
@@ -117,7 +129,6 @@ export const getGroupInfo = (groupId: number) => {
                             }
                         `
                     }).then((res: any) => {
-                        console.log('res: ', res.data);
                         getGrpScss(dispatch, res.data);
                     }).catch(e => {
                         throw e;

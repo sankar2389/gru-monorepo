@@ -217,6 +217,9 @@ class GroupView extends Component<IProps, IState> {
                                     onChangeText={groupName => {
                                         this.setState({ groupName: groupName });
                                     }}
+                                    onSubmitEditing={() => {
+                                        this.onPressCreateGroup()
+                                    }}
                                 />
                             </View>
                             <View style={styles.buttonView}>
