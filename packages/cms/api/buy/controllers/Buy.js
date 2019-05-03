@@ -53,7 +53,9 @@ module.exports = {
    */
 
   create: async (ctx) => {
-    return strapi.services.buy.add(ctx.request.body);
+    const buyordr = await strapi.services.buy.add(ctx.request.body);
+    await strapi.io.emit('buy', JSON.stringify({ message: buyordr }));
+    return buyordr;
   },
 
   /**

@@ -21,6 +21,8 @@ class BuySell extends Component<IProps> {
     componentDidMount() {
         const socket = io('http://localhost:1337/');
         socket.on('hello', (res: any) => console.log(res));
+        socket.on('buy', (res: any) => console.log(res));
+        socket.on('sell', (res: any) => console.log(res));
     }
     render() {
         const { innerContainer } = styles;
