@@ -42,7 +42,8 @@ export interface IGroupsInfo {
     groupName: string,
     creator: string,
     createdAt: any,
-    users: string[]
+    users: string[],
+    members: any[]
 }
 
 export interface ICreateGrpError extends Error { }

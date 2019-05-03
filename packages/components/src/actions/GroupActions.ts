@@ -49,7 +49,8 @@ export const createGroup = (payload: IGroupsInfo) => {
                             "input": {
                                 "data": {
                                     "groupName": payload.groupName,
-                                    "creator": payload.creator
+                                    "creator": payload.creator,
+                                    "members": []
                                 }
                             }
                         }
@@ -61,6 +62,7 @@ export const createGroup = (payload: IGroupsInfo) => {
                                         _id,
                                         groupName,
                                         creator,
+                                        members,
                                         createdAt
                                     }
                                 }
@@ -97,6 +99,7 @@ export const getGroupsList = (creator: string) => {
                                     _id,
                                     groupName,
                                     creator,
+                                    members,
                                     createdAt
                                 }
                             }
@@ -176,6 +179,7 @@ export const onDeleteGroup = (groupId: string, creator: string) => {
                                         _id,
                                         groupName,
                                         creator,
+                                        members,
                                         createdAt
                                     }
                                 }
@@ -236,6 +240,7 @@ export const onUpdateGroup = (groupId: string, groupName: string, creator: strin
                                         _id,
                                         groupName,
                                         creator,
+                                        members,
                                         createdAt
                                     }
                                 }

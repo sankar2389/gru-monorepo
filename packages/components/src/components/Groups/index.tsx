@@ -22,16 +22,22 @@ interface IState {
     groupPageCount: any[],
     modalVisible: boolean,
     groupName: string,
-    updateGroup: any
+    updateGroup: any,
+    startDataOnPage: number,
+    endDataOnPage: number,
+    limitDataOnPage: number
 }
 
 class GroupView extends Component<IProps, IState> {
     state: IState = {
         groupList: [],
-        groupPageCount: [1, 2, 3],
+        groupPageCount: [],
         modalVisible: false,
         groupName: "",
-        updateGroup: ""
+        updateGroup: "",
+        startDataOnPage: 0,
+        endDataOnPage: 9,
+        limitDataOnPage: 9
     }
     constructor(props: IProps) {
         super(props);
@@ -40,51 +46,79 @@ class GroupView extends Component<IProps, IState> {
     async componentDidMount() {
         const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
+
+
+
+    }
+
+    componentWillReceiveProps(newProps: any) {
+        let groupPageCount = []
+        let groupLength = newProps.group.groups.length
+        console.log("groupLenght", groupLength)
+        let totalpage = groupLength / this.state.limitDataOnPage
+        let count = groupLength % this.state.limitDataOnPage
+        if (count !== 0) {
+            totalpage = totalpage + 1
+            if (totalpage > 1) {
+                for (let i = 1; i <= totalpage; i++) {
+                    groupPageCount.push(i)
+                }
+            }
+        } else {
+            if (totalpage > 1) {
+                for (let i = 1; i <= totalpage; i++) {
+                    groupPageCount.push(i)
+                }
+            }
+        }
+
+
+        this.setState({
+            groupPageCount: groupPageCount
+        })
     }
 
     onPressPaginate(pageCount: number) {
-        let groupList = []
-        let onPageCount = pageCount + 5
-        for (let i = pageCount; i <= onPageCount; i++) {
-            groupList.push(i)
-        }
-
-        this.setState({ groupList: groupList })
+        let count = pageCount * this.state.limitDataOnPage
+        let startDataOnPage = count - this.state.limitDataOnPage
+        let endDataOnPage = count
+        this.setState({
+            startDataOnPage: startDataOnPage,
+            endDataOnPage: endDataOnPage
+        })
 
     }
 
     //pagination Next
     onPressPaginateNext() {
-        let groupList = []
-        let groupFistElement = this.state.groupList[0] + 1
-        for (let i = groupFistElement; i <= groupFistElement + 5; i++) {
-            groupList.push(i)
+        let groupPageCount = this.state.groupPageCount.length
+        if (this.state.endDataOnPage < groupPageCount) {
+            this.setState({
+                startDataOnPage: this.state.startDataOnPage + this.state.limitDataOnPage,
+                endDataOnPage: this.state.endDataOnPage + this.state.limitDataOnPage
+            })
+        } else {
+            alert("EOF")
         }
-
-        this.setState({ groupList: groupList })
 
     }
 
-    //pagination Previous
+    // //pagination Previous
     onPressPaginatePrevious() {
-        let groupList = []
-        let groupFistElement = this.state.groupList[0] - 1
-        if (groupFistElement >= 1) {
-            for (let i = groupFistElement; i <= groupFistElement + 5; i++) {
-                groupList.push(i)
-            }
-            this.setState({ groupList: groupList })
+        if (this.state.startDataOnPage > 0) {
+            this.setState({
+                startDataOnPage: this.state.startDataOnPage - this.state.limitDataOnPage,
+                endDataOnPage: this.state.endDataOnPage - this.state.limitDataOnPage
+            })
         } else {
-            Alert.alert("BOF", "You are begning of the group")
+            alert("BOF")
         }
-
     }
 
     //Create group 
     async onPressCreateGroup() {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-
-        if (this.state.groupName && user.email) {
+        if (this.state.groupName.length <= 60 && user.email) {
             const groupData = {
                 groupName: this.state.groupName,
                 creator: user.email,
@@ -92,6 +126,8 @@ class GroupView extends Component<IProps, IState> {
             }
             this.props.createGroup(groupData)
             this.setState({ groupName: "", modalVisible: false })
+        } else {
+            alert("Please check group name")
         }
     }
 
@@ -120,7 +156,7 @@ class GroupView extends Component<IProps, IState> {
     }
 
     updateGroup = (_id: string, groupName: string, creator: string) => {
-        if (_id && groupName) {
+        if (_id && groupName.length < 60) {
             this.props.onUpdateGroup(_id, groupName, creator);
             this.cancelGroupUpdate()
         } else {
@@ -134,6 +170,7 @@ class GroupView extends Component<IProps, IState> {
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
+        console.log("stae", this.state.groupPageCount)
         return this.state.updateGroup ?
             (
                 /** Update group in component */
@@ -155,7 +192,7 @@ class GroupView extends Component<IProps, IState> {
                                 <Text>No of groups - {groups.length}</Text>
                             </View>
                             <View>
-                                <TouchableOpacity style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
+                                <TouchableOpacity disabled={this.state.modalVisible ? true : false} style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
                                     <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
                                 </TouchableOpacity>
                             </View>
@@ -164,69 +201,68 @@ class GroupView extends Component<IProps, IState> {
                         {groups.length > 0 ?
                             <View style={styles.groupListMainContainer}>
                                 {groups.map((group, index) => {
-                                    return (
-                                        <View style={styles.nestedGroupListView} key={index}>
+                                    if (index >= this.state.startDataOnPage && index <= this.state.endDataOnPage) {
+                                        return (
+                                            <View style={styles.nestedGroupListView} key={index}>
 
-                                            <View style={styles.groupListMainContainer}>
-                                                <View style={styles.textView}>
-                                                    <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                </View>
+                                                <View style={styles.groupListMainContainer}>
+                                                    <View style={styles.textView}>
+                                                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                    </View>
 
-                                                <View style={styles.textView}>
-                                                    <Text style={{ marginBottom: 10, flexWrap: "wrap" }}>
-                                                        {group.groupName}
+                                                    <View style={styles.textView}>
+                                                        <Text style={{ marginBottom: 10, flexWrap: "wrap", fontWeight: "900", padding: 0, marginRight: 100 }}>
+                                                            {group.groupName}
+                                                        </Text>
+                                                        <Text style={{ marginBottom: 10, color: "gray", fontSize: 12 }}>
+
+                                                            {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
                                                     </Text>
-                                                    <Text style={{ marginBottom: 10 }}>
-                                                        {moment(group.createdAt).format(' DD-MM-YY, h:mm')}   | Total Member
-                                            </Text>
-                                                    <Text>
-                                                        {/* Image */}
-                                                    </Text>
-                                                </View>
+                                                        <Text>
+                                                            {/* Image */}
+                                                        </Text>
+                                                    </View>
 
-                                                <View style={{ marginTop: 20, marginRight: 20 }}>
-                                                    {/* <TouchableOpacity>
-                                                <Text style={{ fontSize: 20, marginRight: 30 }}>
-                                                    ...
-                                            </Text>
-                                            </TouchableOpacity> */}
-                                                    <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
-                                                        <option >...</option>
-                                                        <option onClick={() => this.onClicEditGroup(group)}>Edit</option>
-                                                        <option onClick={() => this.onClickDeleteGroup(group._id, group.creator)}>Delete</option>
-                                                    </select>
+                                                    <View style={{ marginTop: 20, marginRight: 20 }}>
+                                                        <select disabled={this.state.modalVisible ? true : false} style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="..." >
+                                                            <option >...</option>
+                                                            <option onClick={() => this.onClicEditGroup(group)}>Edit</option>
+                                                            <option onClick={() => this.onClickDeleteGroup(group._id, group.creator)}>Delete</option>
+                                                        </select>
+                                                    </View>
                                                 </View>
                                             </View>
-                                        </View>
 
-                                    )
+                                        )
+                                    }
                                 })}
                             </View>
                             :
                             <Text />
                         }
                         {/* PAGINATION VIEW START */}
-                        <View style={{ flexDirection: "row" }}>
-                            <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
-                                <Text>{"<"}</Text>
-                            </TouchableOpacity>
-                            {this.state.groupPageCount.map(pageCount => {
-                                return (
-                                    <TouchableOpacity key={pageCount}
-                                        onPress={this.onPressPaginate.bind(this, pageCount)}
-                                        style={styles.paginationButton}
-                                    >
-                                        <Text>{pageCount}</Text>
-                                    </TouchableOpacity>
-                                )
-                            })}
+                        {this.state.groupPageCount.length > 1 ?
+                            <View style={{ flexDirection: "row" }}>
+                                <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
+                                    <Text>{"<"}</Text>
+                                </TouchableOpacity>
+                                {this.state.groupPageCount.map(pageCount => {
+                                    return (
+                                        <TouchableOpacity key={pageCount}
+                                            onPress={this.onPressPaginate.bind(this, pageCount)}
+                                            style={styles.paginationButton}
+                                        >
+                                            <Text>{pageCount}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                })}
 
-                            <TouchableOpacity
-                                onPress={this.onPressPaginateNext.bind(this)}
-                                style={styles.paginationButton}>
-                                <Text>{">"}</Text>
-                            </TouchableOpacity>
-                        </View>
+                                <TouchableOpacity
+                                    onPress={this.onPressPaginateNext.bind(this)}
+                                    style={styles.paginationButton}>
+                                    <Text>{">"}</Text>
+                                </TouchableOpacity>
+                            </View> : <Text />}
                         {/* PAGINATION VIEW END */}
                     </View>
 
@@ -235,13 +271,13 @@ class GroupView extends Component<IProps, IState> {
                         this.state.modalVisible ?
                             <View style={styles.modalView}>
                                 <View style={styles.modalCreateGroupView}>
-                                    <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Groups</Text>
+                                    <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Group</Text>
                                 </View>
                                 <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
                                     <TextInput
                                         autoFocus={true}
                                         value={this.state.groupName}
-                                        placeholder={'Group Name Here'}
+                                        placeholder={'Group Name'}
                                         style={styles.inputStyle}
                                         onChangeText={groupName => {
                                             this.setState({ groupName: groupName });
@@ -311,9 +347,11 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     textView: {
+        flex: 1,
         marginTop: 40,
-        marginLeft: 10,
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        alignItems: "flex-start",
+        //backgroundColor: "red"
 
     },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
@@ -332,7 +370,9 @@ const styles = StyleSheet.create({
         height: 100,
         width: 100,
         backgroundColor: "#bfbfbf",
-        borderRadius: 50
+        borderRadius: 50,
+        marginLeft: 50
+
     },
     button: {
         flex: 1,
