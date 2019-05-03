@@ -1,0 +1,29 @@
+{
+  "connection": "default",
+  "collectionName": "",
+  "info": {
+    "name": "buy",
+    "description": "Buy requests"
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "creator": {
+      "default": "",
+      "type": "string"
+    },
+    "unit": {
+      "default": "",
+      "type": "string"
+    },
+    "quantity": {
+      "default": "",
+      "type": "float"
+    },
+    "price": {
+      "default": "",
+      "type": "decimal"
+    }
+  }
+}
