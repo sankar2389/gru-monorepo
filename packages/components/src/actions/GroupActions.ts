@@ -201,7 +201,62 @@ export const onDeleteGroup = (groupId: string, creator: string) => {
 }
 
 /** Edit Group */
-export const onEditGroup = () => {
+export const onUpdateGroup = (groupId: string, groupName: string, creator: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: updateGroupInput) {
+                            updateGroup(input: $input) {
+                              group {
+                                groupName
+                                creator
+                              }
+                            }
+                          }
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": groupId
+                                },
+                                "data": {
+                                    "groupName": groupName
+                                }
+                            }
+                        }
+                    }).then((res: any) => {
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator
+                                    
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
 
 }
 

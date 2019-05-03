@@ -3,8 +3,10 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
+import UpdateGroup from "./updateGroupComponent";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
-import { getGroupsList, createGroup, onDeleteGroup, onEditGroup } from '../../actions';
+import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup } from '../../actions';
+import { string } from "prop-types";
 
 
 interface IProps extends RouteComponentProps {
@@ -12,7 +14,7 @@ interface IProps extends RouteComponentProps {
     getGroupsList: (creator: string) => void,
     createGroup: (groupData: any) => void,
     onDeleteGroup: (groupId: string, creator: string) => void,
-    onEditGroup: (groupId: string) => void
+    onUpdateGroup: (groupId: string, groupName: string, creator: string) => void,
 };
 
 interface IState {
@@ -20,6 +22,7 @@ interface IState {
     groupPageCount: any[],
     modalVisible: boolean,
     groupName: string,
+    updateGroup: any
 }
 
 class GroupView extends Component<IProps, IState> {
@@ -27,7 +30,8 @@ class GroupView extends Component<IProps, IState> {
         groupList: [],
         groupPageCount: [1, 2, 3],
         modalVisible: false,
-        groupName: ""
+        groupName: "",
+        updateGroup: ""
     }
     constructor(props: IProps) {
         super(props);
@@ -104,144 +108,172 @@ class GroupView extends Component<IProps, IState> {
     }
 
     //Edit group
-    onClicEditGroup = (groupId: string) => {
-        console.log("groupId", groupId)
-        if (groupId) {
-            this.props.onEditGroup(groupId)
+    onClicEditGroup = (group: any) => {
+        console.log("updateGroup", group)
+        if (group) {
+            this.setState({
+                updateGroup: group
+            })
         }
         //console.log("group", groupId)
 
     }
+
+    cancelGroupUpdate = () => {
+        this.setState({
+            updateGroup: ""
+        })
+    }
+
+    updateGroup = (_id: string, groupName: string, creator: string) => {
+        if (_id) {
+            this.props.onUpdateGroup(_id, groupName, creator);
+            this.cancelGroupUpdate()
+        }
+    }
+
 
 
 
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
-        return (
-            <View style={innerContainer}>
-                <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
-                    <View style={styles.headerView}>
-                        <View>
-                            <Text style={{ fontSize: 30 }}>List of Groups</Text>
-                            <Text>No of groups - {groups.length}</Text>
-                        </View>
-                        <View>
-                            <TouchableOpacity style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
-                                <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    {groups.length > 0 ?
-                        <View style={styles.groupListMainContainer}>
-                            {groups.map((group, index) => {
-                                return (
-                                    <View style={styles.nestedGroupListView} key={index}>
+        return this.state.updateGroup ?
+            (
+                /** Update group in component */
+                <View style={innerContainer}>
+                    <UpdateGroup
+                        editedGroup={this.state.updateGroup}
+                        cancelGroupUpdate={this.cancelGroupUpdate}
+                        updateGroup={this.updateGroup}
 
-                                        <View style={styles.groupListMainContainer}>
-                                            <View style={styles.textView}>
-                                                <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            </View>
+                    />
+                </View>
+            ) :
+            (
+                <View style={innerContainer}>
+                    <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
+                        <View style={styles.headerView}>
+                            <View>
+                                <Text style={{ fontSize: 30 }}>List of Groups</Text>
+                                <Text>No of groups - {groups.length}</Text>
+                            </View>
+                            <View>
+                                <TouchableOpacity style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
+                                    <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
 
-                                            <View style={styles.textView}>
-                                                <Text style={{ marginBottom: 10 }}>
-                                                    {group.groupName}
-                                                </Text>
-                                                <Text style={{ marginBottom: 10 }}>
-                                                    Date, time  | Total Member
+                        {groups.length > 0 ?
+                            <View style={styles.groupListMainContainer}>
+                                {groups.map((group, index) => {
+                                    return (
+                                        <View style={styles.nestedGroupListView} key={index}>
+
+                                            <View style={styles.groupListMainContainer}>
+                                                <View style={styles.textView}>
+                                                    <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                </View>
+
+                                                <View style={styles.textView}>
+                                                    <Text style={{ marginBottom: 10 }}>
+                                                        {group.groupName}
+                                                    </Text>
+                                                    <Text style={{ marginBottom: 10 }}>
+                                                        Date, time  | Total Member
                                             </Text>
-                                                <Text>
-                                                    {/* Image */}
-                                                </Text>
-                                            </View>
+                                                    <Text>
+                                                        {/* Image */}
+                                                    </Text>
+                                                </View>
 
-                                            <View style={{ marginTop: 20, marginRight: 20 }}>
-                                                {/* <TouchableOpacity>
+                                                <View style={{ marginTop: 20, marginRight: 20 }}>
+                                                    {/* <TouchableOpacity>
                                                 <Text style={{ fontSize: 20, marginRight: 30 }}>
                                                     ...
                                             </Text>
                                             </TouchableOpacity> */}
-                                                <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
-                                                    <option >...</option>
-                                                    <option onClick={() => this.onClicEditGroup(group._id)}>Edit</option>
-                                                    <option onClick={() => this.onClickDeleteGroup(group._id, group.creator)}>Delete</option>
-                                                </select>
+                                                    <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
+                                                        <option >...</option>
+                                                        <option onClick={() => this.onClicEditGroup(group)}>Edit</option>
+                                                        <option onClick={() => this.onClickDeleteGroup(group._id, group.creator)}>Delete</option>
+                                                    </select>
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
 
+                                    )
+                                })}
+                            </View>
+                            :
+                            <Text />
+                        }
+                        {/* PAGINATION VIEW START */}
+                        <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
+                                <Text>{"<"}</Text>
+                            </TouchableOpacity>
+                            {this.state.groupPageCount.map(pageCount => {
+                                return (
+                                    <TouchableOpacity key={pageCount}
+                                        onPress={this.onPressPaginate.bind(this, pageCount)}
+                                        style={styles.paginationButton}
+                                    >
+                                        <Text>{pageCount}</Text>
+                                    </TouchableOpacity>
                                 )
                             })}
+
+                            <TouchableOpacity
+                                onPress={this.onPressPaginateNext.bind(this)}
+                                style={styles.paginationButton}>
+                                <Text>{">"}</Text>
+                            </TouchableOpacity>
                         </View>
-                        :
-                        <Text />
-                    }
-                    {/* PAGINATION VIEW START */}
-                    <View style={{ flexDirection: "row" }}>
-                        <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
-                            <Text>{"<"}</Text>
-                        </TouchableOpacity>
-                        {this.state.groupPageCount.map(pageCount => {
-                            return (
-                                <TouchableOpacity key={pageCount}
-                                    onPress={this.onPressPaginate.bind(this, pageCount)}
-                                    style={styles.paginationButton}
-                                >
-                                    <Text>{pageCount}</Text>
-                                </TouchableOpacity>
-                            )
-                        })}
-
-                        <TouchableOpacity
-                            onPress={this.onPressPaginateNext.bind(this)}
-                            style={styles.paginationButton}>
-                            <Text>{">"}</Text>
-                        </TouchableOpacity>
+                        {/* PAGINATION VIEW END */}
                     </View>
-                    {/* PAGINATION VIEW END */}
-                </View>
 
-                {/* ADD GROUP MODAL START */}
-                {
-                    this.state.modalVisible ?
-                        <View style={styles.modalView}>
-                            <View style={styles.modalCreateGroupView}>
-                                <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Groups</Text>
-                            </View>
-                            <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
-                                <TextInput
-                                    autoFocus={true}
-                                    value={this.state.groupName}
-                                    placeholder={'Group Name Here'}
-                                    style={styles.inputStyle}
-                                    onChangeText={groupName => {
-                                        this.setState({ groupName: groupName });
-                                    }}
-                                    onSubmitEditing={() => {
-                                        this.onPressCreateGroup()
-                                    }}
-                                />
-                            </View>
-                            <View style={styles.buttonView}>
-                                <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
-                                    style={styles.modalCancelButton}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.submitButton}
-                                    onPress={() => this.onPressCreateGroup()}
-                                >
-                                    <Text style={styles.buttonText}>Submit</Text>
-                                </TouchableOpacity>
+                    {/* ADD GROUP MODAL START */}
+                    {
+                        this.state.modalVisible ?
+                            <View style={styles.modalView}>
+                                <View style={styles.modalCreateGroupView}>
+                                    <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Groups</Text>
+                                </View>
+                                <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
+                                    <TextInput
+                                        autoFocus={true}
+                                        value={this.state.groupName}
+                                        placeholder={'Group Name Here'}
+                                        style={styles.inputStyle}
+                                        onChangeText={groupName => {
+                                            this.setState({ groupName: groupName });
+                                        }}
+                                        onSubmitEditing={() => {
+                                            this.onPressCreateGroup()
+                                        }}
+                                    />
+                                </View>
+                                <View style={styles.buttonView}>
+                                    <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
+                                        style={styles.modalCancelButton}>
+                                        <Text style={styles.buttonText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.submitButton}
+                                        onPress={() => this.onPressCreateGroup()}
+                                    >
+                                        <Text style={styles.buttonText}>Submit</Text>
+                                    </TouchableOpacity>
 
-                            </View>
+                                </View>
 
-                        </View> : <Text />
-                }
-                {/* ADD GROUP MODAL END */}
-            </View >
+                            </View> : <Text />
+                    }
+                    {/* ADD GROUP MODAL END */}
+                </View >
+            )
 
-
-        );
     }
 }
 
@@ -249,7 +281,7 @@ const mapStateToProps = ({ auth, group }: any): IReduxState => {
     return { auth, group };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup, onEditGroup })(GroupView);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup })(GroupView);
 
 const styles = StyleSheet.create({
     innerContainer: {
