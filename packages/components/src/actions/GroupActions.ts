@@ -82,6 +82,7 @@ export const getGroupsList = (creator: string) => {
                                     _id,
                                     groupName,
                                     creator
+                                
                                 }
                             }
                         `,
@@ -90,7 +91,7 @@ export const getGroupsList = (creator: string) => {
                         }
                     }).then((res: any) => {
 
-                        console.log("resssssssssssss", res)
+                        console.log("resssssssssssss", res.data)
                         console.log('res: ', res.data);
                         emitGroupsList(dispatch, res.data);
                     }).catch(e => {
@@ -130,7 +131,7 @@ export const getGroupInfo = (groupId: number) => {
 }
 
 /** Delete Group */
-export const onDeleteGroup = (payload: IDeleteGroup) => {
+export const onDeleteGroup = (groupId: string, creator: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -138,27 +139,50 @@ export const onDeleteGroup = (payload: IDeleteGroup) => {
                     const client = createApolloClient(authtoken);
                     client.mutate({
                         mutation: gql`
-                        mutation {
-                            deleteGroup(where:{}) {
+                        mutation ($input: deleteGroupInput) {
+                            deleteGroup(input: $input) {
                               group {
-                                groupName,
+                                  _id
+                                groupName
                                 creator
                               }
                             }
                           }
-                        `
+                          
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": groupId
+                                }
+                            }
+                        }
                     }).then((res: any) => {
-                        console.log(res)
-                        console.log('res: ', res.data);
-                        getGrpScss(dispatch, res.data);
+                        client.query({
+                            query: gql`
+                                query($creator: String) {
+                                    groups(where: { creator: $creator }) {
+                                        _id,
+                                        groupName,
+                                        creator
+                                    
+                                    }
+                                }
+                            `,
+                            variables: {
+                                creator
+                            }
+                        }).then((res: any) => {
+                            emitGroupsList(dispatch, res.data);
+                        }).catch(e => {
+                            throw e;
+                        });
                     }).catch(e => {
-                        console.log("first error", e)
                         throw e;
                     });
                 }
             })
             .catch(e => {
-                console.log("last error", e)
                 throw e;
             })
     }
@@ -198,7 +222,6 @@ export const onEditGroup = (payload: IDeleteGroup) => {
                         console.log('res: ', res.data);
                         getGrpScss(dispatch, res.data);
                     }).catch(e => {
-                        console.log("first error", e)
                         throw e;
                     });
                 }

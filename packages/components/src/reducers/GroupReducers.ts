@@ -20,6 +20,7 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
             return { ...state, ...initState, error: action.payload };
         case 'GRPS_LST':
             return { ...state, ...initState, ...action.payload };
+
         default:
             return state;
     }

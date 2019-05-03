@@ -38,6 +38,7 @@ export interface IGroup {
 }
 
 export interface IGroupsInfo {
+    _id: string,
     groupName: string,
     creator: string,
     createdAt: any,
@@ -63,6 +64,6 @@ export interface IStrapiUser {
     username: string
 }
 
-export interface IDeleteGroup {
-    groupCreator: any
-}
+// export interface IDeleteGroup {
+//     groupId: string
+// }

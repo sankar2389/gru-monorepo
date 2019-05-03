@@ -11,7 +11,7 @@ interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
     createGroup: (groupData: any) => void,
-    onDeleteGroup: (groupCreator: any) => void,
+    onDeleteGroup: (groupId: string, creator: string) => void,
     onEditGroup: (groupId: string) => void
 };
 
@@ -96,12 +96,10 @@ class GroupView extends Component<IProps, IState> {
 
 
     //Delete group
-    onClickDeleteGroup = (groupCreator: string) => {
-        console.log("groupId", groupCreator)
+    onClickDeleteGroup(groupId: string, creator: string) {
         let confirms = confirm(`Delete confirmation \n Are you want to delete ?`)
         if (confirms) {
-            console.log("groupId", groupCreator)
-            this.props.onDeleteGroup(groupCreator)
+            this.props.onDeleteGroup(groupId, creator)
         }
     }
 
@@ -138,7 +136,6 @@ class GroupView extends Component<IProps, IState> {
                         <View style={styles.groupListMainContainer}>
                             {groups.map((group, index) => {
                                 return (
-
                                     <View style={styles.nestedGroupListView} key={index}>
 
                                         <View style={styles.groupListMainContainer}>
@@ -166,8 +163,8 @@ class GroupView extends Component<IProps, IState> {
                                             </TouchableOpacity> */}
                                                 <select style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="...">
                                                     <option >...</option>
-                                                    <option onClick={() => this.onClicEditGroup(group.creator)}>Edit</option>
-                                                    <option onClick={() => this.onClickDeleteGroup(group.creator)}>Delete</option>
+                                                    <option onClick={() => this.onClicEditGroup(group._id)}>Edit</option>
+                                                    <option onClick={() => this.onClickDeleteGroup(group._id, group.creator)}>Delete</option>
                                                 </select>
                                             </View>
                                         </View>
