@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { ICreateGrpError, IGroupsInfo, IDeleteGroup } from '../types';
+import { ICreateGrpError, IGroupsInfo } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
@@ -190,47 +190,8 @@ export const onDeleteGroup = (groupId: string, creator: string) => {
 }
 
 /** Edit Group */
-export const onEditGroup = (payload: IDeleteGroup) => {
-    return (dispatch: Function) => {
-        AsyncStorage.getItem('token')
-            .then((authtoken: string | null) => {
-                console.log("authtoken", authtoken)
-                if (authtoken) {
-                    const client = createApolloClient(authtoken);
+export const onEditGroup = () => {
 
-                    console.log("client", client)
-                    client.mutate({
-                        mutation: gql`
-                        mutation {
-                            createGroup(input: {
-                              data: {
-                                groupName: "My1 second group",
-                                creator: "santanubaraijjjjjj@mathcody.com",
-
-                              }
-                            }) {
-                              group {
-                                groupName
-                                creator
-                                members
-                              }
-                            }
-                          }
-                        `
-                    }).then((res: any) => {
-                        console.log(res)
-                        console.log('res: ', res.data);
-                        getGrpScss(dispatch, res.data);
-                    }).catch(e => {
-                        throw e;
-                    });
-                }
-            })
-            .catch(e => {
-                console.log("last error", e.message)
-                throw e;
-            })
-    }
 }
 
 
