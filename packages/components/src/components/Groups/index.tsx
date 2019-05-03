@@ -7,7 +7,7 @@ import UpdateGroup from "./updateGroupComponent";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup } from '../../actions';
 import { string } from "prop-types";
-
+import moment from "moment";
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
@@ -43,7 +43,6 @@ class GroupView extends Component<IProps, IState> {
     }
 
     onPressPaginate(pageCount: number) {
-        console.log(pageCount)
         let groupList = []
         let onPageCount = pageCount + 5
         for (let i = pageCount; i <= onPageCount; i++) {
@@ -51,14 +50,13 @@ class GroupView extends Component<IProps, IState> {
         }
 
         this.setState({ groupList: groupList })
-        console.log("groupList", groupList)
+
     }
 
     //pagination Next
     onPressPaginateNext() {
         let groupList = []
         let groupFistElement = this.state.groupList[0] + 1
-        console.log("groupFistElement", groupFistElement)
         for (let i = groupFistElement; i <= groupFistElement + 5; i++) {
             groupList.push(i)
         }
@@ -72,7 +70,6 @@ class GroupView extends Component<IProps, IState> {
         let groupList = []
         let groupFistElement = this.state.groupList[0] - 1
         if (groupFistElement >= 1) {
-            console.log("groupFistElement", groupFistElement)
             for (let i = groupFistElement; i <= groupFistElement + 5; i++) {
                 groupList.push(i)
             }
@@ -109,14 +106,11 @@ class GroupView extends Component<IProps, IState> {
 
     //Edit group
     onClicEditGroup = (group: any) => {
-        console.log("updateGroup", group)
         if (group) {
             this.setState({
                 updateGroup: group
             })
         }
-        //console.log("group", groupId)
-
     }
 
     cancelGroupUpdate = () => {
@@ -177,11 +171,11 @@ class GroupView extends Component<IProps, IState> {
                                                 </View>
 
                                                 <View style={styles.textView}>
-                                                    <Text style={{ marginBottom: 10 }}>
+                                                    <Text style={{ marginBottom: 10, flexWrap: "wrap" }}>
                                                         {group.groupName}
                                                     </Text>
                                                     <Text style={{ marginBottom: 10 }}>
-                                                        Date, time  | Total Member
+                                                        {moment(group.createdAt).format(' DD-MM-YY, h:mm')}   | Total Member
                                             </Text>
                                                     <Text>
                                                         {/* Image */}
@@ -316,7 +310,9 @@ const styles = StyleSheet.create({
     },
     textView: {
         marginTop: 40,
-        marginLeft: 20
+        marginLeft: 10,
+        flexWrap: 'wrap'
+
     },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
     addButtom: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5 },

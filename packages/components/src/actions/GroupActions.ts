@@ -60,8 +60,8 @@ export const createGroup = (payload: IGroupsInfo) => {
                                     groups(where: { creator: $creator }) {
                                         _id,
                                         groupName,
-                                        creator
-                                    
+                                        creator,
+                                        createdAt
                                     }
                                 }
                             `,
@@ -96,8 +96,8 @@ export const getGroupsList = (creator: string) => {
                                 groups(where: { creator: $creator }) {
                                     _id,
                                     groupName,
-                                    creator
-                                
+                                    creator,
+                                    createdAt
                                 }
                             }
                         `,
@@ -175,8 +175,8 @@ export const onDeleteGroup = (groupId: string, creator: string) => {
                                     groups(where: { creator: $creator }) {
                                         _id,
                                         groupName,
-                                        creator
-                                    
+                                        creator,
+                                        createdAt
                                     }
                                 }
                             `,
@@ -235,8 +235,8 @@ export const onUpdateGroup = (groupId: string, groupName: string, creator: strin
                                     groups(where: { creator: $creator }) {
                                         _id,
                                         groupName,
-                                        creator
-                                    
+                                        creator,
+                                        createdAt
                                     }
                                 }
                             `,
