@@ -29,6 +29,7 @@
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
     "babel-plugin-react-native-web": "0.9.9",
+    "shx": "^0.3.2",
     "typescript": "3.3.3333",
     "webpack-bundle-analyzer": "^3.0.3"
   },
