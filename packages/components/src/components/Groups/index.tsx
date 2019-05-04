@@ -25,7 +25,8 @@ interface IState {
     updateGroup: any,
     startDataOnPage: number,
     endDataOnPage: number,
-    limitDataOnPage: number
+    limitDataOnPage: number,
+    dropDown: number
 }
 
 class GroupView extends Component<IProps, IState> {
@@ -37,7 +38,8 @@ class GroupView extends Component<IProps, IState> {
         updateGroup: "",
         startDataOnPage: 0,
         endDataOnPage: 9,
-        limitDataOnPage: 9
+        limitDataOnPage: 9,
+        dropDown: -1
     }
     constructor(props: IProps) {
         super(props);
@@ -46,9 +48,6 @@ class GroupView extends Component<IProps, IState> {
     async componentDidMount() {
         const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
-
-
-
     }
 
     componentWillReceiveProps(newProps: any) {
@@ -71,7 +70,6 @@ class GroupView extends Component<IProps, IState> {
                 }
             }
         }
-
 
         this.setState({
             groupPageCount: groupPageCount
@@ -100,7 +98,6 @@ class GroupView extends Component<IProps, IState> {
         } else {
             alert("EOF")
         }
-
     }
 
     // //pagination Previous
@@ -141,7 +138,7 @@ class GroupView extends Component<IProps, IState> {
     }
 
     //Edit group
-    onClicEditGroup = (group: any) => {
+    onClickEditGroup = (group: any) => {
         if (group) {
             this.setState({
                 updateGroup: group
@@ -164,6 +161,17 @@ class GroupView extends Component<IProps, IState> {
         }
     }
 
+    handelDropdownClick = (index: number) => {
+        if (index === this.state.dropDown) {
+            this.setState({
+                dropDown: -1
+            })
+        } else {
+            this.setState({
+                dropDown: index
+            })
+        }
+    }
 
 
 
@@ -224,11 +232,17 @@ class GroupView extends Component<IProps, IState> {
                                                     </View>
 
                                                     <View style={{ marginTop: 20, marginRight: 20 }}>
-                                                        <select disabled={this.state.modalVisible ? true : false} style={{ backgroundColor: "#ffffff", border: "none", WebkitAppearance: "none" }} defaultValue="..." >
-                                                            <option >...</option>
-                                                            <option onClick={() => this.onClicEditGroup(group)}>Edit</option>
-                                                            <option onClick={() => this.onClickDeleteGroup(group._id, group.creator)}>Delete</option>
-                                                        </select>
+                                                        <Text onPress={ () => this.handelDropdownClick(index)} style={styles.dropdownDots}>
+                                                            ...
+                                                        </Text> 
+                                                        { this.state.dropDown === index ?
+                                                            <View style={styles.dropdown}>
+                                                                <ul style={{listStyleType: "none", padding: 5, textAlign: "left",margin: 5}}>
+                                                                    <li onClick={() => this.onClickEditGroup(group)} style={{cursor: "pointer"}}>Edit</li>
+                                                                    <li onClick={() => this.onClickDeleteGroup(group._id, group.creator)} style={{cursor: "pointer"}}>Delete</li>
+                                                                </ul>
+                                                            </View> : <Text />
+                                                        }                                       
                                                     </View>
                                                 </View>
                                             </View>
@@ -269,37 +283,39 @@ class GroupView extends Component<IProps, IState> {
                     {/* ADD GROUP MODAL START */}
                     {
                         this.state.modalVisible ?
-                            <View style={styles.modalView}>
-                                <View style={styles.modalCreateGroupView}>
-                                    <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Group</Text>
-                                </View>
-                                <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
-                                    <TextInput
-                                        autoFocus={true}
-                                        value={this.state.groupName}
-                                        placeholder={'Group Name'}
-                                        style={styles.inputStyle}
-                                        onChangeText={groupName => {
-                                            this.setState({ groupName: groupName });
-                                        }}
-                                        onSubmitEditing={() => {
-                                            this.onPressCreateGroup()
-                                        }}
-                                    />
-                                </View>
-                                <View style={styles.buttonView}>
-                                    <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
-                                        style={styles.modalCancelButton}>
-                                        <Text style={styles.buttonText}>Cancel</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.submitButton}
-                                        onPress={() => this.onPressCreateGroup()}
-                                    >
-                                        <Text style={styles.buttonText}>Submit</Text>
-                                    </TouchableOpacity>
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalView}>
+                                    <View style={styles.modalCreateGroupView}>
+                                        <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Group</Text>
+                                    </View>
+                                    <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
+                                        <TextInput
+                                            autoFocus={true}
+                                            value={this.state.groupName}
+                                            placeholder={'Group Name'}
+                                            style={styles.inputStyle}
+                                            onChangeText={groupName => {
+                                                this.setState({ groupName: groupName });
+                                            }}
+                                            onSubmitEditing={() => {
+                                                this.onPressCreateGroup()
+                                            }}
+                                        />
+                                    </View>
+                                    <View style={styles.buttonView}>
+                                        <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
+                                            style={styles.modalCancelButton}>
+                                            <Text style={styles.buttonText}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.submitButton}
+                                            onPress={() => this.onPressCreateGroup()}
+                                        >
+                                            <Text style={styles.buttonText}>Submit</Text>
+                                        </TouchableOpacity>
+
+                                    </View>
 
                                 </View>
-
                             </View> : <Text />
                     }
                     {/* ADD GROUP MODAL END */}
@@ -346,6 +362,21 @@ const styles = StyleSheet.create({
         marginBottom: 100,
         borderRadius: 5
     },
+    dropdownDots: {
+        position: "absolute",
+        right: 0,
+        top: 0
+    },
+    dropdown: {
+        position: "absolute",
+        right: 0,
+        top: 20,
+        boxShadow: `1px 1px #e0dada`,
+        borderWidth: 1,
+        borderColor: "#e0dada",
+        borderStyle: "solid",
+        backgroundColor: '#ffffff',
+    },
     textView: {
         flex: 1,
         marginTop: 40,
@@ -378,13 +409,23 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#cccccc"
     },
+    modalContainer: {
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0
+    },
     modalView: {
         backgroundColor: "#ffffff",
         //opacity: 0.7,
         width: 500,
         height: 400,
-        position: "absolute",
-        left: 600,
+        position: "relative",
+        marginTop: 30,
+        marginLeft: "auto",
+        marginRight: "auto"
+        // left: 600,
         //borderWidth: 
     },
     modalCreateGroupView: {
