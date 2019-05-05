@@ -6,7 +6,7 @@
       "settings": {
         "client": "mongo",
         "database": "gru",
-        "host": "192.168.0.13",
+        "host": "mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/",
         "username": "",
         "password": ""
       },
