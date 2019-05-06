@@ -65,6 +65,8 @@ export interface IStrapiUser {
     username: string
 }
 
-// export interface IDeleteGroup {
-//     groupId: string
+// export interface ICreateSell {
+//     buyOrsell: string,
+//     price: string,
+//     creator: string
 // }
