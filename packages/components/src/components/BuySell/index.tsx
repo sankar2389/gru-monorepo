@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     },
 
     nestedGroupListView: {
-
+        padding: 10,
         backgroundColor: '#ffffff',
         marginBottom: 10,
         flexDirection: "row", alignItems: "flex-start", justifyContent: "space-around"
