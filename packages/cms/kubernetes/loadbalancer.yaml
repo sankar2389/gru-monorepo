@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: gru-service
+    name: gru-lb
 spec:
     ports:
-        - port: 80
-          targetPort: 80
+        - port: 1337
+          targetPort: 1337
           protocol: TCP
     selector:
         name: gru-cms

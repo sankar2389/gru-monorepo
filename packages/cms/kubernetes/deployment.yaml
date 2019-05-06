@@ -19,4 +19,4 @@ spec:
         image: gcr.io/gru-platform/gru-cms:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
+        - containerPort: 1337

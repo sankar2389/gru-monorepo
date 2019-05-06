@@ -7,9 +7,9 @@ metadata:
 spec:
   externalTrafficPolicy: Cluster
   ports:
-  - port: 80
+  - port: 1337
     protocol: TCP
-    targetPort: 80
+    targetPort: 1337
   selector:
     app: gru-cms
   type: NodePort
