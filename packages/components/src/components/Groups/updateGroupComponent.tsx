@@ -28,6 +28,10 @@ class UpdateGroup extends Component<IProps, IState> {
         //this.onPressPaginate = this.onPressPaginate.bind(this);
     }
 
+    onHandelChangeInput = (groupName: string) => {
+        this.setState({ groupName: groupName });
+    }
+
     render() {
         return (
             <View>
@@ -35,15 +39,16 @@ class UpdateGroup extends Component<IProps, IState> {
                     UPDATE GROUP
             </Text>
 
-                <View style={{ marginTop: 50 }}>
+                <View style={styles.groupNameView}>
                     <Text>Group Name</Text>
                     <TextInput
                         style={styles.inputStyle}
                         autoFocus={true}
                         value={this.state.groupName}
-                        onChangeText={groupName => {
-                            this.setState({ groupName: groupName });
-                        }}
+                        // onChangeText={groupName => {
+                        //     this.setState({ groupName: groupName });
+                        // }}
+                        onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
                     />
                 </View>
                 <View style={styles.buttonView}>
@@ -105,6 +110,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: "#ffffff",
-    }
+    },
+    groupNameView: { marginTop: 50 }
 
 });
