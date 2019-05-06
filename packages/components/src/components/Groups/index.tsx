@@ -148,7 +148,8 @@ class GroupView extends Component<IProps, IState> {
 
     cancelGroupUpdate = () => {
         this.setState({
-            updateGroup: ""
+            updateGroup: "",
+            dropDown: -1
         })
     }
 
@@ -173,7 +174,17 @@ class GroupView extends Component<IProps, IState> {
         }
     }
 
+    onCancelModal = () => {
+        this.setState({ modalVisible: false })
+    }
 
+    onPressVisibleModal = () => {
+        this.setState({ modalVisible: true })
+    }
+
+    onHandelChangeInput = (groupName: string) => {
+        this.setState({ groupName: groupName });
+    }
 
     render() {
         const { groups } = this.props.group;
@@ -196,12 +207,13 @@ class GroupView extends Component<IProps, IState> {
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         <View style={styles.headerView}>
                             <View>
-                                <Text style={{ fontSize: 30 }}>List of Groups</Text>
+                                <Text style={styles.gorupPageHeadText}>List of Groups</Text>
                                 <Text>No of groups - {groups.length}</Text>
                             </View>
                             <View>
-                                <TouchableOpacity disabled={this.state.modalVisible ? true : false} style={styles.addButtom} onPress={() => this.setState({ modalVisible: true })}>
-                                    <Text style={{ color: "#ffffff" }}>+ Add Group</Text>
+                                <TouchableOpacity disabled={this.state.modalVisible ? true : false}
+                                    style={styles.addButtom} onPress={() => this.onPressVisibleModal()}>
+                                    <Text style={styles.addGroupText}>+ Add Group</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -219,11 +231,10 @@ class GroupView extends Component<IProps, IState> {
                                                     </View>
 
                                                     <View style={styles.textView}>
-                                                        <Text style={{ marginBottom: 10, flexWrap: "wrap", fontWeight: "900", padding: 0, marginRight: 100 }}>
+                                                        <Text style={styles.groupNameText}>
                                                             {group.groupName}
                                                         </Text>
-                                                        <Text style={{ marginBottom: 10, color: "gray", fontSize: 12 }}>
-
+                                                        <Text style={styles.groupDateTime}>
                                                             {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
                                                     </Text>
                                                         <Text>
@@ -231,18 +242,18 @@ class GroupView extends Component<IProps, IState> {
                                                         </Text>
                                                     </View>
 
-                                                    <View style={{ marginTop: 20, marginRight: 20 }}>
-                                                        <Text onPress={ () => this.handelDropdownClick(index)} style={styles.dropdownDots}>
+                                                    <View style={styles.droupDownView}>
+                                                        <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
                                                             ...
-                                                        </Text> 
-                                                        { this.state.dropDown === index ?
+                                                        </Text>
+                                                        {this.state.dropDown === index ?
                                                             <View style={styles.dropdown}>
-                                                                <ul style={{listStyleType: "none", padding: 5, textAlign: "left",margin: 5}}>
-                                                                    <li onClick={() => this.onClickEditGroup(group)} style={{cursor: "pointer"}}>Edit</li>
-                                                                    <li onClick={() => this.onClickDeleteGroup(group._id, group.creator)} style={{cursor: "pointer"}}>Delete</li>
+                                                                <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
+                                                                    <li onClick={() => this.onClickEditGroup(group)} style={{ cursor: "pointer" }}>Edit</li>
+                                                                    <li onClick={() => this.onClickDeleteGroup(group._id, group.creator)} style={{ cursor: "pointer" }}>Delete</li>
                                                                 </ul>
                                                             </View> : <Text />
-                                                        }                                       
+                                                        }
                                                     </View>
                                                 </View>
                                             </View>
@@ -286,24 +297,25 @@ class GroupView extends Component<IProps, IState> {
                             <View style={styles.modalContainer}>
                                 <View style={styles.modalView}>
                                     <View style={styles.modalCreateGroupView}>
-                                        <Text style={{ color: "#ffffff", fontSize: 20 }}>Create Group</Text>
+                                        <Text style={styles.createGroupText}>Create Group</Text>
                                     </View>
-                                    <View style={{ flexDirection: "row", marginTop: 15, marginLeft: 20 }}>
+                                    <View style={styles.textInput}>
                                         <TextInput
                                             autoFocus={true}
                                             value={this.state.groupName}
                                             placeholder={'Group Name'}
                                             style={styles.inputStyle}
-                                            onChangeText={groupName => {
-                                                this.setState({ groupName: groupName });
-                                            }}
+                                            // onChangeText={groupName => {
+                                            //     this.setState({ groupName: groupName });
+                                            // }}
+                                            onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
                                             onSubmitEditing={() => {
                                                 this.onPressCreateGroup()
                                             }}
                                         />
                                     </View>
                                     <View style={styles.buttonView}>
-                                        <TouchableOpacity onPress={() => this.setState({ modalVisible: false })}
+                                        <TouchableOpacity onPress={() => this.onCancelModal()}
                                             style={styles.modalCancelButton}>
                                             <Text style={styles.buttonText}>Cancel</Text>
                                         </TouchableOpacity>
@@ -463,5 +475,12 @@ const styles = StyleSheet.create({
     submitButton: {
         backgroundColor: "green",
         padding: 10, borderRadius: 5
-    }
+    },
+    gorupPageHeadText: { fontSize: 30 },
+    addGroupText: { color: "#ffffff" },
+    groupNameText: { marginBottom: 10, flexWrap: "wrap", fontWeight: "900", padding: 0, marginRight: 100 },
+    groupDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
+    droupDownView: { marginTop: 20, marginRight: 20 },
+    createGroupText: { color: "#ffffff", fontSize: 20 },
+    textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 }
 });
