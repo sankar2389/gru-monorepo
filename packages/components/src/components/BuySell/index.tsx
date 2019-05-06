@@ -1,20 +1,28 @@
 import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
-import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text } from "react-native";
+import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Image } from "react-native";
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import TabView from "../common/TabView";
 import io from 'socket.io-client';
-import { createBuyOrSell } from '../../actions';
+import moment from "moment";
+import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator } from '../../actions';
 
 interface IProps extends RouteComponentProps {
-    createBuyOrSell: (data: any) => void,
+    createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string) => void,
+    getBuyDataByCreator: (creator: string) => void,
+    getSellDataByCreator: (creator: string) => void,
+    buyOrSell: any,
 };
 
 interface IState {
     modalVisible: boolean,
     buyOrSellPrice: string,
-    buyOrSellRadioOption: string
+    buyOrSellRadioOption: string,
+    dropDown: number,
+    buyOrSellData: any[],
+    dataFromCollection: string
+
 }
 
 class BuySell extends Component<IProps> {
@@ -29,17 +37,22 @@ class BuySell extends Component<IProps> {
     state: IState = {
         modalVisible: false,
         buyOrSellPrice: "",
-        buyOrSellRadioOption: ""
+        buyOrSellRadioOption: "",
+        dropDown: -1,
+        buyOrSellData: [],
+        dataFromCollection: ""
     }
     constructor(props: IProps) {
         super(props);
 
     }
-    componentDidMount() {
-        const socket = io('http://localhost:1337/');
-        socket.on('hello', (res: any) => console.log(res));
-        socket.on('buy', (res: any) => console.log(res));
-        socket.on('sell', (res: any) => console.log(res));
+    async componentDidMount() {
+        // const socket = io('http://localhost:1337/');
+        // socket.on('hello', (res: any) => console.log(res));
+        // socket.on('buy', (res: any) => console.log(res));
+        // socket.on('sell', (res: any) => console.log(res));
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        this.props.getBuyDataByCreator(user.email)
     }
 
 
@@ -62,24 +75,64 @@ class BuySell extends Component<IProps> {
     }
 
     async onPressCreateBuyOrSell() {
-        const num = /^[0-9\b]+$/;
+        const isNum = /^[0-9\b]+$/;
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        if (num.test(this.state.buyOrSellPrice) !== true) {
-            alert("Enter number only")
-        } else if (this.state.buyOrSellRadioOption.length <= 0) {
+        let buyOrSellPrice = this.state.buyOrSellPrice
+        // if (typeof buyOrSellPrice === "string") {
+        //     alert("Enter number only")
+        // } else 
+        if (this.state.buyOrSellRadioOption.length <= 0) {
             alert("Please select any one Buy or Sell")
         }
         else {
-            const data = {
-                buyOrsell: this.state.buyOrSellRadioOption,
-                buyOrSellPrice: this.state.buyOrSellPrice,
-                creator: user.email
 
-            }
-            this.props.createBuyOrSell(data)
+            let buyOrsell = this.state.buyOrSellRadioOption
+            let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
+            let creator = user.email
+
+            this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator)
+            this.onCancelModal();
         }
 
 
+    }
+
+    handelDropdownClick = (index: number) => {
+        if (index === this.state.dropDown) {
+            this.setState({
+                dropDown: -1
+            })
+        } else {
+            this.setState({
+                dropDown: index
+            })
+        }
+    }
+
+    componentWillReceiveProps(newProps: any) {
+        console.log("newProps", newProps.buyOrSell)
+        if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
+            this.setState({
+                buyOrSellData: newProps.buyOrSell.buyOrSellData.buys,
+                dataFromCollection: "BUY DATA"
+            })
+        }
+        if (newProps.buyOrSell.buyOrSellData.sells !== undefined) {
+            this.setState({
+                buyOrSellData: newProps.buyOrSell.buyOrSellData.sells,
+                dataFromCollection: "SELL DATA"
+            })
+        }
+    }
+
+    async onPressGetSellDataBYCreator() {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        this.props.getSellDataByCreator(user.email)
+    }
+
+    async onPressGetBuyDataBYCreator() {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        this.props.getBuyDataByCreator(user.email)
     }
 
 
@@ -87,12 +140,19 @@ class BuySell extends Component<IProps> {
         const { innerContainer } = styles;
         return (
             <View style={innerContainer}>
-                {/* <h1>Buy / Sell</h1>
-                <h6>Bullion user gold rates</h6> */}
+                <h1>{this.state.dataFromCollection}</h1>
+
                 <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                     <View style={styles.headerView}>
-                        <View>
-                            <Text style={styles.buyAndSellPageHeadText}>Buy and Sell</Text>
+                        <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()}>
+                                <Text style={styles.buyAndSellPageHeadText}>Buy </Text>
+                            </TouchableOpacity>
+                            <Text style={styles.buyAndSellPageHeadText}>/ </Text>
+                            <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}>
+                                <Text style={styles.buyAndSellPageHeadText}>Sell</Text>
+                            </TouchableOpacity>
+
                         </View>
                         <View>
                             <TouchableOpacity disabled={this.state.modalVisible ? true : false}
@@ -101,10 +161,42 @@ class BuySell extends Component<IProps> {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <TabView />
+                    {/* <TabView /> */}
                 </View>
 
+
+                {/* DISPLAY BUY OR SELL DATA */}
+
+                {this.state.buyOrSellData.length > 0 ?
+                    <View>
+                        {this.state.buyOrSellData.map((buyOrSell: any, index: number) => {
+                            return (
+                                <View style={styles.nestedGroupListView} key={index}>
+
+                                    <Text style={styles.buyOrSellText}>
+                                        <u><b>Price</b></u><br /> {buyOrSell.price}
+                                    </Text>
+                                    <Text >
+                                        <u><b>Created Date</b></u> <br />{moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
+                                    </Text>
+
+
+                                </View>
+
+                            )
+
+                        })}
+                    </View>
+                    :
+                    <Text />
+                }
+                {/* END BUY OR SELL DATA */}
+
+
+
+
                 {/* BUY AND SELL MODAL START */}
+
                 {
                     this.state.modalVisible ?
                         <View style={styles.modalContainer}>
@@ -146,7 +238,7 @@ class BuySell extends Component<IProps> {
                                         // }}
                                         onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
                                         onSubmitEditing={() => {
-                                            //this.onPressCreateGroup()
+                                            this.onPressCreateBuyOrSell()
                                         }}
                                     />
                                 </View>
@@ -190,11 +282,11 @@ class BuySell extends Component<IProps> {
         );
     }
 }
-const mapStateToProps = ({ auth }: any): IReduxState => {
-    return { auth };
+const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
+    return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell })(BuySell);
+export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator })(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
@@ -243,7 +335,7 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto"
         // left: 600,
-        //borderWidth: 
+        //borderWidth:
     },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     modalCreateBuySellView: {
@@ -295,5 +387,30 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 70,
         left: "21%"
-    }
+    },
+
+    nestedGroupListView: {
+
+        backgroundColor: '#ffffff',
+        marginBottom: 10,
+        flexDirection: "row", alignItems: "flex-start", justifyContent: "space-around"
+    },
+    buyOrSellText: { flexWrap: "wrap", padding: 0, marginRight: 10 },
+    buyOrSellDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
+    droupDownView: { marginTop: 20, marginRight: 20 },
+    dropdownDots: {
+        position: "absolute",
+        right: 0,
+        top: 0
+    },
+    dropdown: {
+        position: "absolute",
+        right: 0,
+        top: 20,
+        boxShadow: `1px 1px #e0dada`,
+        borderWidth: 1,
+        borderColor: "#e0dada",
+        borderStyle: "solid",
+        backgroundColor: '#ffffff',
+    },
 });
