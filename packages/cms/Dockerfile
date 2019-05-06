@@ -2,10 +2,10 @@ FROM node:11.1.0-alpine
 
 WORKDIR /usr/src/api
 COPY package.json package-lock.json* ./
-RUN npm cache clean --force && npm install
+RUN npm install
 
 COPY . /usr/src/api
 
 EXPOSE 1337
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "start"]
