@@ -114,13 +114,13 @@ class BuySell extends Component<IProps> {
         if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
             this.setState({
                 buyOrSellData: newProps.buyOrSell.buyOrSellData.buys,
-                dataFromCollection: "BUY DATA"
+                dataFromCollection: "BUY_DATA"
             })
         }
         if (newProps.buyOrSell.buyOrSellData.sells !== undefined) {
             this.setState({
                 buyOrSellData: newProps.buyOrSell.buyOrSellData.sells,
-                dataFromCollection: "SELL DATA"
+                dataFromCollection: "SELL_DATA"
             })
         }
     }
@@ -140,17 +140,18 @@ class BuySell extends Component<IProps> {
         const { innerContainer } = styles;
         return (
             <View style={innerContainer}>
-                <h1>{this.state.dataFromCollection}</h1>
+                {/* <h1>{this.state.dataFromCollection}</h1> */}
 
                 <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                     <View style={styles.headerView}>
                         <View style={{ flexDirection: "row" }}>
                             <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()}>
-                                <Text style={styles.buyAndSellPageHeadText}>Buy </Text>
+                                <Text style={this.state.dataFromCollection === "BUY_DATA" ?
+                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>Buy </Text>
                             </TouchableOpacity>
                             <Text style={styles.buyAndSellPageHeadText}>/ </Text>
                             <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}>
-                                <Text style={styles.buyAndSellPageHeadText}>Sell</Text>
+                                <Text style={this.state.dataFromCollection === "SELL_DATA" ? [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>Sell</Text>
                             </TouchableOpacity>
 
                         </View>
@@ -167,28 +168,29 @@ class BuySell extends Component<IProps> {
 
                 {/* DISPLAY BUY OR SELL DATA */}
 
-                {this.state.buyOrSellData.length > 0 ?
-                    <View>
-                        {this.state.buyOrSellData.map((buyOrSell: any, index: number) => {
-                            return (
-                                <View style={styles.nestedGroupListView} key={index}>
+                {
+                    this.state.buyOrSellData.length > 0 ?
+                        <View>
+                            {this.state.buyOrSellData.map((buyOrSell: any, index: number) => {
+                                return (
+                                    <View style={styles.nestedGroupListView} key={index}>
 
-                                    <Text style={styles.buyOrSellText}>
-                                        <u><b>Price</b></u><br /> {buyOrSell.price}
-                                    </Text>
-                                    <Text >
-                                        <u><b>Created Date</b></u> <br />{moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                    </Text>
+                                        <Text style={styles.buyOrSellText}>
+                                            <u><b>Price</b></u><br /> {buyOrSell.price}
+                                        </Text>
+                                        <Text >
+                                            <u><b>Created Date</b></u> <br />{moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
+                                        </Text>
 
 
-                                </View>
+                                    </View>
 
-                            )
+                                )
 
-                        })}
-                    </View>
-                    :
-                    <Text />
+                            })}
+                        </View>
+                        :
+                        <Text />
                 }
                 {/* END BUY OR SELL DATA */}
 
@@ -278,7 +280,7 @@ class BuySell extends Component<IProps> {
                         </View> : <Text />
                 }
                 {/* BUY AND SELL MODAL END */}
-            </View>
+            </View >
         );
     }
 }
@@ -324,6 +326,9 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0
+    },
+    selectedTextColor: {
+        color: "tomato"
     },
     modalView: {
         backgroundColor: "#ffffff",
