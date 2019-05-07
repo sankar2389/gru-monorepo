@@ -187,11 +187,23 @@ class BuySell extends Component<IProps> {
 
 
     async onPressGetSellDataBYCreator() {
+        this.setState({
+            startDataOnPage: 0,
+            endDataOnPage: 10,
+            dataLimitOnPage: 10,
+            selectedPaginatateNumber: 1
+        })
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getSellDataByCreator(user.email);
     }
 
     async onPressGetBuyDataBYCreator() {
+        this.setState({
+            startDataOnPage: 0,
+            endDataOnPage: 10,
+            dataLimitOnPage: 10,
+            selectedPaginatateNumber: 1
+        })
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getBuyDataByCreator(user.email);
     }
@@ -241,11 +253,19 @@ class BuySell extends Component<IProps> {
     }
 
     onPressEditBuyPrice = (price: number, index: number) => {
-        this.setState({
-            buyOrSellPrice: price.toString(),
-            editPrice: true,
-            editIndex: index
-        })
+        if (price) {
+            this.setState({
+                buyOrSellPrice: price.toString(),
+                editPrice: true,
+                editIndex: index
+            })
+        } else {
+            this.setState({
+                buyOrSellPrice: "",
+                editPrice: true,
+                editIndex: index
+            })
+        }
 
     }
 
@@ -267,11 +287,19 @@ class BuySell extends Component<IProps> {
     }
 
     onPressEditSellPrice = (price: number, index: number) => {
-        this.setState({
-            buyOrSellPrice: price.toString(),
-            editPrice: true,
-            editIndex: index
-        })
+        if (price) {
+            this.setState({
+                buyOrSellPrice: price.toString(),
+                editPrice: true,
+                editIndex: index
+            })
+        } else {
+            this.setState({
+                buyOrSellPrice: "",
+                editPrice: true,
+                editIndex: index
+            })
+        }
     }
 
     async onPressUpdateSellPrice(_id: any) {
