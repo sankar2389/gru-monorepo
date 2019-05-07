@@ -5,7 +5,8 @@ export interface IAuth {
 
 export interface IReduxState {
     auth: IAuth,
-    group?: IGroup
+    group?: IGroup,
+    buyOrSell?: any[]
 }
 
 export interface ISignup {
@@ -65,6 +66,11 @@ export interface IStrapiUser {
     username: string
 }
 
-// export interface IDeleteGroup {
-//     groupId: string
+export interface IBuyOrSell {
+    buyOrSellData: any[],
+}
+// export interface ICreateSell {
+//     buyOrsell: string,
+//     price: string,
+//     creator: string
 // }

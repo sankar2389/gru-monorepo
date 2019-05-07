@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: gru-lb
+spec:
+    ports:
+        - port: 1337
+          targetPort: 1337
+          protocol: TCP
+    selector:
+        name: gru-cms
+    type: LoadBalancer

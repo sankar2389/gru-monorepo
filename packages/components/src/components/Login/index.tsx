@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, Button, AsyncStorage } from "react-n
 import { IReduxState, IAuth } from '../../types';
 import { connect } from 'react-redux';
 // @ts-ignore
-import { Router, RouteComponentProps } from 'react-router-dom';
+import { Router, RouteComponentProps } from 'react-router';
 import { loginUser } from '../../actions';
 
 interface IProps extends RouteComponentProps {
@@ -19,8 +19,8 @@ class LoginScreen extends Component<IProps, IState> {
         title: 'Login',
     };
     state: IState = {
-        email: 'santanubarai@test.com',
-        password: '1234'
+        email: '',
+        password: ''
     }
     constructor(props: IProps) {
         super(props);
