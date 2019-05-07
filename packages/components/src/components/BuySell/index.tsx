@@ -23,7 +23,12 @@ interface IState {
     buyOrSellData: any[],
     buyData: any[],
     sellData: any[],
-    dataFromCollection: string
+    dataFromCollection: string,
+    startDataOnPage: number,
+    endDataOnPage: number,
+    dataLimitOnPage: number,
+    groupPageCount: any[],
+    selectedPaginatateNumber: number
 
 }
 
@@ -36,7 +41,12 @@ class BuySell extends Component<IProps> {
         buyOrSellData: [],
         buyData: [],
         sellData: [],
-        dataFromCollection: ""
+        dataFromCollection: "",
+        startDataOnPage: 0,
+        endDataOnPage: 5,
+        dataLimitOnPage: 5,
+        groupPageCount: [],
+        selectedPaginatateNumber: 1
     }
     constructor(props: IProps) {
         super(props);
@@ -69,7 +79,11 @@ class BuySell extends Component<IProps> {
     }
 
     onCancelModal = () => {
-        this.setState({ modalVisible: false })
+        this.setState({
+            modalVisible: false,
+            buyOrSellPrice: "",
+            buyOrSellRadioOption: ""
+        })
     }
 
     onClikcSetBuyOrSell = (evt: string) => {
@@ -94,8 +108,6 @@ class BuySell extends Component<IProps> {
             this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator)
             this.onCancelModal();
         }
-
-
     }
 
     handelDropdownClick = (index: number) => {
@@ -117,6 +129,8 @@ class BuySell extends Component<IProps> {
                 buyData: newProps.buyOrSell.buyOrSellData.buys, ...buyData,
                 dataFromCollection: "BUY_DATA"
             });
+            let dLength = newProps.buyOrSell.buyOrSellData.buys.length
+            this.onLoadPagePagination(dLength)
         }
         if (newProps.buyOrSell.buyOrSellData.sells !== undefined) {
             const { sellData } = this.state;
@@ -125,8 +139,36 @@ class BuySell extends Component<IProps> {
                 sellData: newProps.buyOrSell.buyOrSellData.sells, ...sellData,
                 dataFromCollection: "SELL_DATA"
             });
+            let dLength = newProps.buyOrSell.buyOrSellData.sells.length
+            this.onLoadPagePagination(dLength)
         }
     }
+
+    onLoadPagePagination = (dLength: any) => {
+        let buyOrSellPageCount = []
+        let dataLength = dLength
+        let totalpage = dataLength / this.state.dataLimitOnPage
+        let count = dataLength % this.state.dataLimitOnPage
+        if (count !== 0) {
+            totalpage = totalpage + 1
+            if (totalpage > 1) {
+                for (let i = 1; i <= totalpage; i++) {
+                    buyOrSellPageCount.push(i)
+                }
+            }
+        } else {
+            if (totalpage > 1) {
+                for (let i = 1; i <= totalpage; i++) {
+                    buyOrSellPageCount.push(i)
+                }
+            }
+        }
+
+        this.setState({
+            groupPageCount: buyOrSellPageCount
+        })
+    }
+
 
     async onPressGetSellDataBYCreator() {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
@@ -136,6 +178,52 @@ class BuySell extends Component<IProps> {
     async onPressGetBuyDataBYCreator() {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getBuyDataByCreator(user.email);
+    }
+
+    //pagination Next
+    onPressPaginateNext() {
+        let buySellpageCount: any
+        if (this.state.dataFromCollection === "BUY_DATA") {
+            buySellpageCount = this.state.buyData.length
+        }
+        if (this.state.dataFromCollection === "SELL_DATA") {
+            buySellpageCount = this.state.sellData.length
+        }
+        //let groupPageCount = this.state.buyOrSellData.length
+        if (this.state.endDataOnPage < buySellpageCount) {
+            this.setState({
+                startDataOnPage: this.state.startDataOnPage + this.state.dataLimitOnPage,
+                endDataOnPage: this.state.endDataOnPage + this.state.dataLimitOnPage,
+                selectedPaginatateNumber: this.state.selectedPaginatateNumber + 1
+            })
+        } else {
+            alert("EOF")
+        }
+    }
+
+    //pagination Previous
+    onPressPaginatePrevious() {
+        if (this.state.startDataOnPage > 0) {
+            this.setState({
+                startDataOnPage: this.state.startDataOnPage - this.state.dataLimitOnPage,
+                endDataOnPage: this.state.endDataOnPage - this.state.dataLimitOnPage,
+                selectedPaginatateNumber: this.state.selectedPaginatateNumber - 1
+            })
+        } else {
+            alert("BOF")
+        }
+    }
+
+    onPressPaginate(pageCount: number) {
+        let count = pageCount * this.state.dataLimitOnPage
+        let startDataOnPage = count - this.state.dataLimitOnPage
+        let endDataOnPage = count
+        this.setState({
+            startDataOnPage: startDataOnPage,
+            endDataOnPage: endDataOnPage,
+            selectedPaginatateNumber: pageCount
+        })
+
     }
 
 
@@ -172,22 +260,25 @@ class BuySell extends Component<IProps> {
                     this.state.dataFromCollection === "BUY_DATA" &&
                     <View>
                         {this.state.buyData.map((buyOrSell: any, index: number) => {
-                            return (
-                                <View style={styles.nestedGroupListView} key={index}>
+                            if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
+                                return (
+                                    <View style={styles.nestedGroupListView} key={index}>
 
-                                    <Text style={styles.buyOrSellText}>
-                                        <u><b>Price</b></u><br /> {buyOrSell.price}
-                                    </Text>
-                                    <Text >
-                                        <u><b>Created Date</b></u> <br />{moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                    </Text>
+                                        <Text style={styles.buyOrSellText}>
+                                            <u><b>Price</b></u><br /> {buyOrSell.price}
+                                        </Text>
+                                        <Text >
+                                            <u><b>Created Date</b></u> <br />
+                                            {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
+                                        </Text>
 
 
-                                </View>
+                                    </View>
 
-                            )
+                                )
+                            }
 
-                        })}
+                        }).reverse()}
                     </View>
                 }
                 {/* DISPLAY SELL */}
@@ -195,22 +286,25 @@ class BuySell extends Component<IProps> {
                     this.state.dataFromCollection === "SELL_DATA" &&
                     <View>
                         {this.state.sellData.map((buyOrSell: any, index: number) => {
-                            return (
-                                <View style={styles.nestedGroupListView} key={index}>
+                            if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
+                                return (
+                                    <View style={styles.nestedGroupListView} key={index}>
 
-                                    <Text style={styles.buyOrSellText}>
-                                        <u><b>Price</b></u><br /> {buyOrSell.price}
-                                    </Text>
-                                    <Text >
-                                        <u><b>Created Date</b></u> <br />{moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                    </Text>
+                                        <Text style={styles.buyOrSellText}>
+                                            <u><b>Price</b></u><br /> {buyOrSell.price}
+                                        </Text>
+                                        <Text >
+                                            <u><b>Created Date</b></u> <br />
+                                            {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
+                                        </Text>
 
 
-                                </View>
+                                    </View>
 
-                            )
+                                )
+                            }
 
-                        })}
+                        }).reverse()}
                     </View>
                 }
 
@@ -294,9 +388,50 @@ class BuySell extends Component<IProps> {
 
                             </View>
 
-                        </View> : <Text />
+                        </View> :
+                        <Text />
                 }
                 {/* BUY AND SELL MODAL END */}
+
+                {/* PAGINATION VIEW START */}
+                {this.state.groupPageCount.length > 1 ?
+                    <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
+                            <Text>{"<"}</Text>
+                        </TouchableOpacity>
+                        {this.state.groupPageCount.map(pageCount => {
+                            if (pageCount > 1) {
+                                if (pageCount >= this.state.selectedPaginatateNumber && pageCount < this.state.selectedPaginatateNumber + 2) {
+                                    return (
+
+                                        <TouchableOpacity key={pageCount}
+                                            onPress={this.onPressPaginate.bind(this, pageCount)}
+                                            style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
+                                        >
+                                            <Text>{pageCount}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
+                            } else {
+                                return (
+                                    <TouchableOpacity key={pageCount}
+                                        onPress={this.onPressPaginate.bind(this, pageCount)}
+                                        style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
+                                    >
+                                        <Text>{pageCount}</Text>
+                                    </TouchableOpacity>
+                                )
+                            }
+                        })}
+
+                        <TouchableOpacity
+                            onPress={this.onPressPaginateNext.bind(this)}
+                            style={styles.paginationButton}>
+                            <Text>{">"}</Text>
+                        </TouchableOpacity>
+                    </View> : <Text />}
+                {/* PAGINATION VIEW END */}
+
             </View >
         );
     }
@@ -431,4 +566,24 @@ const styles = StyleSheet.create({
         borderStyle: "solid",
         backgroundColor: '#ffffff',
     },
+    paginationButton: {
+        marginRight: 20,
+        backgroundColor: '#ffffff',
+        borderRadius: 30,
+        padding: 10,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    pageCountStyle: {
+        marginRight: 20,
+        backgroundColor: 'green',
+        borderRadius: 30,
+        padding: 10,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 });
