@@ -91,7 +91,6 @@ class GroupView extends Component<IProps, IState> {
 
     //pagination Next
     onPressPaginateNext() {
-
         if (this.state.endDataOnPage < this.props.group.groups.length) {
             this.setState({
                 startDataOnPage: this.state.startDataOnPage + this.state.limitDataOnPage,

@@ -5,14 +5,16 @@ import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
 import moment from "moment";
-import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator } from '../../actions';
+import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice } from '../../actions';
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string) => void,
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
+    onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     buyOrSell: any,
+
 };
 
 interface IState {
@@ -28,7 +30,9 @@ interface IState {
     endDataOnPage: number,
     dataLimitOnPage: number,
     buyOrSellPageCount: any[],
-    selectedPaginatateNumber: number
+    selectedPaginatateNumber: number,
+    editPrice: boolean,
+    editIndex: any
 
 }
 
@@ -46,7 +50,9 @@ class BuySell extends Component<IProps> {
         endDataOnPage: 10,
         dataLimitOnPage: 10,
         buyOrSellPageCount: [],
-        selectedPaginatateNumber: 1
+        selectedPaginatateNumber: 1,
+        editPrice: false,
+        editIndex: ""
     }
     constructor(props: IProps) {
         super(props);
@@ -65,8 +71,10 @@ class BuySell extends Component<IProps> {
             sellData.push(JSON.parse(res).message);
             this.setState({ sellData });
         });
+        this.onPressGetSellDataBYCreator()
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getBuyDataByCreator(user.email)
+
     }
 
 
@@ -96,7 +104,10 @@ class BuySell extends Component<IProps> {
         const isNum = /^[0-9\b]+$/;
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         let buyOrSellPrice = this.state.buyOrSellPrice
-        if (this.state.buyOrSellRadioOption.length <= 0) {
+        if (isNum.test(buyOrSellPrice) !== true) {
+            alert("Please enter number only")
+        }
+        else if (this.state.buyOrSellRadioOption.length <= 0) {
             alert("Please select any one Buy or Sell")
         }
         else {
@@ -222,9 +233,35 @@ class BuySell extends Component<IProps> {
             endDataOnPage: endDataOnPage,
             selectedPaginatateNumber: pageCount
         })
+    }
+
+    onPressEditPrice = (price: number, index: number) => {
+        this.setState({
+            buyOrSellPrice: price.toString(),
+            editPrice: true,
+            editIndex: index
+        })
 
     }
 
+    async onPressUpdateBuyPrice(_id: any) {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        console.log("asdjfkljaskldjfkl", _id)
+        const isNum = /^[0-9\b]+$/;
+        if (isNum.test(this.state.buyOrSellPrice) !== true || this.state.buyOrSellPrice.length <= 0) {
+            alert("Please enter number only")
+        }
+        else {
+            let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
+            this.props.onUpdateBuyPrice(_id, buyOrSellPrice, user.email)
+            this.setState({
+                editPrice: false,
+                editIndex: ""
+            })
+
+        }
+
+    }
 
     render() {
         const { innerContainer } = styles;
@@ -235,11 +272,12 @@ class BuySell extends Component<IProps> {
                         <View style={{ flexDirection: "row" }}>
                             <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()}>
                                 <Text style={this.state.dataFromCollection === "BUY_DATA" ?
-                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>Buy </Text>
+                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>Buy({this.state.buyData.length}) </Text>
                             </TouchableOpacity>
                             <Text style={styles.buyAndSellPageHeadText}>/ </Text>
                             <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}>
-                                <Text style={this.state.dataFromCollection === "SELL_DATA" ? [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>Sell</Text>
+                                <Text style={this.state.dataFromCollection === "SELL_DATA" ?
+                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>Sell({this.state.sellData.length})</Text>
                             </TouchableOpacity>
 
                         </View>
@@ -262,18 +300,54 @@ class BuySell extends Component<IProps> {
                             if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
                                     <View style={styles.nestedGroupListView} key={index}>
-
+                                        <View style={styles.imageAndNameView}>
+                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                            <Text style={styles.userNameText}>Name</Text>
+                                        </View>
                                         <Text style={styles.buyOrSellText}>
-                                            <u><b>Price</b></u><br /> {buyOrSell.price}
+                                            asks
                                         </Text>
-                                        <Text >
-                                            <u><b>Created Date</b></u> <br />
+                                        <Text style={styles.buyOrSellText}>
+                                            550gm
+                                        </Text>
+                                        <Text style={styles.buyOrSellText}>
+                                            Gold
+                                        </Text>
+                                        {this.state.editPrice && this.state.editIndex == index ?
+                                            <TextInput
+                                                autoFocus={true}
+                                                value={this.state.buyOrSellPrice}
+                                                style={{ borderBottomColor: "black", borderBottomWidth: 1, width: 90 }}
+                                                // onChangeText={groupName => {
+                                                //     this.setState({ groupName: groupName });
+                                                // }}
+                                                onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                                onSubmitEditing={() => {
+                                                    this.onPressCreateBuyOrSell()
+                                                }}
+                                            />
+                                            :
+                                            <Text style={styles.buyOrSellText}>
+                                                &#8377; {buyOrSell.price}
+                                            </Text>
+                                        }
+                                        {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                        </Text>
-
+                                        </Text> */}
+                                        {this.state.editPrice && this.state.editIndex == index ?
+                                            <TouchableOpacity style={styles.saveButton}
+                                                onPress={() => this.onPressUpdateBuyPrice(buyOrSell._id)}
+                                            >
+                                                <Text style={styles.saveButtonText}>Save</Text>
+                                            </TouchableOpacity> :
+                                            <TouchableOpacity style={styles.setPriceButton}
+                                                onPress={() => this.onPressEditPrice(buyOrSell.price, index)}
+                                            >
+                                                <Text>Set Price</Text>
+                                            </TouchableOpacity>
+                                        }
 
                                     </View>
-
                                 )
                             }
 
@@ -288,12 +362,10 @@ class BuySell extends Component<IProps> {
                             if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
                                     <View style={styles.nestedGroupListView} key={index}>
-
                                         <Text style={styles.buyOrSellText}>
-                                            <u><b>Price</b></u><br /> {buyOrSell.price}
+                                            {buyOrSell.price}
                                         </Text>
-                                        <Text >
-                                            <u><b>Created Date</b></u> <br />
+                                        <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
                                         </Text>
 
@@ -401,7 +473,6 @@ class BuySell extends Component<IProps> {
                             if (pageCount > 1) {
                                 if (pageCount >= this.state.selectedPaginatateNumber && pageCount < this.state.selectedPaginatateNumber + 2) {
                                     return (
-
                                         <TouchableOpacity key={pageCount}
                                             onPress={this.onPressPaginate.bind(this, pageCount)}
                                             style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
@@ -438,7 +509,7 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
     return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator })(BuySell);
+export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice })(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
@@ -458,6 +529,7 @@ const styles = StyleSheet.create({
     scene: {
         flex: 1,
     },
+    imageAndNameView: { flexDirection: "row" },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
     pageOpacity: {
         opacity: 0.2
@@ -479,6 +551,17 @@ const styles = StyleSheet.create({
     },
     selectedTextColor: {
         color: "tomato"
+    },
+    saveButtonText: {
+        color: "#ffffff"
+    },
+    setPriceButton: {
+        borderWidth: 1, borderColor: "#f4c242",
+        padding: 10, alignItems: "flex-end", justifyContent: "flex-end", borderRadius: 5
+    },
+    saveButton: {
+        backgroundColor: "#e01134", paddingLeft: 22,
+        paddingRight: 22, paddingBottom: 11, paddingTop: 11, marginRight: 5, borderRadius: 5
     },
     modalView: {
         backgroundColor: "#ffffff",
@@ -544,9 +627,14 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#ffffff',
         marginBottom: 10,
-        flexDirection: "row", alignItems: "flex-start", justifyContent: "space-around"
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent: "space-around"
     },
-    buyOrSellText: { flexWrap: "wrap", padding: 0, marginRight: 10 },
+    buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, marginBottom: 10 },
+    userNameText: {
+        flexWrap: "wrap", paddingTop: 10, marginRight: 30, fontWeight: "900", fontSize: 14
+    },
     buyOrSellDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
     dropdownDots: {
@@ -583,5 +671,14 @@ const styles = StyleSheet.create({
         width: 30,
         alignItems: 'center',
         justifyContent: 'center'
-    }
+    },
+    avatarStyle: {
+        height: 35,
+        width: 35,
+        backgroundColor: "#bfbfbf",
+        borderRadius: 40,
+        // marginLeft: 20,
+        marginRight: 15
+
+    },
 });
