@@ -33,7 +33,8 @@ interface IState {
     buyOrSellPageCount: any[],
     selectedPaginatateNumber: number,
     editPrice: boolean,
-    editIndex: any
+    editIndex: any,
+    userName: string
 
 }
 
@@ -53,7 +54,8 @@ class BuySell extends Component<IProps> {
         buyOrSellPageCount: [],
         selectedPaginatateNumber: 1,
         editPrice: false,
-        editIndex: ""
+        editIndex: "",
+        userName: ""
     }
     constructor(props: IProps) {
         super(props);
@@ -75,7 +77,9 @@ class BuySell extends Component<IProps> {
         this.onPressGetSellDataBYCreator()
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getBuyDataByCreator(user.email)
-
+        this.setState({
+            userName: user.username
+        })
     }
 
 
@@ -327,51 +331,57 @@ class BuySell extends Component<IProps> {
                                     <View style={styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            <Text style={styles.userNameText}>Name</Text>
+                                            <Text style={styles.userNameText}>{this.state.userName}</Text>
                                         </View>
-                                        <Text style={styles.buyOrSellText}>
-                                            asks
-                                        </Text>
-                                        <Text style={styles.buyOrSellText}>
-                                            550gm
-                                        </Text>
-                                        <Text style={styles.buyOrSellText}>
-                                            Gold
-                                        </Text>
-                                        {this.state.editPrice && this.state.editIndex == index ?
-                                            <TextInput
-                                                autoFocus={true}
-                                                value={this.state.buyOrSellPrice}
-                                                style={{ borderBottomColor: "black", borderBottomWidth: 1, width: 90 }}
-                                                // onChangeText={groupName => {
-                                                //     this.setState({ groupName: groupName });
-                                                // }}
-                                                onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                                onSubmitEditing={() => {
-                                                    this.onPressCreateBuyOrSell()
-                                                }}
-                                            />
-                                            :
+                                        <View style={styles.textItemView}>
                                             <Text style={styles.buyOrSellText}>
-                                                &#8377; {buyOrSell.price}
+                                                asks
                                             </Text>
-                                        }
+                                        </View>
+                                        <View style={styles.textItemView}>
+                                            <Text style={styles.buyOrSellText}>
+                                                550gm
+                                            </Text>
+                                        </View>
+                                        <View style={styles.textItemView}>
+                                            <Text style={styles.buyOrSellText}>
+                                                Gold
+                                            </Text>
+                                        </View>
+                                        <View style={styles.textItemView}>
+                                            {this.state.editPrice && this.state.editIndex == index ?
+                                                <TextInput
+                                                    autoFocus={true}
+                                                    value={this.state.buyOrSellPrice}
+                                                    style={styles.editTextInput}
+                                                    onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                                    onSubmitEditing={() => {
+                                                        this.onPressUpdateBuyPrice(buyOrSell._id)
+                                                    }}
+                                                />
+                                                :
+                                                <Text style={styles.buyOrSellText}>
+                                                    &#8377; {buyOrSell.price}
+                                                </Text>
+                                            }
+                                        </View>
                                         {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
                                         </Text> */}
-                                        {this.state.editPrice && this.state.editIndex == index ?
-                                            <TouchableOpacity style={styles.saveButton}
-                                                onPress={() => this.onPressUpdateBuyPrice(buyOrSell._id)}
-                                            >
-                                                <Text style={styles.saveButtonText}>Save</Text>
-                                            </TouchableOpacity> :
-                                            <TouchableOpacity style={styles.setPriceButton}
-                                                onPress={() => this.onPressEditBuyPrice(buyOrSell.price, index)}
-                                            >
-                                                <Text>Set Price</Text>
-                                            </TouchableOpacity>
-                                        }
-
+                                        <View>
+                                            {this.state.editPrice && this.state.editIndex == index ?
+                                                <TouchableOpacity style={styles.saveButton}
+                                                    onPress={() => this.onPressUpdateBuyPrice(buyOrSell._id)}
+                                                >
+                                                    <Text style={styles.saveButtonText}>Save</Text>
+                                                </TouchableOpacity> :
+                                                <TouchableOpacity style={styles.setPriceButton}
+                                                    onPress={() => this.onPressEditBuyPrice(buyOrSell.price, index)}
+                                                >
+                                                    <Text>Set Price</Text>
+                                                </TouchableOpacity>
+                                            }
+                                        </View>
                                     </View>
                                 )
                             }
@@ -389,35 +399,40 @@ class BuySell extends Component<IProps> {
                                     <View style={styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            <Text style={styles.userNameText}>Name</Text>
+                                            <Text style={styles.userNameText}>{this.state.userName}</Text>
                                         </View>
-                                        <Text style={styles.buyOrSellText}>
-                                            asks
-                                        </Text>
-                                        <Text style={styles.buyOrSellText}>
-                                            550gm
-                                        </Text>
-                                        <Text style={styles.buyOrSellText}>
-                                            Gold
-                                        </Text>
-                                        {this.state.editPrice && this.state.editIndex == index ?
-                                            <TextInput
-                                                autoFocus={true}
-                                                value={this.state.buyOrSellPrice}
-                                                style={{ borderBottomColor: "black", borderBottomWidth: 1, width: 90 }}
-                                                // onChangeText={groupName => {
-                                                //     this.setState({ groupName: groupName });
-                                                // }}
-                                                onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                                onSubmitEditing={() => {
-                                                    this.onPressCreateBuyOrSell()
-                                                }}
-                                            />
-                                            :
+                                        <View style={styles.textItemView}>
                                             <Text style={styles.buyOrSellText}>
-                                                &#8377; {buyOrSell.price}
+                                                asks
                                             </Text>
-                                        }
+                                        </View>
+                                        <View style={styles.textItemView}>
+                                            <Text style={styles.buyOrSellText}>
+                                                550gm
+                                            </Text>
+                                        </View>
+                                        <View style={styles.textItemView}>
+                                            <Text style={styles.buyOrSellText}>
+                                                Gold
+                                            </Text>
+                                        </View>
+                                        <View style={styles.textItemView}>
+                                            {this.state.editPrice && this.state.editIndex == index ?
+                                                <TextInput
+                                                    autoFocus={true}
+                                                    value={this.state.buyOrSellPrice}
+                                                    style={styles.editTextInput}
+                                                    onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                                    onSubmitEditing={() => {
+                                                        this.onPressUpdateSellPrice(buyOrSell._id)
+                                                    }}
+                                                />
+                                                :
+                                                <Text style={styles.buyOrSellText}>
+                                                    &#8377; {buyOrSell.price}
+                                                </Text>
+                                            }
+                                        </View>
                                         {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
                                         </Text> */}
@@ -670,6 +685,9 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "#ffffff"
     },
+    textItemView: {
+        flex: 1
+    },
     submitButton: {
         backgroundColor: "green",
         padding: 10, borderRadius: 5
@@ -689,17 +707,15 @@ const styles = StyleSheet.create({
     },
 
     nestedGroupListView: {
-        padding: 10,
+        padding: 8,
         backgroundColor: '#ffffff',
         marginBottom: 10,
         flexDirection: "row",
-        alignItems: "flex-end",
-        justifyContent: "space-between"
+        alignItems: "center",
+        justifyContent: "space-between",
     },
-    buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, marginBottom: 10 },
-    userNameText: {
-        flexWrap: "wrap", paddingTop: 10, fontWeight: "900", fontSize: 14
-    },
+    buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, alignSelf: "center" },
+    userNameText: { flexWrap: "wrap", paddingTop: 10, fontWeight: "900", fontSize: 14 },
     buyOrSellDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
     dropdownDots: {
@@ -707,6 +723,7 @@ const styles = StyleSheet.create({
         right: 0,
         top: 0
     },
+    editTextInput: { borderBottomColor: "black", borderBottomWidth: 1, width: 90, marginLeft: 100 },
     dropdown: {
         position: "absolute",
         right: 0,
