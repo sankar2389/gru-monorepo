@@ -43,6 +43,9 @@ module.exports = function override(config, env) {
   )
 
   config.plugins.push(
+    env === 'production' ? new webpack.DefinePlugin({
+      'process.env.CMS_API': JSON.stringify(process.env.CMS_API || 'http://35.226.147.64:1337/')
+    }) :
     new webpack.DefinePlugin({
       'process.env.CMS_API': JSON.stringify(process.env.CMS_API || 'http://localhost:1337/')
     })

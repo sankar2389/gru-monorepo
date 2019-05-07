@@ -7,9 +7,9 @@ A quick description of gru.
 ##### WEB
 ```
 yarn workspace @gru/web build
-cd packages/web/dist/
+cd packages/web/
 sudo docker image build -t gru-web .
-sudo docker run -p 3000:80 --rm gru-web
+sudo docker run -p 80:80 --rm gru-web
 ```
 
 ##### CMS
