@@ -5,9 +5,8 @@
       "connector": "strapi-hook-mongoose",
       "settings": {
         "client": "mongo",
-        "host": "${process.env.DATABASE_HOST || '192.168.0.13'}",
+        "uri": "mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/gru",
         "port": "${process.env.DATABASE_PORT || 27017}",
-        "database": "${process.env.DATABASE_NAME || 'gru'}",
         "username": "${process.env.DATABASE_USERNAME || ''}",
         "password": "${process.env.DATABASE_PASSWORD || ''}"
       },

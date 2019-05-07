@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gru-web
+  labels:
+    app: gru-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gru-web
+  template:
+    metadata:
+      labels:
+        app: gru-web
+    spec:
+      containers:
+      - name: gru-web
+        image: gcr.io/gru-platform/gru-web:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

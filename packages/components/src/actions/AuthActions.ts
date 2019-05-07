@@ -1,8 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { ISignup, ISignupError, ILogin, IForgotPass } from '../types';
 import { AsyncStorage } from 'react-native';
-import createApolloClient from '../apollo';
-import gql from 'graphql-tag';
+const CMS_API = process.env.CMS_API;
 
 const regSuccess = (dispatch: Function, message: string) => {
     dispatch({ type: 'REG_SUCCESS', payload: message });
@@ -30,7 +29,7 @@ export const loginUser = (payload: ILogin) => {
     const { email, password } = payload;
     return (dispatch: Function) => {
         axios
-            .post('http://localhost:1337/auth/local', {
+            .post(CMS_API + 'auth/local', {
                 identifier: email,
                 password
             })
@@ -41,6 +40,7 @@ export const loginUser = (payload: ILogin) => {
                 loginSuccess(dispatch, response.data.jwt);
             })
             .catch((error: AxiosError) => {
+                console.log(error);
                 const err: ISignupError = error.response!.data
                 console.error('Error: ', err.message);
                 loginFail(dispatch, err);
@@ -52,16 +52,14 @@ export const signupUser = (payload: ISignup) => {
     const { username, email, password } = payload;
     return (dispatch: Function) => {
         axios
-            .post('http://localhost:1337/auth/local/register', {
+            .post(CMS_API +  'auth/local/register', {
                 username: username,
                 email: email,
                 password: password
             })
-            .then(response => {
-                // Handle success.
-                console.log('Well done!');
-                console.log('User profile', response.data.user);
-                console.log('User token', response.data.jwt);
+            .then(async (response) => {
+                await AsyncStorage.setItem('token', response.data.jwt);
+                await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
                 regSuccess(dispatch, response.data.jwt);
             })
             .catch((error: AxiosError) => {
@@ -79,14 +77,13 @@ export const logoutUser = () => {
         logout(dispatch, '');
     }
 }
-
 export const forgotPass = (payload: IForgotPass) => {
     const { email } = payload;
     return (dispatch: Function) => {
         axios
-            .post('http://localhost:1337/auth/forgot-password', {
+            .post(CMS_API + 'auth/forgot-password', {
                 email,
-                url: 'http:/localhost:1337/admin/plugins/users-permissions/auth/reset-password'
+                url: CMS_API + 'admin/plugins/users-permissions/auth/reset-password'
             })
             .then(response => {
                 resetSuccess(dispatch, response);

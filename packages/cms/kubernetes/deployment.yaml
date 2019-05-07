@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gru-cms
+  labels:
+    app: gru-cms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gru-cms
+  template:
+    metadata:
+      labels:
+        app: gru-cms
+    spec:
+      containers:
+      - name: gru-cms
+        image: gcr.io/gru-platform/gru-cms:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 1337
