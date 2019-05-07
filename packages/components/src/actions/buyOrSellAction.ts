@@ -1,0 +1,146 @@
+//import { ICreateSell } from '../types';
+import createApolloClient from '../apollo';
+import gql from 'graphql-tag';
+import { AsyncStorage } from 'react-native';
+
+
+
+const getBuyOrSellDataByCreatorSuccess = (dispatch: Function, response: any[]) => {
+    dispatch({ type: 'BUY_DATA_LIST_SUCCESS', payload: response })
+}
+
+
+export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creator: string) => {
+    console.log("asdfasfdas", buyOrsell)
+    console.log("buyOrSellPrice", typeof (buyOrSellPrice))
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken)
+                    if (buyOrsell === "buy") {
+                        client.mutate({
+                            mutation: gql`
+                            mutation ($input: createBuyInput) {
+                                createBuy(input: $input) {
+                                  buy {
+                                    price
+                                    creator
+                                  }
+                                }
+                              }                          
+                            `,
+                            variables: {
+                                "input": {
+                                    "data": {
+                                        "price": buyOrSellPrice,
+                                        "creator": creator
+                                    }
+                                }
+                            }
+                        }).then(res => {
+                            console.log("res buy", res)
+                        }).catch(err => {
+                            console.log("err buy", err)
+                        })
+
+                    } else if (buyOrsell === "sell") {
+                        client.mutate({
+                            mutation: gql`
+                            mutation ($input: createSellInput) {
+                                createSell(input: $input) {
+                                  sell {
+                                    price
+                                    creator
+                                  }
+                                }
+                              }                      
+                            `,
+                            variables: {
+                                "input": {
+                                    "data": {
+                                        "price": buyOrSellPrice,
+                                        "creator": creator
+                                    }
+                                }
+                            }
+                        }).then(res => {
+                            console.log("res sell", res)
+                        }).catch(err => {
+                            console.log("err sell", err)
+                        })
+
+                    } else {
+                        alert("Nothing is selected")
+                    }
+
+                }
+            }).catch(err => {
+                console.log("err all", err)
+            })
+    }
+}
+
+export const getBuyDataByCreator = (creator: string) => {
+    console.log("creator", creator)
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                        query ($creator: String) {
+                            buys(where: {creator: $creator}) {
+                              _id
+                              price
+                              creator
+                            }
+                          }
+                        `,
+                        variables: {
+                            creator
+                        }
+                    }).then((res: any) => {
+                        console.log("ress", res.data)
+                        getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
+                    }).catch(e => {
+                        console.log("grapql error", e)
+                        throw e;
+                    });
+                }
+            })
+    }
+}
+
+export const getSellDataByCreator = (creator: string) => {
+    console.log("creator", creator)
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                        query ($creator: String) {
+                            sells(where: {creator: $creator}) {
+                              _id
+                              price
+                              creator
+                            }
+                          }
+                        `,
+                        variables: {
+                            creator
+                        }
+                    }).then((res: any) => {
+                        console.log("ress", res.data)
+                        getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
+                    }).catch(e => {
+                        console.log("grapql error", e)
+                        throw e;
+                    });
+                }
+            })
+    }
+}
