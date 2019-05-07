@@ -541,7 +541,7 @@ class BuySell extends Component<IProps> {
                                             onPress={this.onPressPaginate.bind(this, pageCount)}
                                             style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
                                         >
-                                            <Text>{pageCount}</Text>
+                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>{pageCount}</Text>
                                         </TouchableOpacity>
                                     )
                                 }
@@ -551,7 +551,7 @@ class BuySell extends Component<IProps> {
                                         onPress={this.onPressPaginate.bind(this, pageCount)}
                                         style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
                                     >
-                                        <Text>{pageCount}</Text>
+                                        <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>{pageCount}</Text>
                                     </TouchableOpacity>
                                 )
                             }
@@ -593,6 +593,7 @@ const styles = StyleSheet.create({
     scene: {
         flex: 1,
     },
+    blankTextStyle: {},
     imageAndNameView: { flexDirection: "row" },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
     pageOpacity: {
@@ -693,11 +694,11 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         flexDirection: "row",
         alignItems: "flex-end",
-        justifyContent: "space-around"
+        justifyContent: "space-between"
     },
     buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, marginBottom: 10 },
     userNameText: {
-        flexWrap: "wrap", paddingTop: 10, marginRight: 30, fontWeight: "900", fontSize: 14
+        flexWrap: "wrap", paddingTop: 10, fontWeight: "900", fontSize: 14
     },
     buyOrSellDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
@@ -728,13 +729,16 @@ const styles = StyleSheet.create({
     },
     pageCountStyle: {
         marginRight: 20,
-        backgroundColor: '#2d8958',
+        backgroundColor: '#d72b2b',
         borderRadius: 30,
         padding: 10,
         height: 30,
         width: 30,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    pageCountTextStyle: {
+        color: "#ffffff"
     },
     avatarStyle: {
         height: 35,
