@@ -324,17 +324,31 @@ class BuySell extends Component<IProps> {
         const { innerContainer } = styles;
         return (
             <View style={innerContainer}>
+                <View style={{ alignItems: "flex-start" }}>
+                    <Text style={styles.headerBuyAndSell}>
+                        Buy / Sell
+                    </Text>
+                    <Text style={styles.headerSmallText}>Bullion user gold rates</Text>
+                </View>
+
+
                 <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                     <View style={styles.headerView}>
                         <View style={{ flexDirection: "row" }}>
-                            <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()}>
+                            <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()} style={this.state.dataFromCollection === "BUY_DATA" ?
+                                styles.buyOrSellButtonTab : styles.blankTextStyle
+                            }>
                                 <Text style={this.state.dataFromCollection === "BUY_DATA" ?
-                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>Buy({this.state.buyData.length}) </Text>
+                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>BUY({this.state.buyData.length}) </Text>
                             </TouchableOpacity>
                             <Text style={styles.buyAndSellPageHeadText}>/ </Text>
-                            <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}>
+                            <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}
+                                style={this.state.dataFromCollection === "SELL_DATA" ?
+                                    styles.buyOrSellButtonTab : styles.blankTextStyle
+                                }
+                            >
                                 <Text style={this.state.dataFromCollection === "SELL_DATA" ?
-                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>Sell({this.state.sellData.length})</Text>
+                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>SELL({this.state.sellData.length})</Text>
                             </TouchableOpacity>
 
                         </View>
@@ -636,17 +650,22 @@ const styles = StyleSheet.create({
     scene: {
         flex: 1,
     },
+    headerBuyAndSell: { fontWeight: "900", fontSize: 20 },
+    buyOrSellButtonTab: {
+        borderBottomWidth: 2, borderBottomColor: "red"
+    },
     blankTextStyle: {},
     imageAndNameView: { flexDirection: "row" },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
     pageOpacity: {
         opacity: 0.2
     },
+    headerSmallText: { marginBottom: 50, color: "#686662" },
     pageOpacityNone: {
 
     },
     buyAndSellPageHeadText: {
-        fontSize: 30
+        fontSize: 16
     },
     addButtom: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5 },
     addGroupText: { color: "#ffffff" },
@@ -658,7 +677,7 @@ const styles = StyleSheet.create({
         right: 0
     },
     selectedTextColor: {
-        color: "tomato"
+        color: "tomato",
     },
     saveButtonText: {
         color: "#ffffff"
