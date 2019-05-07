@@ -21,25 +21,21 @@ interface IState {
     buyOrSellRadioOption: string,
     dropDown: number,
     buyOrSellData: any[],
+    buyData: any[],
+    sellData: any[],
     dataFromCollection: string
 
 }
 
 class BuySell extends Component<IProps> {
-    // state = {
-    //     index: 0,
-    //     routes: [
-    //         { key: 'first', title: 'First' },
-    //         { key: 'second', title: 'Second' },
-    //     ],
-    // };
-
     state: IState = {
         modalVisible: false,
         buyOrSellPrice: "",
         buyOrSellRadioOption: "",
         dropDown: -1,
         buyOrSellData: [],
+        buyData: [],
+        sellData: [],
         dataFromCollection: ""
     }
     constructor(props: IProps) {
@@ -47,10 +43,18 @@ class BuySell extends Component<IProps> {
 
     }
     async componentDidMount() {
-        // const socket = io('http://localhost:1337/');
+        const socket = io('http://localhost:1337/');
         // socket.on('hello', (res: any) => console.log(res));
-        // socket.on('buy', (res: any) => console.log(res));
-        // socket.on('sell', (res: any) => console.log(res));
+        socket.on('buy', (res: any) => {
+            const { buyData } = this.state;
+            buyData.push(JSON.parse(res).message);
+            this.setState({ buyData });
+        });
+        socket.on('sell', (res: any) => {
+            const { sellData } = this.state;
+            sellData.push(JSON.parse(res).message);
+            this.setState({ sellData });
+        });
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getBuyDataByCreator(user.email)
     }
@@ -78,9 +82,6 @@ class BuySell extends Component<IProps> {
         const isNum = /^[0-9\b]+$/;
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         let buyOrSellPrice = this.state.buyOrSellPrice
-        // if (typeof buyOrSellPrice === "string") {
-        //     alert("Enter number only")
-        // } else 
         if (this.state.buyOrSellRadioOption.length <= 0) {
             alert("Please select any one Buy or Sell")
         }
@@ -101,38 +102,40 @@ class BuySell extends Component<IProps> {
         if (index === this.state.dropDown) {
             this.setState({
                 dropDown: -1
-            })
+            });
         } else {
             this.setState({
                 dropDown: index
-            })
+            });
         }
     }
 
     componentWillReceiveProps(newProps: any) {
-        console.log("newProps", newProps.buyOrSell)
         if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
+            const { buyData } = this.state;
             this.setState({
-                buyOrSellData: newProps.buyOrSell.buyOrSellData.buys,
+                buyData: newProps.buyOrSell.buyOrSellData.buys, ...buyData,
                 dataFromCollection: "BUY_DATA"
-            })
+            });
         }
         if (newProps.buyOrSell.buyOrSellData.sells !== undefined) {
+            const { sellData } = this.state;
+            sellData.push(newProps.buyOrSell.buyOrSellData.sells);
             this.setState({
-                buyOrSellData: newProps.buyOrSell.buyOrSellData.sells,
+                sellData: newProps.buyOrSell.buyOrSellData.sells, ...sellData,
                 dataFromCollection: "SELL_DATA"
-            })
+            });
         }
     }
 
     async onPressGetSellDataBYCreator() {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        this.props.getSellDataByCreator(user.email)
+        this.props.getSellDataByCreator(user.email);
     }
 
     async onPressGetBuyDataBYCreator() {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        this.props.getBuyDataByCreator(user.email)
+        this.props.getBuyDataByCreator(user.email);
     }
 
 
@@ -140,8 +143,6 @@ class BuySell extends Component<IProps> {
         const { innerContainer } = styles;
         return (
             <View style={innerContainer}>
-                {/* <h1>{this.state.dataFromCollection}</h1> */}
-
                 <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                     <View style={styles.headerView}>
                         <View style={{ flexDirection: "row" }}>
@@ -166,36 +167,52 @@ class BuySell extends Component<IProps> {
                 </View>
 
 
-                {/* DISPLAY BUY OR SELL DATA */}
-
+                {/* DISPLAY BUY */}
                 {
-                    this.state.buyOrSellData.length > 0 ?
-                        <View>
-                            {this.state.buyOrSellData.map((buyOrSell: any, index: number) => {
-                                return (
-                                    <View style={styles.nestedGroupListView} key={index}>
+                    this.state.dataFromCollection === "BUY_DATA" &&
+                    <View>
+                        {this.state.buyData.map((buyOrSell: any, index: number) => {
+                            return (
+                                <View style={styles.nestedGroupListView} key={index}>
 
-                                        <Text style={styles.buyOrSellText}>
-                                            <u><b>Price</b></u><br /> {buyOrSell.price}
-                                        </Text>
-                                        <Text >
-                                            <u><b>Created Date</b></u> <br />{moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                        </Text>
+                                    <Text style={styles.buyOrSellText}>
+                                        <u><b>Price</b></u><br /> {buyOrSell.price}
+                                    </Text>
+                                    <Text >
+                                        <u><b>Created Date</b></u> <br />{moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
+                                    </Text>
 
 
-                                    </View>
+                                </View>
 
-                                )
+                            )
 
-                            })}
-                        </View>
-                        :
-                        <Text />
+                        })}
+                    </View>
                 }
-                {/* END BUY OR SELL DATA */}
+                {/* DISPLAY SELL */}
+                {
+                    this.state.dataFromCollection === "SELL_DATA" &&
+                    <View>
+                        {this.state.sellData.map((buyOrSell: any, index: number) => {
+                            return (
+                                <View style={styles.nestedGroupListView} key={index}>
+
+                                    <Text style={styles.buyOrSellText}>
+                                        <u><b>Price</b></u><br /> {buyOrSell.price}
+                                    </Text>
+                                    <Text >
+                                        <u><b>Created Date</b></u> <br />{moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
+                                    </Text>
 
 
+                                </View>
 
+                            )
+
+                        })}
+                    </View>
+                }
 
                 {/* BUY AND SELL MODAL START */}
 
@@ -332,15 +349,12 @@ const styles = StyleSheet.create({
     },
     modalView: {
         backgroundColor: "#ffffff",
-        //opacity: 0.7,
         width: 500,
         height: 400,
         position: "relative",
         marginTop: 30,
         marginLeft: "auto",
         marginRight: "auto"
-        // left: 600,
-        //borderWidth:
     },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     modalCreateBuySellView: {
@@ -351,7 +365,6 @@ const styles = StyleSheet.create({
     createBuySellText: { color: "#ffffff", fontSize: 20 },
     inputStyle: {
         height: 30,
-        //borderBottomWidth: 1,
         margin: 15,
         backgroundColor: "rgba(106,106,106,0.41)",
         borderRadius: 20,
