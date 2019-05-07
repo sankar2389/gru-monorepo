@@ -201,3 +201,61 @@ export const onUpdateBuyPrice = (_id: any, buyPrice: number, creator: string) =>
             })
     }
 }
+
+export const onUpdateSellPrice = (_id: any, buyPrice: number, creator: string) => {
+    console.log("emsil", creator)
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: updateSellInput) {
+                            updateSell(input: $input) {
+                              sell {
+                                price
+                              }
+                            }
+                          }
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": _id
+                                },
+                                "data": {
+                                    "price": buyPrice
+                                }
+                            }
+                        }
+                    }).then((res: any) => {
+                        client.query({
+                            query: gql`
+                            query ($creator: String) {
+                                sells(where: {creator: $creator}) {
+                                  _id
+                                  price
+                                  creator
+                                  createdAt
+                                }
+                              }
+                            `,
+                            variables: {
+                                creator
+                            }
+                        }).then((res: any) => {
+                            console.log("ress", res.data)
+                            getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
+                        }).catch(e => {
+                            console.log("grapql error", e)
+                            throw e;
+                        });
+                    }).catch(e => {
+                        console.log("grapql error", e)
+                        throw e;
+                    });
+                }
+            })
+    }
+}

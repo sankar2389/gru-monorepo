@@ -5,7 +5,7 @@ import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
 import moment from "moment";
-import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice } from '../../actions';
+import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice } from '../../actions';
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
@@ -13,6 +13,7 @@ interface IProps extends RouteComponentProps {
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
+    onUpdateSellPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     buyOrSell: any,
 
 };
@@ -235,7 +236,7 @@ class BuySell extends Component<IProps> {
         })
     }
 
-    onPressEditPrice = (price: number, index: number) => {
+    onPressEditBuyPrice = (price: number, index: number) => {
         this.setState({
             buyOrSellPrice: price.toString(),
             editPrice: true,
@@ -246,7 +247,6 @@ class BuySell extends Component<IProps> {
 
     async onPressUpdateBuyPrice(_id: any) {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        console.log("asdjfkljaskldjfkl", _id)
         const isNum = /^[0-9\b]+$/;
         if (isNum.test(this.state.buyOrSellPrice) !== true || this.state.buyOrSellPrice.length <= 0) {
             alert("Please enter number only")
@@ -260,8 +260,33 @@ class BuySell extends Component<IProps> {
             })
 
         }
-
     }
+
+    onPressEditSellPrice = (price: number, index: number) => {
+        this.setState({
+            buyOrSellPrice: price.toString(),
+            editPrice: true,
+            editIndex: index
+        })
+    }
+
+    async onPressUpdateSellPrice(_id: any) {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        const isNum = /^[0-9\b]+$/;
+        if (isNum.test(this.state.buyOrSellPrice) !== true || this.state.buyOrSellPrice.length <= 0) {
+            alert("Please enter number only")
+        }
+        else {
+            let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
+            this.props.onUpdateSellPrice(_id, buyOrSellPrice, user.email)
+            this.setState({
+                editPrice: false,
+                editIndex: ""
+            })
+
+        }
+    }
+
 
     render() {
         const { innerContainer } = styles;
@@ -341,7 +366,7 @@ class BuySell extends Component<IProps> {
                                                 <Text style={styles.saveButtonText}>Save</Text>
                                             </TouchableOpacity> :
                                             <TouchableOpacity style={styles.setPriceButton}
-                                                onPress={() => this.onPressEditPrice(buyOrSell.price, index)}
+                                                onPress={() => this.onPressEditBuyPrice(buyOrSell.price, index)}
                                             >
                                                 <Text>Set Price</Text>
                                             </TouchableOpacity>
@@ -362,13 +387,52 @@ class BuySell extends Component<IProps> {
                             if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
                                     <View style={styles.nestedGroupListView} key={index}>
+                                        <View style={styles.imageAndNameView}>
+                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                            <Text style={styles.userNameText}>Name</Text>
+                                        </View>
                                         <Text style={styles.buyOrSellText}>
-                                            {buyOrSell.price}
+                                            asks
                                         </Text>
                                         <Text style={styles.buyOrSellText}>
+                                            550gm
+                                        </Text>
+                                        <Text style={styles.buyOrSellText}>
+                                            Gold
+                                        </Text>
+                                        {this.state.editPrice && this.state.editIndex == index ?
+                                            <TextInput
+                                                autoFocus={true}
+                                                value={this.state.buyOrSellPrice}
+                                                style={{ borderBottomColor: "black", borderBottomWidth: 1, width: 90 }}
+                                                // onChangeText={groupName => {
+                                                //     this.setState({ groupName: groupName });
+                                                // }}
+                                                onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                                onSubmitEditing={() => {
+                                                    this.onPressCreateBuyOrSell()
+                                                }}
+                                            />
+                                            :
+                                            <Text style={styles.buyOrSellText}>
+                                                &#8377; {buyOrSell.price}
+                                            </Text>
+                                        }
+                                        {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                        </Text>
-
+                                        </Text> */}
+                                        {this.state.editPrice && this.state.editIndex == index ?
+                                            <TouchableOpacity style={styles.saveButton}
+                                                onPress={() => this.onPressUpdateSellPrice(buyOrSell._id)}
+                                            >
+                                                <Text style={styles.saveButtonText}>Save</Text>
+                                            </TouchableOpacity> :
+                                            <TouchableOpacity style={styles.setPriceButton}
+                                                onPress={() => this.onPressEditSellPrice(buyOrSell.price, index)}
+                                            >
+                                                <Text>Set Price</Text>
+                                            </TouchableOpacity>
+                                        }
 
                                     </View>
 
@@ -509,7 +573,7 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
     return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice })(BuySell);
+export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice })(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
