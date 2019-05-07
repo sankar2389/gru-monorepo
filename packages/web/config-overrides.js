@@ -42,5 +42,11 @@ module.exports = function override(config, env) {
     }),
   )
 
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      'process.env.CMS_API': JSON.stringify(process.env.CMS_API || 'http://localhost:1337/')
+    })
+  )
+
   return config
 }

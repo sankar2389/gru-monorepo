@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
-import { NavigationScreenProps } from 'react-navigation';
+import { View, Text, StyleSheet, TextInput, Button, AsyncStorage } from "react-native";
 import { connect } from 'react-redux';
 import { signupUser } from '../../actions';
 import { IAuth, IReduxState } from '../../types';
+import { RouteComponentProps } from "react-router";
 
-interface IProps extends NavigationScreenProps {
+interface IProps extends RouteComponentProps {
     signupUser: Function,
     auth: IAuth
 }
@@ -21,7 +21,7 @@ class UserRegScreen extends Component<IProps, IState> {
         username: 'Santanu B',
         password: '1234',
         confirmPass: '1234',
-        email: 'santanubarai@mathcody.com',
+        email: 'santanubarai@test.com',
         formError: undefined
     }
     constructor(props: IProps) {
@@ -37,10 +37,15 @@ class UserRegScreen extends Component<IProps, IState> {
         }
     }
     componentDidUpdate(prevProps: IProps) {
-        const { authtoken } = this.props.auth;
-        if(authtoken) {
-            this.props.navigation.navigate('App');
-        }
+        AsyncStorage.getItem('token')
+            .then(authtoken => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/dashboard',
+                        state: { authtoken }
+                    });
+                }
+            })
     }
     render() {
         const { username, password, confirmPass, email, formError } = this.state;
