@@ -69,9 +69,16 @@ class Sidebar extends Component<IProps, IState> {
     }
 
     render() {
-        const { sidebar, sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
+        const { sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
         return (
-            <View style={sidebar}>
+            <div style={{
+                width: 70,
+                backgroundColor: "#d72b2b",
+                position: "fixed",
+                top: 70,
+                left: 0,
+                bottom: 0
+            }}>
                 <View style={sidebarButtonGroup}>
                     <View style={this.state.sideBarBackgroundColor === "/secure/dashboard" ? [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
                         <TouchableOpacity onPress={() => this._gotoDash()}>
@@ -113,7 +120,7 @@ class Sidebar extends Component<IProps, IState> {
                     </View>
                 </View>
 
-            </View>
+            </div>
         )
     }
 }
@@ -122,14 +129,14 @@ export { Sidebar }
 
 
 const styles = StyleSheet.create({
-    sidebar: {
-        width: 70,
-        backgroundColor: "#d72b2b",
-        position: "absolute",
-        top: 70,
-        left: 0,
-        bottom: 0
-    },
+    // sidebar: {
+    //     width: 70,
+    //     backgroundColor: "#d72b2b",
+    //     position: "fixed",
+    //     top: 70,
+    //     left: 0,
+    //     bottom: 0
+    // },
     sidebarButtonCtnr: {
         backgroundColor: "#d72b2b",
         display: 'flex',
