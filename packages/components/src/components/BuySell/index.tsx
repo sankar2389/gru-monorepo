@@ -27,7 +27,7 @@ interface IState {
     startDataOnPage: number,
     endDataOnPage: number,
     dataLimitOnPage: number,
-    groupPageCount: any[],
+    buyOrSellPageCount: any[],
     selectedPaginatateNumber: number
 
 }
@@ -43,9 +43,9 @@ class BuySell extends Component<IProps> {
         sellData: [],
         dataFromCollection: "",
         startDataOnPage: 0,
-        endDataOnPage: 5,
-        dataLimitOnPage: 5,
-        groupPageCount: [],
+        endDataOnPage: 10,
+        dataLimitOnPage: 10,
+        buyOrSellPageCount: [],
         selectedPaginatateNumber: 1
     }
     constructor(props: IProps) {
@@ -165,7 +165,7 @@ class BuySell extends Component<IProps> {
         }
 
         this.setState({
-            groupPageCount: buyOrSellPageCount
+            buyOrSellPageCount: buyOrSellPageCount
         })
     }
 
@@ -189,7 +189,6 @@ class BuySell extends Component<IProps> {
         if (this.state.dataFromCollection === "SELL_DATA") {
             buySellpageCount = this.state.sellData.length
         }
-        //let groupPageCount = this.state.buyOrSellData.length
         if (this.state.endDataOnPage < buySellpageCount) {
             this.setState({
                 startDataOnPage: this.state.startDataOnPage + this.state.dataLimitOnPage,
@@ -309,7 +308,6 @@ class BuySell extends Component<IProps> {
                 }
 
                 {/* BUY AND SELL MODAL START */}
-
                 {
                     this.state.modalVisible ?
                         <View style={styles.modalContainer}>
@@ -394,12 +392,12 @@ class BuySell extends Component<IProps> {
                 {/* BUY AND SELL MODAL END */}
 
                 {/* PAGINATION VIEW START */}
-                {this.state.groupPageCount.length > 1 ?
+                {this.state.buyOrSellPageCount.length > 1 ?
                     <View style={{ flexDirection: "row" }}>
                         <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
                             <Text>{"<"}</Text>
                         </TouchableOpacity>
-                        {this.state.groupPageCount.map(pageCount => {
+                        {this.state.buyOrSellPageCount.map(pageCount => {
                             if (pageCount > 1) {
                                 if (pageCount >= this.state.selectedPaginatateNumber && pageCount < this.state.selectedPaginatateNumber + 2) {
                                     return (
@@ -578,7 +576,7 @@ const styles = StyleSheet.create({
     },
     pageCountStyle: {
         marginRight: 20,
-        backgroundColor: 'green',
+        backgroundColor: '#2d8958',
         borderRadius: 30,
         padding: 10,
         height: 30,
