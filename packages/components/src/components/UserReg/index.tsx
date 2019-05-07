@@ -18,10 +18,10 @@ interface IState {
 }
 class UserRegScreen extends Component<IProps, IState> {
     state: IState = {
-        username: 'Santanu B',
-        password: '1234',
-        confirmPass: '1234',
-        email: 'santanubarai@test.com',
+        username: '',
+        password: '',
+        confirmPass: '',
+        email: '',
         formError: undefined
     }
     constructor(props: IProps) {

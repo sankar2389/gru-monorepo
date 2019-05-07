@@ -11,8 +11,6 @@ const getBuyOrSellDataByCreatorSuccess = (dispatch: Function, response: any[]) =
 
 
 export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creator: string) => {
-    console.log("asdfasfdas", buyOrsell)
-    console.log("buyOrSellPrice", typeof (buyOrSellPrice))
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -114,7 +112,6 @@ export const getBuyDataByCreator = (creator: string) => {
 }
 
 export const getSellDataByCreator = (creator: string) => {
-    console.log("creator", creator)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {

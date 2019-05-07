@@ -3,10 +3,10 @@ import { RouteComponentProps } from "react-router";
 import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Image } from "react-native";
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
-import TabView from "../common/TabView";
 import io from 'socket.io-client';
 import moment from "moment";
 import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator } from '../../actions';
+const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string) => void,
@@ -43,7 +43,7 @@ class BuySell extends Component<IProps> {
 
     }
     async componentDidMount() {
-        const socket = io('http://localhost:1337/');
+        const socket = io(CMS_API + '');
         // socket.on('hello', (res: any) => console.log(res));
         socket.on('buy', (res: any) => {
             const { buyData } = this.state;

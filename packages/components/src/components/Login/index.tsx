@@ -19,8 +19,8 @@ class LoginScreen extends Component<IProps, IState> {
         title: 'Login',
     };
     state: IState = {
-        email: 'santanubarai@test.com',
-        password: '1234'
+        email: '',
+        password: ''
     }
     constructor(props: IProps) {
         super(props);
