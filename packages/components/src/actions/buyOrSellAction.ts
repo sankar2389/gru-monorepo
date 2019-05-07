@@ -93,6 +93,7 @@ export const getBuyDataByCreator = (creator: string) => {
                               _id
                               price
                               creator
+                              createdAt
                             }
                           }
                         `,
@@ -124,6 +125,7 @@ export const getSellDataByCreator = (creator: string) => {
                               _id
                               price
                               creator
+                              createdAt
                             }
                           }
                         `,
