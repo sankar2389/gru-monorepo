@@ -190,7 +190,6 @@ class GroupView extends Component<IProps, IState> {
     }
 
     onPressGoToGroupChat = (group: any) => {
-        console.log(group)
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {

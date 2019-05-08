@@ -15,12 +15,18 @@ interface IProps extends RouteComponentProps {
 };
 
 interface IState {
-    chatButtonType: string
+    chatButtonType: string,
+    groupName: "",
+    createdAt: any,
+    memgers: number
 }
 
 class GroupChat extends Component<IProps, IState> {
     state: IState = {
-        chatButtonType: ""
+        chatButtonType: "",
+        groupName: "",
+        createdAt: "",
+        memgers: 0
 
     }
     constructor(props: IProps) {
@@ -30,8 +36,14 @@ class GroupChat extends Component<IProps, IState> {
 
     async componentDidMount() {
         console.log("this.props", this.props.location.state.group)
-        let user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        this.props.getGroupsList(user.email);
+        if (this.props.location.state.group.groupName) {
+            this.setState({
+                groupName: this.props.location.state.group.groupName,
+                createdAt: this.props.location.state.group.createdAt,
+                memgers: this.props.location.state.group.members || 0
+            })
+        }
+
     }
 
     onPressSetChatButton = (buttonType: string) => {
@@ -40,11 +52,14 @@ class GroupChat extends Component<IProps, IState> {
         })
     }
 
+    async onPressGetGroupDetails() {
+        let user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        this.props.getGroupsList(user.email);
+    }
+
 
     render() {
-        console.log("this.props", this.props)
         const { groups } = this.props.group
-        console.log("gorups", groups)
         return (
             <View style={styles.chatView}>
                 <View style={styles.pageHeightView}>
@@ -85,19 +100,19 @@ class GroupChat extends Component<IProps, IState> {
                                 {
                                     groups.map((group, index) => {
                                         return (
-                                            <TouchableOpacity>
-                                                <View style={{
-                                                    padding: 10, flexDirection: "row", justifyContent: "space-around",
-                                                    borderBottomColor: "gray", borderBottomWidth: 1,
-                                                }}>
+                                            <TouchableOpacity key={index}>
+                                                <View style={styles.groupListView}>
                                                     <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
 
                                                     <View style={styles.groupNameView}>
-                                                        <Text style={styles.groupNameText}>
-                                                            {group.groupName}(unread message length)
-                                                        </Text>
+                                                        <View style={{ flexDirection: "row" }}>
+                                                            <Text style={styles.groupNameText}>
+                                                                {group.groupName}
+                                                            </Text>
+                                                            <Text style={{ backgroundColor: "red", color: "#ffffff", borderRadius: 20, padding: 1, fontSize: 14 }}>10</Text>
+                                                        </View>
                                                         <Text style={styles.groupDateTime}>
-                                                            {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
+                                                            created on : {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
                                             </Text>
                                                         <Text>
                                                             Last message
@@ -115,8 +130,26 @@ class GroupChat extends Component<IProps, IState> {
 
 
                     </View>
-                    <View style={{ flex: 5, backgroundColor: "gray" }}>
-                        <Text>Chat name</Text>
+                    <View style={{ flex: 5, backgroundColor: "yellow" }}>
+                        <View style={styles.groupListView}>
+                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+
+                            <View style={styles.groupNameView}>
+
+                                <Text style={styles.groupNameText}>
+                                    {this.state.groupName}
+
+                                </Text>
+
+
+                                <Text style={styles.groupDateTime}>
+                                    {moment(this.state.createdAt).fromNow()}
+                                    {moment(this.state.createdAt).format('h:mm')} |
+                                    {this.state.memgers} Members
+                                            </Text>
+
+                            </View>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -147,10 +180,10 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(226,226,226, 0.8)",
         borderRadius: 20,
         padding: 20,
-        width: "50%",
+        width: "70%",
     },
     pageHeightView: { height: "89.2vh", backgroundColor: "#f4f5f9", flexDirection: "row", flex: 1 },
-    flexLeftView: { flex: 1.5, backgroundColor: "yellow" },
+    flexLeftView: { flex: 1.5 },
     textAndAddButtonView: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
     addButton: { backgroundColor: "tomato", padding: 10, borderRadius: 50, height: 40, width: 40 },
     addButtonText: { color: "#ffffff", fontWeight: "900", fontSize: 18 },
@@ -170,4 +203,8 @@ const styles = StyleSheet.create({
     groupNameView: { flex: 1, marginLeft: 20, alignItems: "flex-start", },
     groupNameText: { flexWrap: "wrap", fontWeight: "900" },
     groupDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
+    groupListView: {
+        padding: 10, flexDirection: "row", justifyContent: "space-around",
+        borderBottomColor: "gray", borderBottomWidth: 1,
+    }
 });
