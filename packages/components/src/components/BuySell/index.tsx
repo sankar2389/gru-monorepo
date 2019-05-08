@@ -9,7 +9,7 @@ import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuy
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
-    createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string) => void,
+    createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
@@ -120,8 +120,9 @@ class BuySell extends Component<IProps> {
             let buyOrsell = this.state.buyOrSellRadioOption
             let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
             let creator = user.email
+            let creatorObject = user
 
-            this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator)
+            this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
         }
     }
@@ -322,6 +323,7 @@ class BuySell extends Component<IProps> {
 
     render() {
         const { innerContainer } = styles;
+        console.log("this.state.buyData", this.state.buyData)
         return (
             <View style={innerContainer}>
                 <View style={{ alignItems: "flex-start" }}>
@@ -373,7 +375,7 @@ class BuySell extends Component<IProps> {
                                     <View style={styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            <Text style={styles.userNameText}>{this.state.userName}</Text>
+                                            <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
                                         </View>
                                         <View style={styles.textItemView}>
                                             <Text style={styles.buyOrSellText}>
@@ -441,7 +443,7 @@ class BuySell extends Component<IProps> {
                                     <View style={styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            <Text style={styles.userNameText}>{this.state.userName}</Text>
+                                            <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
                                         </View>
                                         <View style={styles.textItemView}>
                                             <Text style={styles.buyOrSellText}>
@@ -535,7 +537,7 @@ class BuySell extends Component<IProps> {
                                     <TextInput
                                         autoFocus={true}
                                         value={this.state.buyOrSellPrice}
-                                        placeholder={'Buy or Sell'}
+                                        placeholder={'Buy or Sell Price'}
                                         style={styles.inputStyle}
                                         // onChangeText={groupName => {
                                         //     this.setState({ groupName: groupName });

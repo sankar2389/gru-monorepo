@@ -205,7 +205,6 @@ class GroupView extends Component<IProps, IState> {
                 </View>
             ) :
             (
-
                 <View style={innerContainer}>
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         <View style={styles.headerView}>
