@@ -43,7 +43,8 @@ class GroupChat extends Component<IProps, IState> {
                 memgers: this.props.location.state.group.members || 0
             })
         }
-
+        let user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        this.props.getGroupsList(user.email);
     }
 
     onPressSetChatButton = (buttonType: string) => {
@@ -112,7 +113,7 @@ class GroupChat extends Component<IProps, IState> {
                                                             <Text style={{ backgroundColor: "red", color: "#ffffff", borderRadius: 20, padding: 1, fontSize: 14 }}>10</Text>
                                                         </View>
                                                         <Text style={styles.groupDateTime}>
-                                                            created on : {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
+                                                            {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
                                             </Text>
                                                         <Text>
                                                             Last message
@@ -144,8 +145,7 @@ class GroupChat extends Component<IProps, IState> {
 
                                 <Text style={styles.groupDateTime}>
                                     {moment(this.state.createdAt).fromNow()}
-                                    {moment(this.state.createdAt).format('h:mm')} |
-                                    {this.state.memgers} Members
+                                    {moment(this.state.createdAt).format('h:mm')} | {this.state.memgers} Members
                                             </Text>
 
                             </View>
