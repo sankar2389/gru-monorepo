@@ -8,7 +8,6 @@ const initState: IGroup = {
 export default (state: IGroup = initState, action: AnyAction): IGroup => {
     switch (action.type) {
         case 'GRP_CREATE_SUCCESS':
-            console.log("reducers", action.payload)
             return {
                 ...state,
                 groups: [...state.groups, action.payload]

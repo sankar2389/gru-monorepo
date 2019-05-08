@@ -26,7 +26,8 @@ interface IState {
     startDataOnPage: number,
     endDataOnPage: number,
     limitDataOnPage: number,
-    dropDown: number
+    dropDown: number,
+    selectedPaginatateNumber: number
 }
 
 class GroupView extends Component<IProps, IState> {
@@ -39,7 +40,8 @@ class GroupView extends Component<IProps, IState> {
         startDataOnPage: 0,
         endDataOnPage: 9,
         limitDataOnPage: 9,
-        dropDown: -1
+        dropDown: -1,
+        selectedPaginatateNumber: 1
     }
     constructor(props: IProps) {
         super(props);
@@ -53,7 +55,6 @@ class GroupView extends Component<IProps, IState> {
     componentWillReceiveProps(newProps: any) {
         let groupPageCount = []
         let groupLength = newProps.group.groups.length
-        console.log("groupLenght", groupLength)
         let totalpage = groupLength / this.state.limitDataOnPage
         let count = groupLength % this.state.limitDataOnPage
         if (count !== 0) {
@@ -82,18 +83,19 @@ class GroupView extends Component<IProps, IState> {
         let endDataOnPage = count
         this.setState({
             startDataOnPage: startDataOnPage,
-            endDataOnPage: endDataOnPage
+            endDataOnPage: endDataOnPage,
+            selectedPaginatateNumber: pageCount
         })
 
     }
 
     //pagination Next
     onPressPaginateNext() {
-        let groupPageCount = this.state.groupPageCount.length
-        if (this.state.endDataOnPage < groupPageCount) {
+        if (this.state.endDataOnPage < this.props.group.groups.length) {
             this.setState({
                 startDataOnPage: this.state.startDataOnPage + this.state.limitDataOnPage,
-                endDataOnPage: this.state.endDataOnPage + this.state.limitDataOnPage
+                endDataOnPage: this.state.endDataOnPage + this.state.limitDataOnPage,
+                selectedPaginatateNumber: this.state.selectedPaginatateNumber + 1
             })
         } else {
             alert("EOF")
@@ -105,7 +107,8 @@ class GroupView extends Component<IProps, IState> {
         if (this.state.startDataOnPage > 0) {
             this.setState({
                 startDataOnPage: this.state.startDataOnPage - this.state.limitDataOnPage,
-                endDataOnPage: this.state.endDataOnPage - this.state.limitDataOnPage
+                endDataOnPage: this.state.endDataOnPage - this.state.limitDataOnPage,
+                selectedPaginatateNumber: this.state.selectedPaginatateNumber - 1
             })
         } else {
             alert("BOF")
@@ -189,7 +192,6 @@ class GroupView extends Component<IProps, IState> {
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
-        console.log("stae", this.state.groupPageCount)
         return this.state.updateGroup ?
             (
                 /** Update group in component */
@@ -221,7 +223,7 @@ class GroupView extends Component<IProps, IState> {
                         {groups.length > 0 ?
                             <View style={styles.groupListMainContainer}>
                                 {groups.map((group, index) => {
-                                    if (index >= this.state.startDataOnPage && index <= this.state.endDataOnPage) {
+                                    if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                         return (
                                             <View style={styles.nestedGroupListView} key={index}>
 
@@ -266,7 +268,7 @@ class GroupView extends Component<IProps, IState> {
                             <Text />
                         }
                         {/* PAGINATION VIEW START */}
-                        {this.state.groupPageCount.length > 1 ?
+                        {/* {this.state.groupPageCount.length > 1 ?
                             <View style={{ flexDirection: "row" }}>
                                 <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
                                     <Text>{"<"}</Text>
@@ -287,7 +289,7 @@ class GroupView extends Component<IProps, IState> {
                                     style={styles.paginationButton}>
                                     <Text>{">"}</Text>
                                 </TouchableOpacity>
-                            </View> : <Text />}
+                            </View> : <Text />} */}
                         {/* PAGINATION VIEW END */}
                     </View>
 
@@ -331,6 +333,46 @@ class GroupView extends Component<IProps, IState> {
                             </View> : <Text />
                     }
                     {/* ADD GROUP MODAL END */}
+
+                    {/* PAGINATION VIEW START */}
+                    {this.state.groupPageCount.length > 1 ?
+                        <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
+                                <Text>{"<"}</Text>
+                            </TouchableOpacity>
+                            {this.state.groupPageCount.map(pageCount => {
+                                if (pageCount > 1) {
+                                    if (pageCount >= this.state.selectedPaginatateNumber && pageCount < this.state.selectedPaginatateNumber + 2) {
+                                        return (
+
+                                            <TouchableOpacity key={pageCount}
+                                                onPress={this.onPressPaginate.bind(this, pageCount)}
+                                                style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
+                                            >
+                                                <Text>{pageCount}</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    }
+                                } else {
+                                    return (
+                                        <TouchableOpacity key={pageCount}
+                                            onPress={this.onPressPaginate.bind(this, pageCount)}
+                                            style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
+                                        >
+                                            <Text>{pageCount}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
+                            })}
+
+                            <TouchableOpacity
+                                onPress={this.onPressPaginateNext.bind(this)}
+                                style={styles.paginationButton}>
+                                <Text>{">"}</Text>
+                            </TouchableOpacity>
+                        </View> : <Text />}
+                    {/* PAGINATION VIEW END */}
+
                 </View >
             )
 
@@ -402,6 +444,16 @@ const styles = StyleSheet.create({
     paginationButton: {
         marginRight: 20,
         backgroundColor: '#ffffff',
+        borderRadius: 30,
+        padding: 10,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    pageCountStyle: {
+        marginRight: 20,
+        backgroundColor: '#2d8958',
         borderRadius: 30,
         padding: 10,
         height: 30,

@@ -112,7 +112,6 @@ class Sidebar extends Component<IProps, IState> {
                         </TouchableOpacity>
                     </View>
                 </View>
-
             </View>
         )
     }
@@ -124,6 +123,7 @@ export { Sidebar }
 const styles = StyleSheet.create({
     sidebar: {
         width: 70,
+        height: "100vh",
         backgroundColor: "#d72b2b",
         position: "absolute",
         top: 70,
