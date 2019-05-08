@@ -598,7 +598,9 @@ class BuySell extends Component<IProps> {
                                             onPress={this.onPressPaginate.bind(this, pageCount)}
                                             style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
                                         >
-                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>{pageCount}</Text>
+                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>
+                                                {pageCount}
+                                            </Text>
                                         </TouchableOpacity>
                                     )
                                 }

@@ -97,7 +97,8 @@ class Sidebar extends Component<IProps, IState> {
                                 style={sidebarButton} />
                         </TouchableOpacity>
                     </View>
-                    <View style={this.state.sideBarBackgroundColor === "/secure/groups" ? [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
+                    <View style={this.state.sideBarBackgroundColor === "/secure/groups" ?
+                        [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
                         <TouchableOpacity onPress={() => this._gotoGroups()}>
                             <Image
                                 source={require('../../assets/images/group.png')}
