@@ -33,7 +33,7 @@ export function App() {
 }
 
 const PrivateRoute: any = ({ component: PrivateComponent, auth, ...rest }: { component: ComponentType, auth: any }) => (
-<Route {...rest} render={(props: any) => (
+  <Route {...rest} render={(props: any) => (
     isAuthenticated(props) === true ? <View style={styles.container}><Navigation {...props} /><PrivateComponent {...props} /></View> : <Redirect to='/login' />
   )} />
 )
@@ -54,6 +54,6 @@ function isAuthenticated(props: any): boolean {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%"
+    //height: "100%",
   }
 })

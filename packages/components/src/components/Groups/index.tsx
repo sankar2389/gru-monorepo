@@ -267,30 +267,6 @@ class GroupView extends Component<IProps, IState> {
                             :
                             <Text />
                         }
-                        {/* PAGINATION VIEW START */}
-                        {/* {this.state.groupPageCount.length > 1 ?
-                            <View style={{ flexDirection: "row" }}>
-                                <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
-                                    <Text>{"<"}</Text>
-                                </TouchableOpacity>
-                                {this.state.groupPageCount.map(pageCount => {
-                                    return (
-                                        <TouchableOpacity key={pageCount}
-                                            onPress={this.onPressPaginate.bind(this, pageCount)}
-                                            style={styles.paginationButton}
-                                        >
-                                            <Text>{pageCount}</Text>
-                                        </TouchableOpacity>
-                                    )
-                                })}
-
-                                <TouchableOpacity
-                                    onPress={this.onPressPaginateNext.bind(this)}
-                                    style={styles.paginationButton}>
-                                    <Text>{">"}</Text>
-                                </TouchableOpacity>
-                            </View> : <Text />} */}
-                        {/* PAGINATION VIEW END */}
                     </View>
 
                     {/* ADD GROUP MODAL START */}
@@ -336,7 +312,7 @@ class GroupView extends Component<IProps, IState> {
 
                     {/* PAGINATION VIEW START */}
                     {this.state.groupPageCount.length > 1 ?
-                        <View style={{ flexDirection: "row" }}>
+                        <View style={styles.paginationView}>
                             <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
                                 <Text>{"<"}</Text>
                             </TouchableOpacity>
@@ -534,5 +510,6 @@ const styles = StyleSheet.create({
     groupDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
     createGroupText: { color: "#ffffff", fontSize: 20 },
-    textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 }
+    textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
+    paginationView: { flexDirection: "row", backgroundColor: "lightGray", padding: 20, position: "absolute", bottom: 40 }
 });
