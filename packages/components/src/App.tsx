@@ -9,6 +9,7 @@ import UserRegScreen from './components/UserReg';
 import Dashboard from './components/Dashboard';
 import BuySell from './components/BuySell';
 import GroupView from './components/Groups';
+import GroupChat from "./components/Groups/groupChat";
 
 import './App.css';
 import Navigation from './components/Navigation';
@@ -26,6 +27,7 @@ export function App() {
           <PrivateRoute path="/secure/dashboard" component={Dashboard} />
           <PrivateRoute path="/secure/buysell" component={BuySell} />
           <PrivateRoute path="/secure/groups" component={GroupView} />
+          <PrivateRoute path="/secure/group-chat" component={GroupChat} />
         </Router>
       </div>
     </Provider>
@@ -33,7 +35,7 @@ export function App() {
 }
 
 const PrivateRoute: any = ({ component: PrivateComponent, auth, ...rest }: { component: ComponentType, auth: any }) => (
-<Route {...rest} render={(props: any) => (
+  <Route {...rest} render={(props: any) => (
     isAuthenticated(props) === true ? <View style={styles.container}><Navigation {...props} /><PrivateComponent {...props} /></View> : <Redirect to='/login' />
   )} />
 )

@@ -28,9 +28,8 @@ class Sidebar extends Component<IProps, IState> {
                 sideBarBackgroundColor: this.props.history.location.pathname
             })
         }
-
-
     }
+
     clicked() {
         console.log("clicked")
     }
