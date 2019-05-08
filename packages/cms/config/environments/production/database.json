@@ -5,10 +5,10 @@
       "connector": "strapi-hook-mongoose",
       "settings": {
         "client": "mongo",
-        "uri": "mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/gru",
-        "port": "${process.env.DATABASE_PORT || 27017}",
-        "username": "${process.env.DATABASE_USERNAME || ''}",
-        "password": "${process.env.DATABASE_PASSWORD || ''}"
+        "host": "mongo-0.mongo",
+        "port": "27017",
+        "username": "",
+        "password": ""
       },
       "options": {}
     }
