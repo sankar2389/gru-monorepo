@@ -9,7 +9,6 @@ const initState: IBuyOrSell = {
 export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell => {
     switch (action.type) {
         case 'BUY_DATA_LIST_SUCCESS':
-            console.log("reducerssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss", action.payload)
             return {
                 ...state,
                 buyOrSellData: action.payload
