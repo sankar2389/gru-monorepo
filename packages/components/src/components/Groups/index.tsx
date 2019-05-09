@@ -253,7 +253,7 @@ class GroupView extends Component<IProps, IState> {
                                                             </Text>
                                                             <Text style={styles.groupDateTime}>
                                                                 {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                                    </Text>
+</Text>
                                                             <Text>
                                                                 {/* Image */}
                                                             </Text>
@@ -263,7 +263,7 @@ class GroupView extends Component<IProps, IState> {
                                                     <View style={styles.droupDownView}>
                                                         <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
                                                             ...
-                                                        </Text>
+</Text>
                                                         {this.state.dropDown === index ?
                                                             <View style={styles.dropdown}>
                                                                 <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
@@ -302,7 +302,7 @@ class GroupView extends Component<IProps, IState> {
                                             placeholder={'Group Name'}
                                             style={styles.inputStyle}
                                             // onChangeText={groupName => {
-                                            //     this.setState({ groupName: groupName });
+                                            // this.setState({ groupName: groupName });
                                             // }}
                                             onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
                                             onSubmitEditing={() => {
@@ -367,6 +367,7 @@ class GroupView extends Component<IProps, IState> {
                         </View> : <Text />}
                     {/* PAGINATION VIEW END */}
 
+
                 </View >
             )
 
@@ -381,8 +382,6 @@ export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGrou
 
 const styles = StyleSheet.create({
     innerContainer: {
-        backgroundColor: '#f0f0f0',
-        width: "95%",
         marginTop: 70,
         marginLeft: 70,
         padding: 50,
