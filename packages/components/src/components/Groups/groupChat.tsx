@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ImageBackground } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList } from "../../actions";
 import moment from "moment";
 
@@ -18,8 +18,9 @@ interface IState {
     chatButtonType: string,
     groupName: "",
     createdAt: any,
-    memgers: number,
-    replyText: string
+    members: number,
+    replyText: string,
+    sendMessage: any
 }
 
 class GroupChat extends Component<IProps, IState> {
@@ -27,8 +28,9 @@ class GroupChat extends Component<IProps, IState> {
         chatButtonType: "group",
         groupName: "",
         createdAt: "",
-        memgers: 0,
-        replyText: ""
+        members: 0,
+        replyText: "",
+        sendMessage: []
 
     }
     constructor(props: IProps) {
@@ -41,7 +43,7 @@ class GroupChat extends Component<IProps, IState> {
             this.setState({
                 groupName: this.props.location.state.group.groupName,
                 createdAt: this.props.location.state.group.createdAt,
-                memgers: this.props.location.state.group.members || 0
+                members: this.props.location.state.group.members || 0
             })
         }
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
@@ -66,21 +68,28 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     onPressReplyMessage = () => {
-        alert("sumbited")
+        let sendMessage = this.state.sendMessage;
+        sendMessage.push(this.state.replyText)
+        this.setState({
+            sendMessage: sendMessage,
+            replyText: "",
+        })
+        //this._root.focus()
+
     }
 
     onPressSelectGroup = (group: any) => {
-        console.log(group)
         this.setState({
             groupName: group.groupName,
             createdAt: group.createdAt,
-            memgers: group.members || 0
+            members: group.members || 0
         })
     }
 
 
     render() {
-        const { groups } = this.props.group
+        const { groups } = this.props.group;
+
         return (
             <View style={styles.chatView}>
 
@@ -133,7 +142,7 @@ class GroupChat extends Component<IProps, IState> {
                                                             {group.groupName}
                                                         </Text>
                                                         <View style={styles.memberLenght}>
-                                                            <Text>16</Text>
+                                                            <Text style={styles.memberLengthText}>16</Text>
                                                         </View>
                                                     </View>
                                                     <Text style={styles.groupDateTime}>
@@ -155,6 +164,7 @@ class GroupChat extends Component<IProps, IState> {
                 </View>
                 {/* LEFT SIDE MESSAGE PART END */}
 
+
                 {/* RIGHT SIDE MESSAGE PART START */}
                 <View style={styles.rightSideView}>
                     <View style={styles.rightSideListView}>
@@ -166,50 +176,46 @@ class GroupChat extends Component<IProps, IState> {
 
                             <Text style={styles.groupDateTime}>
                                 {moment(this.state.createdAt).fromNow()} {""}
-                                {moment(this.state.createdAt).format('h:mm')} | {this.state.memgers} Members
+                                {moment(this.state.createdAt).format('h:mm')} | {this.state.members} Members
                                 </Text>
                         </View>
                     </View>
 
                     <View style={styles.messageView}>
                         <View style={styles.receiveMessageView}>
-                            <Text style={styles.receiveMessaageText}>Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message </Text>
-                            <Text style={styles.receiveMessaageText}>Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message </Text>
+                            <Text style={styles.receiveMessaageText}>
+                                Receive message Receive message  Receive message Receive message  Receive message Receive message Receive message Receive message Receive message Receive message
+                            </Text>
                         </View>
-                        <View style={styles.sendMessageView}>
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message
-                                    </Text>
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
+                        {this.state.sendMessage.length > 0 ?
+                            <View style={styles.sendMessageView}>
+                                {this.state.sendMessage.map((sendMsg: string, index: number) => {
+                                    return (
+                                        <Text style={styles.sendMessageText} key={index}>
+                                            {"sendMsg"}
+                                            {"sendMsg"}
+                                            {"sendMsg"}
+                                            {"sendMsg"}
+                                            {"sendMsg"}
+                                            {"sendMsg"}
+                                            {"sendMsg"}
+                                            {"sendMsg"}
+                                            {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"}
+                                        </Text>
+                                    )
+                                })}
 
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
-
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
-
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
-
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
-                            <Text style={styles.sendMessageText}>
-                                Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
-
-
-                        </View>
-
+                            </View>
+                            :
+                            <Text />
+                        }
                     </View>
+
 
                     <View style={styles.messageWriteView}>
                         <TextInput style={styles.writeMessageTextInput}
+                            //ref={component => this._root = component}
+                            autoFocus={true}
                             placeholder={"Write a reply..."}
                             multiline={true}
                             numberOfLines={4}
@@ -217,8 +223,9 @@ class GroupChat extends Component<IProps, IState> {
                             onChangeText={(replyText) => this.onHandelChangeReplyInput(replyText)}
                         />
                         <View style={styles.sendButtonView}>
-                            <TouchableOpacity style={styles.sendButtom}
+                            <TouchableOpacity style={this.state.replyText ? styles.sendButtom : styles.sendButtonDisable}
                                 onPress={() => this.onPressReplyMessage()}
+                                disabled={this.state.replyText ? false : true}
                             >
                                 <Text style={styles.sendButtonText}>Reply</Text>
                             </TouchableOpacity>
@@ -292,22 +299,24 @@ const styles = StyleSheet.create({
     },
     selectedGroup: { backgroundColor: "#f0f0f0" },
     memberLenght: {
-        backgroundColor: "tomato", color: "#ffffff", borderRadius: 50, height: 25, width: 25, marginLeft: 5, justifyContent: "center"
+        backgroundColor: "tomato", borderRadius: 50, height: 25, width: 25, marginLeft: 5, justifyContent: "center"
     },
+    memberLengthText: { color: "#ffffff" },
     rightSideView: { flex: 5, },
     messageView: {
         paddingLeft: 20, paddingRight: 100, marginTop: 20, height: "70%",
-        overflowY: "scroll", backgroundColor: "#f0f0f0"
+        backgroundColor: "#f0f0f0", overflowY: "scroll"
     },
     receiveMessageView: {
         alignItems: "flex-start", paddingTop: 15, marginRight: 650,
     },
     sendMessageView: { alignItems: "flex-start", paddingTop: 15, marginLeft: 650, },
     messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0" },
-    writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10 },
-    receiveMessaageText: { backgroundColor: "#DCDCDC", borderRadius: 10, padding: 10 },
+    writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, margin: 5 },
+    receiveMessaageText: { backgroundColor: "#DCDCDC", borderRadius: 10, padding: 10, },
     sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5 },
-    sendMessageText: { backgroundColor: "#ffffff", borderRadius: 10, padding: 10 },
+    sendMessageText: { backgroundColor: "#ffffff", borderRadius: 10, padding: 10, margin: 5 },
     sendButtom: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "#DC143C", borderRadius: 5 },
+    sendButtonDisable: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "gray", borderRadius: 5 },
     sendButtonText: { fontStyle: "italic", fontFamily: "Open Sans", color: "#ffffff" }
 });
