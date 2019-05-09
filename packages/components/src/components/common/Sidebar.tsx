@@ -122,7 +122,7 @@ export { Sidebar }
 const styles = StyleSheet.create({
     sidebar: {
         width: 70,
-        height: "100vh",
+        height: "92.6vh",
         backgroundColor: "#d72b2b",
         position: "absolute",
         top: 70,
