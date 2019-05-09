@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ImageBackground } from "react-native";
 import { getGroupsList } from "../../actions";
 import moment from "moment";
 
@@ -23,7 +23,7 @@ interface IState {
 
 class GroupChat extends Component<IProps, IState> {
     state: IState = {
-        chatButtonType: "",
+        chatButtonType: "group",
         groupName: "",
         createdAt: "",
         memgers: 0
@@ -64,6 +64,8 @@ class GroupChat extends Component<IProps, IState> {
         return (
             <View style={styles.chatView}>
                 <View style={styles.pageHeightView}>
+
+                    {/* LEFT SIDE MESSAGE PART START */}
                     <View style={styles.flexLeftView}>
                         <View style={styles.textAndAddButtonView}>
                             <TextInput
@@ -97,12 +99,13 @@ class GroupChat extends Component<IProps, IState> {
 
                         {/* MAP ON GROUP LIST */}
                         {groups.length > 0 ?
-                            <View style={{ height: "83vh", overflow: "scroll" }}>
+                            <View style={styles.groupView}>
                                 {
                                     groups.map((group, index) => {
                                         return (
                                             <TouchableOpacity key={index}>
-                                                <View style={styles.groupListView}>
+                                                <View style={this.state.groupName === group.groupName ?
+                                                    [styles.groupListView, styles.selectedGroup] : styles.groupListView}>
                                                     <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
 
                                                     <View style={styles.groupNameView}>
@@ -110,14 +113,14 @@ class GroupChat extends Component<IProps, IState> {
                                                             <Text style={styles.groupNameText}>
                                                                 {group.groupName}
                                                             </Text>
-                                                            <Text style={{ backgroundColor: "red", color: "#ffffff", borderRadius: 20, padding: 1, fontSize: 14 }}>10</Text>
+                                                            <Text style={styles.memberLenght}>10</Text>
                                                         </View>
                                                         <Text style={styles.groupDateTime}>
                                                             {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                            </Text>
+                                                        </Text>
                                                         <Text>
                                                             Last message
-                                            </Text>
+                                                        </Text>
                                                     </View>
                                                 </View>
                                             </TouchableOpacity>
@@ -128,11 +131,12 @@ class GroupChat extends Component<IProps, IState> {
                             :
                             <Text />
                         }
-
-
                     </View>
-                    <View style={{ flex: 5, borderColor: "gray", borderWidth: 1 }}>
-                        <View style={styles.groupListView}>
+                    {/* LEFT SIDE MESSAGE PART END */}
+
+                    {/* RIGHT SIDE MESSAGE PART START */}
+                    <View style={styles.rightSideView}>
+                        <View style={styles.rightSideListView}>
                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
                             <View style={styles.groupNameView}>
                                 <Text style={styles.groupNameText}>
@@ -146,27 +150,34 @@ class GroupChat extends Component<IProps, IState> {
                             </View>
                         </View>
 
-                        <View style={{ flex: 4, paddingLeft: 20, paddingRight: 100, marginTop: 20, overflow: "visible" }}>
-                            <View style={{ alignItems: "flex-start" }}>
-                                <Text>Receive message</Text>
-                            </View>
-                            <View style={{ alignItems: "flex-end" }}>
-                                <Text>Send message</Text>
+                        <View style={styles.messageView}>
+                            <View style={{ flex: 1, flexDirection: "row" }}>
+                                <View style={styles.receiveMessageView}>
+                                    <Text style={styles.receiveMessaageText}>Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message Receive message </Text>
+                                </View>
+                                <View style={styles.sendMessageView}>
+                                    <Text style={styles.sendMessageText}>
+                                        Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message Send message </Text>
+                                </View>
                             </View>
                         </View>
-                        <br />
-                        <View style={{ flex: 1, alignItems: "center" }}>
-                            <TextInput style={{ width: "98%", height: "70%", marginTop: 5, backgroundColor: "lightgray", borderRadius: 5, padding: 10 }}
+
+                        <View style={styles.messageWriteView}>
+                            <TextInput style={styles.writeMessageTextInput}
+                                placeholder={"Write a reply..."}
+                                multiline={true}
+                                numberOfLines={4}
                             />
-                            <View style={{ width: "98%", alignItems: "flex-end", marginTop: 5 }}>
-                                <TouchableOpacity style={{ padding: 10, backgroundColor: "silver", borderRadius: 5 }}>
-                                    <Text style={{ fontStyle: "italic", fontFamily: "abcd" }}>Send</Text>
+                            <View style={styles.sendButtonView}>
+                                <TouchableOpacity style={styles.sendButtom}>
+                                    <Text style={styles.sendButtonText}>Reply</Text>
                                 </TouchableOpacity>
                             </View>
 
                         </View>
 
                     </View>
+                    {/* RIGHT SIDE MESSAGE PART END */}
                 </View>
             </View>
         )
@@ -184,7 +195,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#f4f5f9",
         marginTop: 70,
         marginLeft: 70,
-        padding: 50,
+        paddingTop: 50,
+        paddingRight: 50,
+        paddingBottom: 50,
         display: "flex"
 
     },
@@ -198,7 +211,7 @@ const styles = StyleSheet.create({
         padding: 20,
         width: "70%",
     },
-    pageHeightView: { height: "89.2vh", backgroundColor: "#f4f5f9", flexDirection: "row", flex: 1 },
+    pageHeightView: { backgroundColor: "#f4f5f9", flexDirection: "row", flex: 1 },
     flexLeftView: { flex: 1.5 },
     textAndAddButtonView: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
     addButton: { backgroundColor: "tomato", padding: 10, borderRadius: 50, height: 40, width: 40 },
@@ -206,7 +219,7 @@ const styles = StyleSheet.create({
     chatTypeView: { flexDirection: "row", justifyContent: "space-around" },
     chatTypeButton: { padding: 10 },
     selectedChatButton: {
-        borderBottomWidth: 2, borderBottomColor: "#9b8325"
+        borderBottomWidth: 2, borderBottomColor: "#9b8325", marginBottom: 5
     },
     avatarStyle: {
         height: 50,
@@ -216,11 +229,33 @@ const styles = StyleSheet.create({
         // marginLeft: 50
 
     },
+    groupView: { height: "83vh", overflowY: "scroll" },
     groupNameView: { flex: 1, marginLeft: 20, alignItems: "flex-start", },
     groupNameText: { flexWrap: "wrap", fontWeight: "900" },
     groupDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     groupListView: {
-        padding: 10, flexDirection: "row", justifyContent: "space-around",
-        borderBottomColor: "gray", borderBottomWidth: 1,
-    }
+        padding: 20, flexDirection: "row", justifyContent: "space-around",
+        borderColor: "#E5DFDF", borderWidth: 1,
+    },
+
+    rightSideListView: {
+        padding: 22, flexDirection: "row", justifyContent: "space-around",
+        borderLeftColor: "#E5DFDF", borderLeftWidth: 1,
+    },
+    selectedGroup: { backgroundColor: "#f0f0f0" },
+    memberLenght: { backgroundColor: "tomato", color: "#ffffff", borderRadius: 20, padding: 1, fontSize: 14 },
+    rightSideView: { flex: 5, },
+    messageView: {
+        flex: 4, paddingLeft: 20, paddingRight: 100, marginTop: 20,
+        overflowY: "scroll", backgroundColor: "#f0f0f0"
+    },
+    receiveMessageView: { flex: 1, alignItems: "flex-start", paddingTop: 15, marginRight: 20 },
+    sendMessageView: { flex: 1, alignItems: "flex-start", paddingTop: 30, },
+    messageWriteView: { flex: 1, alignItems: "center", backgroundColor: "#f0f0f0" },
+    writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10 },
+    receiveMessaageText: { backgroundColor: "#DCDCDC", borderRadius: 10, padding: 10 },
+    sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5 },
+    sendMessageText: { backgroundColor: "#ffffff", borderRadius: 10, padding: 10 },
+    sendButtom: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "#DC143C", borderRadius: 5 },
+    sendButtonText: { fontStyle: "italic", fontFamily: "Open Sans", color: "#ffffff" }
 });
