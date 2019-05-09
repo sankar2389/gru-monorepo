@@ -131,25 +131,41 @@ class GroupChat extends Component<IProps, IState> {
 
 
                     </View>
-                    <View style={{ flex: 5, backgroundColor: "yellow" }}>
+                    <View style={{ flex: 5, borderColor: "gray", borderWidth: 1 }}>
                         <View style={styles.groupListView}>
                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-
                             <View style={styles.groupNameView}>
-
                                 <Text style={styles.groupNameText}>
                                     {this.state.groupName}
-
                                 </Text>
 
-
                                 <Text style={styles.groupDateTime}>
-                                    {moment(this.state.createdAt).fromNow()}
+                                    {moment(this.state.createdAt).fromNow()} {""}
                                     {moment(this.state.createdAt).format('h:mm')} | {this.state.memgers} Members
-                                            </Text>
-
+                                </Text>
                             </View>
                         </View>
+
+                        <View style={{ flex: 4, paddingLeft: 20, paddingRight: 100, marginTop: 20, overflow: "visible" }}>
+                            <View style={{ alignItems: "flex-start" }}>
+                                <Text>Receive message</Text>
+                            </View>
+                            <View style={{ alignItems: "flex-end" }}>
+                                <Text>Send message</Text>
+                            </View>
+                        </View>
+                        <br />
+                        <View style={{ flex: 1, alignItems: "center" }}>
+                            <TextInput style={{ width: "98%", height: "70%", marginTop: 5, backgroundColor: "lightgray", borderRadius: 5, padding: 10 }}
+                            />
+                            <View style={{ width: "98%", alignItems: "flex-end", marginTop: 5 }}>
+                                <TouchableOpacity style={{ padding: 10, backgroundColor: "silver", borderRadius: 5 }}>
+                                    <Text style={{ fontStyle: "italic", fontFamily: "abcd" }}>Send</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                        </View>
+
                     </View>
                 </View>
             </View>
