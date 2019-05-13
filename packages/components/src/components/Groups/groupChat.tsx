@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { UserRatesCard } from "../common";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList } from "../../actions";
 import moment from "moment";
+import Peer from 'peerjs';
+import io from 'socket.io-client';
+const CMS_API = process.env.CMS_API;
 
 
 interface IProps extends RouteComponentProps {
@@ -74,8 +76,6 @@ class GroupChat extends Component<IProps, IState> {
             sendMessage: sendMessage,
             replyText: "",
         })
-        //this._root.focus()
-
     }
 
     onPressSelectGroup = (group: any) => {
@@ -86,6 +86,42 @@ class GroupChat extends Component<IProps, IState> {
         })
     }
 
+    componentWillMount() {
+
+        const socket = io(CMS_API + '');
+        // socket.on("connection", (res: any) => {
+        //     console.log("socketId")
+        //     console.log("socketId", res.id)
+        // })
+
+        //socket.connect(Peer.id)
+
+        // const peer = new Peer({
+
+        // host: 'http://localhost:1337/', port: 3000, path: '/peerjs',
+        // debug: 3,
+        // config: {
+        //     'iceServers': [
+        //         { urls: 'stun:stun1.l.google.com:19302' },
+        //         { urls: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }
+        //     ]
+        // }
+        //  })
+        //console.log("peer", peer)
+
+
+
+        // var conn = peer.connect(peer.id)
+        // peer.on('open', function (id: string) {
+        //     console.log('My peer ID is: ' + id);
+        // });
+        // peer.on('connection', function (conn) {
+        //     conn.on('data', function (data) {
+        //         // Will print 'hi!'
+        //         console.log("data", data)
+        //     })
+        // })
+    }
 
     render() {
         const { groups } = this.props.group;
