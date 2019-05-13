@@ -45,7 +45,7 @@ class GroupView extends Component<IProps, IState> {
     }
     constructor(props: IProps) {
         super(props);
-        //this.onPressPaginate = this.onPressPaginate.bind(this);
+        this.onPressGoToGroupChat = this.onPressGoToGroupChat.bind(this);
     }
     async componentDidMount() {
         const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
@@ -189,6 +189,18 @@ class GroupView extends Component<IProps, IState> {
         this.setState({ groupName: groupName });
     }
 
+    onPressGoToGroupChat = (group: any) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/group-chat',
+                        state: { authtoken, group }
+                    });
+                }
+            })
+    }
+
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
@@ -225,29 +237,33 @@ class GroupView extends Component<IProps, IState> {
                                 {groups.map((group, index) => {
                                     if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                         return (
-                                            <View style={styles.nestedGroupListView} key={index}>
 
+                                            <View style={styles.nestedGroupListView} key={index} >
+                                                {/* */}
                                                 <View style={styles.groupListMainContainer}>
-                                                    <View style={styles.textView}>
-                                                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                    </View>
+                                                    <TouchableOpacity onPress={() => this.onPressGoToGroupChat(group)}
+                                                        style={styles.goToGroupChatButton}>
+                                                        <View style={styles.textView}>
+                                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                        </View>
 
-                                                    <View style={styles.textView}>
-                                                        <Text style={styles.groupNameText}>
-                                                            {group.groupName}
-                                                        </Text>
-                                                        <Text style={styles.groupDateTime}>
-                                                            {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                                    </Text>
-                                                        <Text>
-                                                            {/* Image */}
-                                                        </Text>
-                                                    </View>
+                                                        <View style={styles.textView}>
+                                                            <Text style={styles.groupNameText}>
+                                                                {group.groupName}
+                                                            </Text>
+                                                            <Text style={styles.groupDateTime}>
+                                                                {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
+</Text>
+                                                            <Text>
+                                                                {/* Image */}
+                                                            </Text>
+                                                        </View>
+                                                    </TouchableOpacity>
 
                                                     <View style={styles.droupDownView}>
                                                         <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
                                                             ...
-                                                        </Text>
+</Text>
                                                         {this.state.dropDown === index ?
                                                             <View style={styles.dropdown}>
                                                                 <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
@@ -258,9 +274,11 @@ class GroupView extends Component<IProps, IState> {
                                                         }
                                                     </View>
                                                 </View>
+
                                             </View>
 
                                         )
+
                                     }
                                 })}
                             </View>
@@ -284,7 +302,7 @@ class GroupView extends Component<IProps, IState> {
                                             placeholder={'Group Name'}
                                             style={styles.inputStyle}
                                             // onChangeText={groupName => {
-                                            //     this.setState({ groupName: groupName });
+                                            // this.setState({ groupName: groupName });
                                             // }}
                                             onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
                                             onSubmitEditing={() => {
@@ -354,6 +372,7 @@ class GroupView extends Component<IProps, IState> {
                         </View> : <Text />}
                     {/* PAGINATION VIEW END */}
 
+
                 </View >
             )
 
@@ -368,9 +387,6 @@ export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGrou
 
 const styles = StyleSheet.create({
     innerContainer: {
-        backgroundColor: '#f4f5f9',
-        width: "95%",
-        height: "92vh",
         marginTop: 70,
         marginLeft: 70,
         padding: 50,
@@ -512,14 +528,13 @@ const styles = StyleSheet.create({
     },
     gorupPageHeadText: { fontSize: 30 },
     addGroupText: { color: "#ffffff" },
-    groupNameText: { marginBottom: 10, flexWrap: "wrap", fontWeight: "900", padding: 0, marginRight: 100 },
+    groupNameText: { marginBottom: 10, flexWrap: "wrap", fontWeight: "900", padding: 0, marginLeft: 15 },
     groupDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
     createGroupText: { color: "#ffffff", fontSize: 20 },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
-    paginationView: { flexDirection: "row", padding: 20, position: "absolute", bottom: 50, marginLeft: 80 },
-    pageCountTextStyle: {
-        color: "#ffffff"
-    },
-    blankTextStyle: {}
+    goToGroupChatButton: { flexDirection: "row", paddingRight: 60 },
+    pageCountTextStyle: {},
+    blankTextStyle: {},
+    paginationView: {}
 });

@@ -645,8 +645,6 @@ const SellList = () => (
 
 const styles = StyleSheet.create({
     innerContainer: {
-        width: "95%",
-        paddingTop: 20,
         marginTop: 70,
         marginLeft: 70,
         paddingLeft: 50,
