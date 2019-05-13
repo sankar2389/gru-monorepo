@@ -372,8 +372,6 @@ class GroupView extends Component<IProps, IState> {
                             </TouchableOpacity>
                         </View> : <Text />}
                     {/* PAGINATION VIEW END */}
-
-
                 </ScrollView >
             )
 

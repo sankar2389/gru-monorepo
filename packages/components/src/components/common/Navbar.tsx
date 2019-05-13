@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         width: "20%",
         position: "absolute",
         top: 0,
-        left: "30%"
+        left: "30%",
     },
     navButtonCtnr: {
         display: 'flex',
