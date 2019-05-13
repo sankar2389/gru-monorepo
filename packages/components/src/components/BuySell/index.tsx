@@ -648,7 +648,8 @@ const styles = StyleSheet.create({
         marginTop: 70,
         marginLeft: 70,
         paddingLeft: 50,
-        display: "flex"
+        display: "flex",
+
     },
     scene: {
         flex: 1,

@@ -38,6 +38,10 @@ class NavbarComponent extends Component<IProps, IState> {
     onMouseLeaveHandler() {
         this.setState({ mouseEvent: " " })
     }
+    componentDidMount() {
+        console.log("width", window.innerWidth)
+        //console.log("outwidth", window.outerHeight)
+    }
 
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
@@ -143,7 +147,9 @@ const styles = StyleSheet.create({
         width: "50%",
         position: "absolute",
         top: 0,
-        left: "30%"
+        left: "30%",
+        marginLeft: 7,
+        marginRight: 7,
     },
     navButtonCtnr: {
         display: 'flex',
