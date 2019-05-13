@@ -44,14 +44,13 @@ class LoginScreen extends Component<IProps, IState> {
         const { email, password } = this.state;
         const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText, loginViewStyleFtr, h3, a, or } = styles;
         return (
-            <View style={loginViewStyle}>
-                <View style={formView}>
-                    <View>
-                        <Text style={{ backgroundColor: "gray", color: "#d72b2b" }}>GRU</Text>
-                    </View>
-
+            <View style={{ backgroundColor: "gray", height: "100%", alignItems: "center", justifyContent: "center" }}>
+                <View >
+                    <Text>GRU</Text>
                 </View>
             </View>
+
+
         );
     }
 }
