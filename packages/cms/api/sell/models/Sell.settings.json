@@ -1,6 +1,6 @@
 {
   "connection": "default",
-  "collectionName": "",
+  "collectionName": "sell",
   "info": {
     "name": "sell",
     "description": "Sell requests"
@@ -24,6 +24,10 @@
     "price": {
       "default": "",
       "type": "decimal"
+    },
+    "creatorObject": {
+      "default": "",
+      "type": "json"
     }
   }
 }

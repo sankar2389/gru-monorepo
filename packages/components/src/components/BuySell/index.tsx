@@ -9,7 +9,7 @@ import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuy
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
-    createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string) => void,
+    createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
@@ -120,8 +120,9 @@ class BuySell extends Component<IProps> {
             let buyOrsell = this.state.buyOrSellRadioOption
             let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
             let creator = user.email
+            let creatorObject = user
 
-            this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator)
+            this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
         }
     }
@@ -366,14 +367,14 @@ class BuySell extends Component<IProps> {
                 {/* DISPLAY BUY */}
                 {
                     this.state.dataFromCollection === "BUY_DATA" &&
-                    <View>
+                    <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         {this.state.buyData.map((buyOrSell: any, index: number) => {
                             if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
                                     <View style={styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            <Text style={styles.userNameText}>{this.state.userName}</Text>
+                                            <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
                                         </View>
                                         <View style={styles.textItemView}>
                                             <Text style={styles.buyOrSellText}>
@@ -434,14 +435,14 @@ class BuySell extends Component<IProps> {
                 {/* DISPLAY SELL */}
                 {
                     this.state.dataFromCollection === "SELL_DATA" &&
-                    <View>
+                    <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         {this.state.sellData.map((buyOrSell: any, index: number) => {
                             if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
                                     <View style={styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            <Text style={styles.userNameText}>{this.state.userName}</Text>
+                                            <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
                                         </View>
                                         <View style={styles.textItemView}>
                                             <Text style={styles.buyOrSellText}>
@@ -506,7 +507,7 @@ class BuySell extends Component<IProps> {
                         <View style={styles.modalContainer}>
                             <View style={styles.modalView}>
                                 <View style={styles.modalCreateBuySellView}>
-                                    <Text style={styles.createBuySellText}>Create Buy And Sell</Text>
+                                    <Text style={styles.createBuySellText}>Buy / Sell</Text>
                                 </View>
 
                                 <View style={styles.goldOrSilverView}>
@@ -535,7 +536,7 @@ class BuySell extends Component<IProps> {
                                     <TextInput
                                         autoFocus={true}
                                         value={this.state.buyOrSellPrice}
-                                        placeholder={'Buy or Sell'}
+                                        placeholder={'Buy or Sell Price'}
                                         style={styles.inputStyle}
                                         // onChangeText={groupName => {
                                         //     this.setState({ groupName: groupName });
@@ -586,7 +587,7 @@ class BuySell extends Component<IProps> {
 
                 {/* PAGINATION VIEW START */}
                 {this.state.buyOrSellPageCount.length > 1 ?
-                    <View style={{ flexDirection: "row" }}>
+                    <View style={styles.paginationView}>
                         <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
                             <Text>{"<"}</Text>
                         </TouchableOpacity>
@@ -598,7 +599,9 @@ class BuySell extends Component<IProps> {
                                             onPress={this.onPressPaginate.bind(this, pageCount)}
                                             style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
                                         >
-                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>{pageCount}</Text>
+                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>
+                                                {pageCount}
+                                            </Text>
                                         </TouchableOpacity>
                                     )
                                 }
@@ -641,10 +644,9 @@ const SellList = () => (
 
 const styles = StyleSheet.create({
     innerContainer: {
-        width: "95%",
         marginTop: 70,
         marginLeft: 70,
-        padding: 50,
+        paddingLeft: 50,
         display: "flex"
     },
     scene: {
@@ -670,11 +672,16 @@ const styles = StyleSheet.create({
     addButtom: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5 },
     addGroupText: { color: "#ffffff" },
     modalContainer: {
+        // backgroundColor: "gray",
+        alignItems: "center",
+        justifyContent: "center",
         position: "absolute",
         top: 0,
         bottom: 0,
         left: 0,
-        right: 0
+        right: 0,
+        height: "100vh"
+
     },
     selectedTextColor: {
         color: "tomato",
@@ -695,17 +702,23 @@ const styles = StyleSheet.create({
         width: 500,
         height: 400,
         position: "relative",
-        marginTop: 30,
         marginLeft: "auto",
-        marginRight: "auto"
+        marginRight: "auto",
+        borderRadius: 5,
+        shadowColor: "#000",
+        shadowOpacity: 1,
+        shadowOffset: { width: 10, height: 10, },
+        shadowRadius: 100,
+        elevation: 24,
     },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     modalCreateBuySellView: {
-        backgroundColor: "gray",
-        alignItems: 'center',
-        justifyContent: "center"
+        alignItems: "flex-start",
+        justifyContent: "center",
+        marginTop: 20,
+        paddingLeft: 105
     },
-    createBuySellText: { color: "#ffffff", fontSize: 20 },
+    createBuySellText: { fontWeight: "900", fontSize: 20 },
     inputStyle: {
         height: 30,
         margin: 15,
@@ -811,6 +824,6 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         // marginLeft: 20,
         marginRight: 15
-
     },
+    paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: 800 }
 });

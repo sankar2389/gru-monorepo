@@ -8,4 +8,6 @@ COPY . /usr/src/api
 
 EXPOSE 1337
 
-CMD [ "NODE_ENV=production", "npm", "start"]
+ENV NODE_ENV=production
+
+CMD [ "npm", "start"]

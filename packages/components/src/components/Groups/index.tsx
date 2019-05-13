@@ -4,7 +4,7 @@ import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
 import UpdateGroup from "./updateGroupComponent";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup } from '../../actions';
 import { string } from "prop-types";
 import moment from "moment";
@@ -38,14 +38,14 @@ class GroupView extends Component<IProps, IState> {
         groupName: "",
         updateGroup: "",
         startDataOnPage: 0,
-        endDataOnPage: 9,
-        limitDataOnPage: 9,
+        endDataOnPage: 6,
+        limitDataOnPage: 6,
         dropDown: -1,
         selectedPaginatateNumber: 1
     }
     constructor(props: IProps) {
         super(props);
-        //this.onPressPaginate = this.onPressPaginate.bind(this);
+        this.onPressGoToGroupChat = this.onPressGoToGroupChat.bind(this);
     }
     async componentDidMount() {
         const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
@@ -189,6 +189,18 @@ class GroupView extends Component<IProps, IState> {
         this.setState({ groupName: groupName });
     }
 
+    onPressGoToGroupChat = (group: any) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/group-chat',
+                        state: { authtoken, group }
+                    });
+                }
+            })
+    }
+
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
@@ -208,7 +220,7 @@ class GroupView extends Component<IProps, IState> {
                 <View style={innerContainer}>
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         <View style={styles.headerView}>
-                            <View>
+                            <View style={styles.groupListLength}>
                                 <Text style={styles.gorupPageHeadText}>List of Groups</Text>
                                 <Text>No of groups - {groups.length}</Text>
                             </View>
@@ -225,29 +237,31 @@ class GroupView extends Component<IProps, IState> {
                                 {groups.map((group, index) => {
                                     if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                         return (
-                                            <View style={styles.nestedGroupListView} key={index}>
-
+                                            <View style={styles.nestedGroupListView} key={index} >
                                                 <View style={styles.groupListMainContainer}>
-                                                    <View style={styles.textView}>
-                                                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                    </View>
+                                                    <TouchableOpacity onPress={() => this.onPressGoToGroupChat(group)}
+                                                        style={styles.goToGroupChatButton}>
+                                                        <View style={styles.textView}>
+                                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                        </View>
 
-                                                    <View style={styles.textView}>
-                                                        <Text style={styles.groupNameText}>
-                                                            {group.groupName}
-                                                        </Text>
-                                                        <Text style={styles.groupDateTime}>
-                                                            {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                                    </Text>
-                                                        <Text>
-                                                            {/* Image */}
-                                                        </Text>
-                                                    </View>
+                                                        <View style={styles.textView}>
+                                                            <Text style={styles.groupNameText}>
+                                                                {group.groupName}
+                                                            </Text>
+                                                            <Text style={styles.groupDateTime}>
+                                                                {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
+                                                            </Text>
+                                                            <Text>
+                                                                {/* Image */}
+                                                            </Text>
+                                                        </View>
+                                                    </TouchableOpacity>
 
                                                     <View style={styles.droupDownView}>
                                                         <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
                                                             ...
-                                                        </Text>
+                                                            </Text>
                                                         {this.state.dropDown === index ?
                                                             <View style={styles.dropdown}>
                                                                 <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
@@ -258,39 +272,16 @@ class GroupView extends Component<IProps, IState> {
                                                         }
                                                     </View>
                                                 </View>
-                                            </View>
 
+                                            </View>
                                         )
+
                                     }
                                 })}
                             </View>
                             :
                             <Text />
                         }
-                        {/* PAGINATION VIEW START */}
-                        {/* {this.state.groupPageCount.length > 1 ?
-                            <View style={{ flexDirection: "row" }}>
-                                <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
-                                    <Text>{"<"}</Text>
-                                </TouchableOpacity>
-                                {this.state.groupPageCount.map(pageCount => {
-                                    return (
-                                        <TouchableOpacity key={pageCount}
-                                            onPress={this.onPressPaginate.bind(this, pageCount)}
-                                            style={styles.paginationButton}
-                                        >
-                                            <Text>{pageCount}</Text>
-                                        </TouchableOpacity>
-                                    )
-                                })}
-
-                                <TouchableOpacity
-                                    onPress={this.onPressPaginateNext.bind(this)}
-                                    style={styles.paginationButton}>
-                                    <Text>{">"}</Text>
-                                </TouchableOpacity>
-                            </View> : <Text />} */}
-                        {/* PAGINATION VIEW END */}
                     </View>
 
                     {/* ADD GROUP MODAL START */}
@@ -308,7 +299,7 @@ class GroupView extends Component<IProps, IState> {
                                             placeholder={'Group Name'}
                                             style={styles.inputStyle}
                                             // onChangeText={groupName => {
-                                            //     this.setState({ groupName: groupName });
+                                            // this.setState({ groupName: groupName });
                                             // }}
                                             onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
                                             onSubmitEditing={() => {
@@ -334,9 +325,10 @@ class GroupView extends Component<IProps, IState> {
                     }
                     {/* ADD GROUP MODAL END */}
 
+
                     {/* PAGINATION VIEW START */}
                     {this.state.groupPageCount.length > 1 ?
-                        <View style={{ flexDirection: "row" }}>
+                        <View style={styles.paginationView}>
                             <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
                                 <Text>{"<"}</Text>
                             </TouchableOpacity>
@@ -349,7 +341,9 @@ class GroupView extends Component<IProps, IState> {
                                                 onPress={this.onPressPaginate.bind(this, pageCount)}
                                                 style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
                                             >
-                                                <Text>{pageCount}</Text>
+                                                <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>
+                                                    {pageCount}
+                                                </Text>
                                             </TouchableOpacity>
                                         )
                                     }
@@ -359,7 +353,9 @@ class GroupView extends Component<IProps, IState> {
                                             onPress={this.onPressPaginate.bind(this, pageCount)}
                                             style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
                                         >
-                                            <Text>{pageCount}</Text>
+                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>
+                                                {pageCount}
+                                            </Text>
                                         </TouchableOpacity>
                                     )
                                 }
@@ -372,6 +368,7 @@ class GroupView extends Component<IProps, IState> {
                             </TouchableOpacity>
                         </View> : <Text />}
                     {/* PAGINATION VIEW END */}
+
 
                 </View >
             )
@@ -387,8 +384,6 @@ export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGrou
 
 const styles = StyleSheet.create({
     innerContainer: {
-        backgroundColor: '#f0f0f0',
-        width: "95%",
         marginTop: 70,
         marginLeft: 70,
         padding: 50,
@@ -416,6 +411,7 @@ const styles = StyleSheet.create({
         marginBottom: 100,
         borderRadius: 5
     },
+    groupListLength: { alignItems: "flex-start" },
     dropdownDots: {
         position: "absolute",
         right: 0,
@@ -453,7 +449,7 @@ const styles = StyleSheet.create({
     },
     pageCountStyle: {
         marginRight: 20,
-        backgroundColor: '#2d8958',
+        backgroundColor: '#d72b2b',
         borderRadius: 30,
         padding: 10,
         height: 30,
@@ -530,9 +526,15 @@ const styles = StyleSheet.create({
     },
     gorupPageHeadText: { fontSize: 30 },
     addGroupText: { color: "#ffffff" },
-    groupNameText: { marginBottom: 10, flexWrap: "wrap", fontWeight: "900", padding: 0, marginRight: 100 },
+    groupNameText: { marginBottom: 10, flexWrap: "wrap", fontWeight: "900", padding: 0, marginLeft: 15 },
     groupDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
     createGroupText: { color: "#ffffff", fontSize: 20 },
-    textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 }
+    textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
+    goToGroupChatButton: { flexDirection: "row", paddingRight: 60 },
+    pageCountTextStyle: {
+        color: "#ffffff"
+    },
+    blankTextStyle: {},
+    paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: 800 }
 });
