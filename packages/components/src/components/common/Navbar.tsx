@@ -38,30 +38,19 @@ class NavbarComponent extends Component<IProps, IState> {
     onMouseLeaveHandler() {
         this.setState({ mouseEvent: " " })
     }
-    componentDidMount() {
-        console.log("width", window.innerWidth)
-        //console.log("outwidth", window.outerHeight)
-    }
 
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
             navButtonCtnrAdd, navButtonText, mouseOverBackgroundColor } = styles;
         return (
-            <View style={{ flex: 1, padding: 5, flexDirection: "row", backgroundColor: "#ffffff", }}>
-                <View style={{ flex: 1, alignItems: "center" }}>
-                    <Text style={headerText}>GRU</Text>
-
-                </View>
-
-                <View style={{ flex: 2 }}>
-                    <TextInput
-                        value={this.state.search}
-                        placeholder={'Search'}
-                        style={inputStyle}
-                    />
-                </View>
-
-                <View style={{ flex: 3, flexDirection: "row", justifyContent: "flex-end" }}>
+            <View style={navbar}>
+                <Text style={headerText}>GRU</Text>
+                <TextInput
+                    value={this.state.search}
+                    placeholder={'Search'}
+                    style={inputStyle}
+                />
+                <View style={navButtonGroup}>
                     <View style={navButtonCtnrAdd}>
                         <TouchableOpacity onPress={this.showBuySell}>
                             <Image
@@ -144,12 +133,10 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(226,226,226,0.21)",
         borderRadius: 20,
         padding: 20,
-        width: "50%",
+        width: "20%",
         position: "absolute",
         top: 0,
-        left: "30%",
-        marginLeft: 7,
-        marginRight: 7,
+        left: "30%"
     },
     navButtonCtnr: {
         display: 'flex',

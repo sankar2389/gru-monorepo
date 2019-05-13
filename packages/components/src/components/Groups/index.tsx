@@ -4,7 +4,7 @@ import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
 import UpdateGroup from "./updateGroupComponent";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup } from '../../actions';
 import { string } from "prop-types";
 import moment from "moment";
@@ -180,7 +180,6 @@ class GroupView extends Component<IProps, IState> {
     onCancelModal = () => {
         this.setState({ modalVisible: false })
     }
-
     onPressVisibleModal = () => {
         this.setState({ modalVisible: true })
     }
@@ -201,6 +200,8 @@ class GroupView extends Component<IProps, IState> {
             })
     }
 
+
+
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
@@ -217,7 +218,7 @@ class GroupView extends Component<IProps, IState> {
                 </View>
             ) :
             (
-                <View style={innerContainer}>
+                <ScrollView style={innerContainer}>
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         <View style={styles.headerView}>
                             <View>
@@ -373,7 +374,7 @@ class GroupView extends Component<IProps, IState> {
                     {/* PAGINATION VIEW END */}
 
 
-                </View >
+                </ScrollView >
             )
 
     }
@@ -390,7 +391,9 @@ const styles = StyleSheet.create({
         marginTop: 70,
         marginLeft: 70,
         padding: 50,
-        display: "flex"
+        display: "flex",
+        height: "92.6vh",
+
     },
     scene: {
         flex: 1,
