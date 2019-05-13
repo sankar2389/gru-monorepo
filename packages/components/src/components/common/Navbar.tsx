@@ -43,14 +43,21 @@ class NavbarComponent extends Component<IProps, IState> {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
             navButtonCtnrAdd, navButtonText, mouseOverBackgroundColor } = styles;
         return (
-            <View style={navbar}>
-                <Text style={headerText}>GRU</Text>
-                <TextInput
-                    value={this.state.search}
-                    placeholder={'Search'}
-                    style={inputStyle}
-                />
-                <View style={navButtonGroup}>
+            <View style={{ flex: 1, padding: 5, flexDirection: "row", backgroundColor: "#ffffff", }}>
+                <View style={{ flex: 1, alignItems: "center" }}>
+                    <Text style={headerText}>GRU</Text>
+
+                </View>
+
+                <View style={{ flex: 2 }}>
+                    <TextInput
+                        value={this.state.search}
+                        placeholder={'Search'}
+                        style={inputStyle}
+                    />
+                </View>
+
+                <View style={{ flex: 3, flexDirection: "row", justifyContent: "flex-end" }}>
                     <View style={navButtonCtnrAdd}>
                         <TouchableOpacity onPress={this.showBuySell}>
                             <Image
@@ -133,7 +140,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(226,226,226,0.21)",
         borderRadius: 20,
         padding: 20,
-        width: "20%",
+        width: "50%",
         position: "absolute",
         top: 0,
         left: "30%"

@@ -61,7 +61,7 @@ class LoginScreen extends Component<IProps, IState> {
                         onChangeText={(text) => this.setState({ password: text })}
                     />
 
-                    <TouchableOpacity style={styles.loginBtnCtnr}>
+                    <TouchableOpacity style={styles.loginBtnCtnr} onPress={() => this.login()}>
                         <Text style={{ color: "#ffffff" }}>
                             LOGIN
                         </Text>
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
         top: -8,
         color: '#878787',
     },
-    formView: { backgroundColor: "#ffffff", padding: 50, marginBottom: 120, borderRadius: 5 },
+    formView: { backgroundColor: "#ffffff", padding: 50, marginBottom: 90, borderRadius: 5 },
     inputStyle: {
         height: 30,
         width: "100%",
