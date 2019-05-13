@@ -4,7 +4,7 @@ import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
 import UpdateGroup from "./updateGroupComponent";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup } from '../../actions';
 import { string } from "prop-types";
 import moment from "moment";
@@ -237,9 +237,7 @@ class GroupView extends Component<IProps, IState> {
                                 {groups.map((group, index) => {
                                     if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                         return (
-
                                             <View style={styles.nestedGroupListView} key={index} >
-                                                {/* */}
                                                 <View style={styles.groupListMainContainer}>
                                                     <TouchableOpacity onPress={() => this.onPressGoToGroupChat(group)}
                                                         style={styles.goToGroupChatButton}>
@@ -253,7 +251,7 @@ class GroupView extends Component<IProps, IState> {
                                                             </Text>
                                                             <Text style={styles.groupDateTime}>
                                                                 {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-</Text>
+                                                            </Text>
                                                             <Text>
                                                                 {/* Image */}
                                                             </Text>
@@ -263,7 +261,7 @@ class GroupView extends Component<IProps, IState> {
                                                     <View style={styles.droupDownView}>
                                                         <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
                                                             ...
-</Text>
+                                                            </Text>
                                                         {this.state.dropDown === index ?
                                                             <View style={styles.dropdown}>
                                                                 <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
@@ -276,7 +274,6 @@ class GroupView extends Component<IProps, IState> {
                                                 </View>
 
                                             </View>
-
                                         )
 
                                     }
@@ -535,7 +532,9 @@ const styles = StyleSheet.create({
     createGroupText: { color: "#ffffff", fontSize: 20 },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     goToGroupChatButton: { flexDirection: "row", paddingRight: 60 },
-    pageCountTextStyle: {},
+    pageCountTextStyle: {
+        color: "#ffffff"
+    },
     blankTextStyle: {},
-    paginationView: {}
+    paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: 800 }
 });
