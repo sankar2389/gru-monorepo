@@ -47,37 +47,9 @@ class LoginScreen extends Component<IProps, IState> {
             <View style={loginViewStyle}>
                 <View style={formView}>
                     <View>
-                        <Text style={headerText}>GRU</Text>
-                        <TextInput
-                            value={email}
-                            placeholder={'Email address'}
-                            style={inputStyle}
-                            onChangeText={(text) => this.setState({ email: text })}
-                        />
-                        <TextInput
-                            value={password}
-                            placeholder={'Password'}
-                            secureTextEntry={true}
-                            style={inputStyle}
-                            onChangeText={(text) => this.setState({ password: text })}
-                        />
-                        <View style={loginBtnCtnr}>
-                            <Button
-                                onPress={() => this.login()}
-                                title="Login"
-                                color="#d72b2b"
-                                accessibilityLabel="Log in to the user panel"
-                            />
-                        </View>
-                        <Text style={a} onPress={() => this.props.history.push('/forget')}>Forget Password</Text>
+                        <Text style={{ backgroundColor: "gray", color: "#d72b2b" }}>GRU</Text>
                     </View>
-                    <View style={loginViewStyleFtr}>
-                        <Text style={or}>or</Text>
-                        <View>
-                            <Text style={h3}>New user ?</Text>
-                            <Text style={a} onPress={() => this.props.history.push('/newuser')}>Create new account</Text>
-                        </View>
-                    </View>
+
                 </View>
             </View>
         );
@@ -113,7 +85,6 @@ const styles = StyleSheet.create({
     },
     headerText: {
         color: '#d72b2b',
-        margin: 20,
         fontSize: 40
     },
     h3: {
@@ -131,10 +102,8 @@ const styles = StyleSheet.create({
         color: '#878787',
     },
     formView: {
-        width: '20vw',
-        height: '50vh',
         backgroundColor: '#ffffff',
-        padding: 25
+        padding: "25vh"
     },
     inputStyle: {
         height: 30,
