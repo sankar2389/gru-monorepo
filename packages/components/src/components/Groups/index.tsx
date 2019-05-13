@@ -220,7 +220,7 @@ class GroupView extends Component<IProps, IState> {
                 <View style={innerContainer}>
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         <View style={styles.headerView}>
-                            <View>
+                            <View style={styles.groupListLength}>
                                 <Text style={styles.gorupPageHeadText}>List of Groups</Text>
                                 <Text>No of groups - {groups.length}</Text>
                             </View>
@@ -414,6 +414,7 @@ const styles = StyleSheet.create({
         marginBottom: 100,
         borderRadius: 5
     },
+    groupListLength: { alignItems: "flex-start" },
     dropdownDots: {
         position: "absolute",
         right: 0,
