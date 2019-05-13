@@ -323,7 +323,6 @@ class BuySell extends Component<IProps> {
 
     render() {
         const { innerContainer } = styles;
-        console.log("this.state.buyData", this.state.buyData)
         return (
             <View style={innerContainer}>
                 <View style={{ alignItems: "flex-start" }}>
@@ -368,7 +367,7 @@ class BuySell extends Component<IProps> {
                 {/* DISPLAY BUY */}
                 {
                     this.state.dataFromCollection === "BUY_DATA" &&
-                    <View>
+                    <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         {this.state.buyData.map((buyOrSell: any, index: number) => {
                             if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
@@ -436,7 +435,7 @@ class BuySell extends Component<IProps> {
                 {/* DISPLAY SELL */}
                 {
                     this.state.dataFromCollection === "SELL_DATA" &&
-                    <View>
+                    <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         {this.state.sellData.map((buyOrSell: any, index: number) => {
                             if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
@@ -508,7 +507,7 @@ class BuySell extends Component<IProps> {
                         <View style={styles.modalContainer}>
                             <View style={styles.modalView}>
                                 <View style={styles.modalCreateBuySellView}>
-                                    <Text style={styles.createBuySellText}>Create Buy And Sell</Text>
+                                    <Text style={styles.createBuySellText}>Buy / Sell</Text>
                                 </View>
 
                                 <View style={styles.goldOrSilverView}>
@@ -673,11 +672,16 @@ const styles = StyleSheet.create({
     addButtom: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5 },
     addGroupText: { color: "#ffffff" },
     modalContainer: {
+        // backgroundColor: "gray",
+        alignItems: "center",
+        justifyContent: "center",
         position: "absolute",
         top: 0,
         bottom: 0,
         left: 0,
-        right: 0
+        right: 0,
+        height: "100vh"
+
     },
     selectedTextColor: {
         color: "tomato",
@@ -698,17 +702,23 @@ const styles = StyleSheet.create({
         width: 500,
         height: 400,
         position: "relative",
-        marginTop: 30,
         marginLeft: "auto",
-        marginRight: "auto"
+        marginRight: "auto",
+        borderRadius: 5,
+        shadowColor: "#000",
+        shadowOpacity: 1,
+        shadowOffset: { width: 10, height: 10, },
+        shadowRadius: 100,
+        elevation: 24,
     },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     modalCreateBuySellView: {
-        backgroundColor: "gray",
-        alignItems: 'center',
-        justifyContent: "center"
+        alignItems: "flex-start",
+        justifyContent: "center",
+        marginTop: 20,
+        paddingLeft: 105
     },
-    createBuySellText: { color: "#ffffff", fontSize: 20 },
+    createBuySellText: { fontWeight: "900", fontSize: 20 },
     inputStyle: {
         height: 30,
         margin: 15,
