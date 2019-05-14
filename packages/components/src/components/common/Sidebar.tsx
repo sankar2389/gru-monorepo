@@ -81,7 +81,7 @@ class Sidebar extends Component<IProps, IState> {
     render() {
         const { sidebar, sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
         return (
-            <View style={sidebar}>
+            <View style={this.state.dWidth <= 700 ? styles.smSidebar : sidebar}>
                 <View style={sidebarButtonGroup}>
                     <View style={this.state.sideBarBackgroundColor === "/secure/dashboard" ? [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
                         <TouchableOpacity onPress={() => this._gotoDash()}>
@@ -138,6 +138,16 @@ const styles = StyleSheet.create({
         backgroundColor: "#d72b2b",
         position: "absolute",
         top: 70,
+        left: 0,
+        bottom: 0,
+    },
+
+    smSidebar: {
+        width: 70,
+        height: "79vh",
+        backgroundColor: "#d72b2b",
+        position: "absolute",
+        top: 155,
         left: 0,
         bottom: 0,
     },
