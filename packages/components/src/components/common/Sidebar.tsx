@@ -6,12 +6,14 @@ interface IProps extends RouteComponentProps { };
 
 interface IState {
     sideBarBackgroundColor: string | undefined,
+    dWidth: any
 
 }
 
 class Sidebar extends Component<IProps, IState> {
     state: IState = {
         sideBarBackgroundColor: undefined,
+        dWidth: ""
 
     }
     constructor(props: IProps) {
@@ -22,12 +24,12 @@ class Sidebar extends Component<IProps, IState> {
 
     }
     componentDidMount() {
-        // console.log(this.props.history.location.pathname);
         if (this.props.history.location.pathname) {
             this.setState({
                 sideBarBackgroundColor: this.props.history.location.pathname
             })
         }
+        window.addEventListener("resize", this.updateDimension)
     }
 
     clicked() {
@@ -65,6 +67,15 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
+    }
+
+    updateDimension = () => {
+        this.setState({
+            dWidth: window.innerWidth
+        })
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimension)
     }
 
     render() {
@@ -128,7 +139,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 70,
         left: 0,
-        bottom: 0
+        bottom: 0,
     },
     sidebarButtonCtnr: {
         backgroundColor: "#d72b2b",
