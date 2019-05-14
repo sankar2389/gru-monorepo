@@ -308,7 +308,7 @@ class GroupView extends Component<IProps, IState> {
                     {
                         this.state.modalVisible ?
                             <View style={styles.modalContainer}>
-                                <View style={styles.modalView}>
+                                <View style={this.state.dWidth <= 700 ? styles.smModalView : styles.modalView}>
                                     <View style={styles.modalCreateGroupView}>
                                         <Text style={styles.createGroupText}>Create Group</Text>
                                     </View>
@@ -327,7 +327,7 @@ class GroupView extends Component<IProps, IState> {
                                             }}
                                         />
                                     </View>
-                                    <View style={styles.buttonView}>
+                                    <View style={this.state.dWidth <= 700 ? styles.smButtonView : styles.buttonView}>
                                         <TouchableOpacity onPress={() => this.onCancelModal()}
                                             style={styles.modalCancelButton}>
                                             <Text style={styles.buttonText}>Cancel</Text>
@@ -543,6 +543,16 @@ const styles = StyleSheet.create({
         // left: 600,
         //borderWidth: 
     },
+    smModalView: {
+        backgroundColor: "#ffffff",
+        width: "99%",
+        height: 400,
+        position: "relative",
+        marginTop: 10,
+        marginLeft: "auto",
+        marginRight: "auto"
+    },
+
     modalCreateGroupView: {
         backgroundColor: "gray",
         alignItems: 'center',
@@ -571,6 +581,12 @@ const styles = StyleSheet.create({
         alignItems: "flex-end",
         position: "absolute",
         top: 350, left: 300
+    },
+    smButtonView: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "absolute",
+        top: 300, left: 40,
     },
     buttonText: {
         color: "#ffffff"

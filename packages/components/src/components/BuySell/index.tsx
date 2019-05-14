@@ -526,7 +526,7 @@ class BuySell extends Component<IProps> {
                 {
                     this.state.modalVisible ?
                         <View style={styles.modalContainer}>
-                            <View style={styles.modalView}>
+                            <View style={this.state.dWidth <= 700 ? styles.smModalView : styles.modalView}>
                                 <View style={styles.modalCreateBuySellView}>
                                     <Text style={styles.createBuySellText}>Create Buy And Sell</Text>
                                 </View>
@@ -586,7 +586,7 @@ class BuySell extends Component<IProps> {
                                 </View>
 
 
-                                <View style={styles.buttonView}>
+                                <View style={this.state.dWidth ? styles.smButtonView : styles.buttonView}>
                                     <TouchableOpacity onPress={() => this.onCancelModal()}
                                         style={styles.modalCancelButton}>
                                         <Text style={styles.buttonText}>Cancel</Text>
@@ -740,6 +740,15 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto"
     },
+    smModalView: {
+        backgroundColor: "#ffffff",
+        width: "99%",
+        height: 400,
+        position: "relative",
+        marginTop: 10,
+        marginLeft: "auto",
+        marginRight: "auto"
+    },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     modalCreateBuySellView: {
         backgroundColor: "gray",
@@ -762,7 +771,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "flex-end",
         position: "absolute",
-        top: 350, left: 300
+        top: 350, left: 300,
+    },
+    smButtonView: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "absolute",
+        top: 300, left: 40,
     },
     modalCancelButton: {
         backgroundColor: "red",
