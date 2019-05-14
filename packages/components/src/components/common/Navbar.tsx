@@ -61,8 +61,6 @@ class NavbarComponent extends Component<IProps, IState> {
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
             navButtonCtnrAdd, navButtonText, mouseOverBackgroundColor } = styles;
-        console.log("state", this.state.dWidth)
-
         return (
             <View style={this.state.dWidth <= 700 ? styles.smNavbar : navbar}>
                 <Text style={this.state.dWidth <= 700 ? styles.smHeaderText : headerText}>GRU</Text>
