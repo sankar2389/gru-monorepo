@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     },
     smNavbar: {
         width: "100%",
-        height: 165,
+        height: 164,
         backgroundColor: "#ffffff",
         flexDirection: "column",
         alignItems: "flex-start",

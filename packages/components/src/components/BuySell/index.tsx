@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
-import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Image } from "react-native";
+import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Image, ScrollView } from "react-native";
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
@@ -34,7 +34,8 @@ interface IState {
     selectedPaginatateNumber: number,
     editPrice: boolean,
     editIndex: any,
-    userName: string
+    userName: string,
+    dWidth: any
 
 }
 
@@ -55,7 +56,8 @@ class BuySell extends Component<IProps> {
         selectedPaginatateNumber: 1,
         editPrice: false,
         editIndex: "",
-        userName: ""
+        userName: "",
+        dWidth: ""
     }
     constructor(props: IProps) {
         super(props);
@@ -80,6 +82,7 @@ class BuySell extends Component<IProps> {
         this.setState({
             userName: user.username
         })
+        window.addEventListener("resize", this.updateDimension)
     }
 
 
@@ -320,41 +323,58 @@ class BuySell extends Component<IProps> {
         }
     }
 
+    // CHECKPAGE LENGTH
+    componentWillMount() {
+        this.updateDimension()
+    }
+    updateDimension = () => {
+        this.setState({
+            dWidth: window.innerWidth
+        })
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimension)
+    }
+
+
 
     render() {
         const { innerContainer } = styles;
-        console.log("this.state.buyData", this.state.buyData)
         return (
-            <View style={innerContainer}>
+            <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                 <View style={{ alignItems: "flex-start" }}>
                     <Text style={styles.headerBuyAndSell}>
                         Buy / Sell
                     </Text>
-                    <Text style={styles.headerSmallText}>Bullion user gold rates</Text>
+                    <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Bullion user gold rates</Text>
                 </View>
 
 
                 <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
-                    <View style={styles.headerView}>
-                        <View style={{ flexDirection: "row" }}>
+                    <View style={this.state.dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
+                        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                             <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()} style={this.state.dataFromCollection === "BUY_DATA" ?
                                 styles.buyOrSellButtonTab : styles.blankTextStyle
                             }>
                                 <Text style={this.state.dataFromCollection === "BUY_DATA" ?
-                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>BUY({this.state.buyData.length}) </Text>
+                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>
+                                    BUY({this.state.buyData.length})
+                                    </Text>
                             </TouchableOpacity>
-                            <Text style={styles.buyAndSellPageHeadText}>/ </Text>
+                            <Text style={styles.buyAndSellPageHeadText}> / </Text>
                             <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}
                                 style={this.state.dataFromCollection === "SELL_DATA" ?
                                     styles.buyOrSellButtonTab : styles.blankTextStyle
                                 }
                             >
                                 <Text style={this.state.dataFromCollection === "SELL_DATA" ?
-                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>SELL({this.state.sellData.length})</Text>
+                                    [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>
+                                    SELL({this.state.sellData.length})
+                                    </Text>
                             </TouchableOpacity>
 
                         </View>
-                        <View>
+                        <View style={this.state.dWidth <= 700 ? styles.addButtonOutterView : styles.blankTextStyle}>
                             <TouchableOpacity disabled={this.state.modalVisible ? true : false}
                                 style={styles.addButtom} onPress={() => this.onPressVisibleModal()}>
                                 <Text style={styles.addGroupText}>+ Create Buy Or Sell</Text>
@@ -372,7 +392,7 @@ class BuySell extends Component<IProps> {
                         {this.state.buyData.map((buyOrSell: any, index: number) => {
                             if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
-                                    <View style={styles.nestedGroupListView} key={index}>
+                                    <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
                                             <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
@@ -626,7 +646,7 @@ class BuySell extends Component<IProps> {
                     </View> : <Text />}
                 {/* PAGINATION VIEW END */}
 
-            </View >
+            </ScrollView >
         );
     }
 }
@@ -648,8 +668,18 @@ const styles = StyleSheet.create({
         marginTop: 70,
         marginLeft: 70,
         paddingLeft: 50,
+        marginRight: 10,
         display: "flex",
-
+        flexWrap: "wrap"
+    },
+    smInnerContainer: {
+        marginTop: 10,
+        marginLeft: 25,
+        marginRight: 7,
+        paddingRight: 7,
+        paddingLeft: 50,
+        display: "flex",
+        height: "77vh",
     },
     scene: {
         flex: 1,
@@ -659,19 +689,22 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2, borderBottomColor: "red"
     },
     blankTextStyle: {},
-    imageAndNameView: { flexDirection: "row" },
+    imageAndNameView: { flexDirection: "row", flexWrap: "wrap" },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
+    smHeaderView: { flexDirection: "column", marginBottom: 20 },
     pageOpacity: {
         opacity: 0.2
     },
     headerSmallText: { marginBottom: 50, color: "#686662" },
+    smHeaderSmallText: { marginBottom: 20, color: "#686662" },
+
     pageOpacityNone: {
 
     },
     buyAndSellPageHeadText: {
         fontSize: 16
     },
-    addButtom: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5 },
+    addButtom: { backgroundColor: '#ff4d4d', padding: 10, marginRight: 10, borderRadius: 5 },
     addGroupText: { color: "#ffffff" },
     modalContainer: {
         position: "absolute",
@@ -679,6 +712,9 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0
+    },
+    addButtonOutterView: {
+        marginTop: 10
     },
     selectedTextColor: {
         color: "tomato",
@@ -737,7 +773,8 @@ const styles = StyleSheet.create({
         color: "#ffffff"
     },
     textItemView: {
-        flex: 1
+        flex: 1,
+        flexWrap: "wrap"
     },
     submitButton: {
         backgroundColor: "green",
@@ -764,6 +801,16 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+        flexWrap: "wrap"
+    },
+    smNestedGroupListView: {
+        padding: 8,
+        backgroundColor: '#ffffff',
+        marginBottom: 10,
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap"
     },
     buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, alignSelf: "center" },
     userNameText: { flexWrap: "wrap", paddingTop: 10, fontWeight: "900", fontSize: 14 },

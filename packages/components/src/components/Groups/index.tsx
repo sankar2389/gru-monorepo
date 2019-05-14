@@ -221,8 +221,6 @@ class GroupView extends Component<IProps, IState> {
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
-        console.log("gstate", this.state.dWidth)
-
         return this.state.updateGroup ?
             (
                 /** Update group in component */
@@ -282,7 +280,7 @@ class GroupView extends Component<IProps, IState> {
                                                     <View style={this.state.dWidth <= 700 ? styles.smDroupDownView : styles.droupDownView}>
                                                         <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
                                                             ...
-                                                        </Text>
+                                                         </Text>
                                                         {this.state.dropDown === index ?
                                                             <View style={styles.dropdown}>
                                                                 <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
