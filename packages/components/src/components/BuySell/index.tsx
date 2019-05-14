@@ -670,7 +670,8 @@ const styles = StyleSheet.create({
         paddingLeft: 50,
         marginRight: 10,
         display: "flex",
-        flexWrap: "wrap"
+        flexWrap: "wrap",
+
     },
     smInnerContainer: {
         marginTop: 10,

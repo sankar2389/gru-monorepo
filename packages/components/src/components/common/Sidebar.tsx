@@ -69,6 +69,10 @@ class Sidebar extends Component<IProps, IState> {
             })
     }
 
+    componentWillMount() {
+        this.updateDimension()
+    }
+
     updateDimension = () => {
         this.setState({
             dWidth: window.innerWidth
@@ -79,6 +83,7 @@ class Sidebar extends Component<IProps, IState> {
     }
 
     render() {
+        console.log("state", this.state.dWidth)
         const { sidebar, sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smSidebar : sidebar}>
