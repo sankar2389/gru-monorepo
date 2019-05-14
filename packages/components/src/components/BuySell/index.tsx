@@ -35,7 +35,7 @@ interface IState {
     editPrice: boolean,
     editIndex: any,
     userName: string,
-    dWidth: any
+    dWidth: number
 
 }
 
@@ -57,7 +57,7 @@ class BuySell extends Component<IProps> {
         editPrice: false,
         editIndex: "",
         userName: "",
-        dWidth: ""
+        dWidth: 700
     }
     constructor(props: IProps) {
         super(props);
@@ -402,32 +402,34 @@ class BuySell extends Component<IProps> {
                                                 asks
                                             </Text>
                                         </View>
-                                        <View style={styles.textItemView}>
-                                            <Text style={styles.buyOrSellText}>
-                                                550gm
-                                            </Text>
-                                        </View>
-                                        <View style={styles.textItemView}>
-                                            <Text style={styles.buyOrSellText}>
-                                                Gold
-                                            </Text>
-                                        </View>
-                                        <View style={styles.textItemView}>
-                                            {this.state.editPrice && this.state.editIndex == index ?
-                                                <TextInput
-                                                    autoFocus={true}
-                                                    value={this.state.buyOrSellPrice}
-                                                    style={styles.editTextInput}
-                                                    onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                                    onSubmitEditing={() => {
-                                                        this.onPressUpdateBuyPrice(buyOrSell._id)
-                                                    }}
-                                                />
-                                                :
+                                        <View style={styles.secontRowView}>
+                                            <View style={styles.textItemView}>
                                                 <Text style={styles.buyOrSellText}>
-                                                    &#8377; {buyOrSell.price}
-                                                </Text>
-                                            }
+                                                    550gm
+                                            </Text>
+                                            </View>
+                                            <View style={styles.textItemView}>
+                                                <Text style={styles.buyOrSellText}>
+                                                    Gold
+                                            </Text>
+                                            </View>
+                                            <View style={styles.textItemView}>
+                                                {this.state.editPrice && this.state.editIndex == index ?
+                                                    <TextInput
+                                                        autoFocus={true}
+                                                        value={this.state.buyOrSellPrice}
+                                                        style={styles.editTextInput}
+                                                        onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                                        onSubmitEditing={() => {
+                                                            this.onPressUpdateBuyPrice(buyOrSell._id)
+                                                        }}
+                                                    />
+                                                    :
+                                                    <Text style={styles.buyOrSellText}>
+                                                        &#8377; {buyOrSell.price}
+                                                    </Text>
+                                                }
+                                            </View>
                                         </View>
                                         {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
@@ -714,6 +716,10 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0
     },
+    secontRowView: {
+        flexDirection: "row", flex: 1,
+        justifyContent: "space-around", alignItems: "flex-start", width: "95%", padding: 10
+    },
     addButtonOutterView: {
         marginTop: 10
     },
@@ -790,7 +796,8 @@ const styles = StyleSheet.create({
     },
     textItemView: {
         flex: 1,
-        flexWrap: "wrap"
+        flexWrap: "wrap",
+        justifyContent: "space-around"
     },
     submitButton: {
         backgroundColor: "green",
