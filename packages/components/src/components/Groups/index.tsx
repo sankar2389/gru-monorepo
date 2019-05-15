@@ -39,8 +39,8 @@ class GroupView extends Component<IProps, IState> {
         groupName: "",
         updateGroup: "",
         startDataOnPage: 0,
-        endDataOnPage: 6,
-        limitDataOnPage: 6,
+        endDataOnPage: 9,
+        limitDataOnPage: 9,
         dropDown: -1,
         selectedPaginatateNumber: 1,
         dWidth: ""
@@ -234,116 +234,117 @@ class GroupView extends Component<IProps, IState> {
                 </View>
             ) :
             (
-                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
-                    <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
-                        <View style={this.state.dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
-                            <View>
-                                <Text style={styles.gorupPageHeadText}>List of Groups</Text>
-                                <Text>No of groups - {groups.length}</Text>
+                <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
+                    <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
+                        <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
+                            <View style={this.state.dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
+                                <View>
+                                    <Text style={styles.gorupPageHeadText}>List of Groups</Text>
+                                    <Text>No of groups - {groups.length}</Text>
+                                </View>
+                                <View>
+                                    <TouchableOpacity disabled={this.state.modalVisible ? true : false}
+                                        style={styles.addButtom} onPress={() => this.onPressVisibleModal()}>
+                                        <Text style={styles.addGroupText}>+ Add Group</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                            <View>
-                                <TouchableOpacity disabled={this.state.modalVisible ? true : false}
-                                    style={styles.addButtom} onPress={() => this.onPressVisibleModal()}>
-                                    <Text style={styles.addGroupText}>+ Add Group</Text>
-                                </TouchableOpacity>
-                            </View>
+
+                            {groups.length > 0 ?
+                                <View style={styles.groupListMainContainer}>
+                                    {groups.map((group, index) => {
+                                        if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
+                                            return (
+
+                                                <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index} >
+                                                    {/* */}
+                                                    <View style={this.state.dWidth <= 700 ? styles.smGroupListMainContainer : styles.groupListMainContainer}>
+                                                        <TouchableOpacity onPress={() => this.onPressGoToGroupChat(group)}
+                                                            style={this.state.dWidth <= 700 ? styles.smGoToGroupChatButton : styles.goToGroupChatButton}>
+                                                            <View style={this.state.dWidth <= 700 ? styles.smTextView : styles.textView}>
+                                                                <Image style={this.state.dWidth <= 700 ? styles.smAvatarStyle : styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                            </View>
+
+                                                            <View style={this.state.dWidth <= 700 ? styles.smTextView : styles.textView}>
+                                                                <Text style={styles.groupNameText}>
+                                                                    {group.groupName}
+                                                                </Text>
+                                                                <Text style={styles.groupDateTime}>
+                                                                    {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
+                                                            </Text>
+                                                                <Text>
+                                                                    {/* Image */}
+                                                                </Text>
+                                                            </View>
+                                                        </TouchableOpacity>
+
+                                                        <View style={this.state.dWidth <= 700 ? styles.smDroupDownView : styles.droupDownView}>
+                                                            <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
+                                                                ...
+                                                         </Text>
+                                                            {this.state.dropDown === index ?
+                                                                <View style={styles.dropdown}>
+                                                                    <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
+                                                                        <li onClick={() => this.onClickEditGroup(group)} style={{ cursor: "pointer" }}>Edit</li>
+                                                                        <li onClick={() => this.onClickDeleteGroup(group._id, group.creator)} style={{ cursor: "pointer" }}>Delete</li>
+                                                                    </ul>
+                                                                </View> : <Text />
+                                                            }
+                                                        </View>
+                                                    </View>
+
+                                                </View>
+                                            )
+
+                                        }
+                                    })}
+                                </View>
+                                :
+                                <Text />
+                            }
                         </View>
 
-                        {groups.length > 0 ?
-                            <View style={styles.groupListMainContainer}>
-                                {groups.map((group, index) => {
-                                    if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
-                                        return (
+                        {/* ADD GROUP MODAL START */}
+                        {
+                            this.state.modalVisible ?
+                                <View style={styles.modalContainer}>
+                                    <View style={this.state.dWidth <= 700 ? styles.smModalView : styles.modalView}>
+                                        <View style={styles.modalCreateGroupView}>
+                                            <Text style={styles.createGroupText}>Create Group</Text>
+                                        </View>
+                                        <View style={styles.textInput}>
+                                            <TextInput
+                                                autoFocus={true}
+                                                value={this.state.groupName}
+                                                placeholder={'Group Name'}
+                                                style={styles.inputStyle}
+                                                // onChangeText={groupName => {
+                                                // this.setState({ groupName: groupName });
+                                                // }}
+                                                onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
+                                                onSubmitEditing={() => {
+                                                    this.onPressCreateGroup()
+                                                }}
+                                            />
+                                        </View>
+                                        <View style={this.state.dWidth <= 700 ? styles.smButtonView : styles.buttonView}>
+                                            <TouchableOpacity onPress={() => this.onCancelModal()}
+                                                style={styles.modalCancelButton}>
+                                                <Text style={styles.buttonText}>Cancel</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.submitButton}
+                                                onPress={() => this.onPressCreateGroup()}
+                                            >
+                                                <Text style={styles.buttonText}>Submit</Text>
+                                            </TouchableOpacity>
 
-                                            <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index} >
-                                                {/* */}
-                                                <View style={this.state.dWidth <= 700 ? styles.smGroupListMainContainer : styles.groupListMainContainer}>
-                                                    <TouchableOpacity onPress={() => this.onPressGoToGroupChat(group)}
-                                                        style={this.state.dWidth <= 700 ? styles.smGoToGroupChatButton : styles.goToGroupChatButton}>
-                                                        <View style={this.state.dWidth <= 700 ? styles.smTextView : styles.textView}>
-                                                            <Image style={this.state.dWidth <= 700 ? styles.smAvatarStyle : styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                        </View>
+                                        </View>
 
-                                                        <View style={this.state.dWidth <= 700 ? styles.smTextView : styles.textView}>
-                                                            <Text style={styles.groupNameText}>
-                                                                {group.groupName}
-                                                            </Text>
-                                                            <Text style={styles.groupDateTime}>
-                                                                {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                                            </Text>
-                                                            <Text>
-                                                                {/* Image */}
-                                                            </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-
-                                                    <View style={this.state.dWidth <= 700 ? styles.smDroupDownView : styles.droupDownView}>
-                                                        <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
-                                                            ...
-                                                         </Text>
-                                                        {this.state.dropDown === index ?
-                                                            <View style={styles.dropdown}>
-                                                                <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
-                                                                    <li onClick={() => this.onClickEditGroup(group)} style={{ cursor: "pointer" }}>Edit</li>
-                                                                    <li onClick={() => this.onClickDeleteGroup(group._id, group.creator)} style={{ cursor: "pointer" }}>Delete</li>
-                                                                </ul>
-                                                            </View> : <Text />
-                                                        }
-                                                    </View>
-                                                </View>
-
-                                            </View>
-                                        )
-
-                                    }
-                                })}
-                            </View>
-                            :
-                            <Text />
+                                    </View>
+                                </View> : <Text />
                         }
-                    </View>
-
-                    {/* ADD GROUP MODAL START */}
-                    {
-                        this.state.modalVisible ?
-                            <View style={styles.modalContainer}>
-                                <View style={this.state.dWidth <= 700 ? styles.smModalView : styles.modalView}>
-                                    <View style={styles.modalCreateGroupView}>
-                                        <Text style={styles.createGroupText}>Create Group</Text>
-                                    </View>
-                                    <View style={styles.textInput}>
-                                        <TextInput
-                                            autoFocus={true}
-                                            value={this.state.groupName}
-                                            placeholder={'Group Name'}
-                                            style={styles.inputStyle}
-                                            // onChangeText={groupName => {
-                                            // this.setState({ groupName: groupName });
-                                            // }}
-                                            onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
-                                            onSubmitEditing={() => {
-                                                this.onPressCreateGroup()
-                                            }}
-                                        />
-                                    </View>
-                                    <View style={this.state.dWidth <= 700 ? styles.smButtonView : styles.buttonView}>
-                                        <TouchableOpacity onPress={() => this.onCancelModal()}
-                                            style={styles.modalCancelButton}>
-                                            <Text style={styles.buttonText}>Cancel</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.submitButton}
-                                            onPress={() => this.onPressCreateGroup()}
-                                        >
-                                            <Text style={styles.buttonText}>Submit</Text>
-                                        </TouchableOpacity>
-
-                                    </View>
-
-                                </View>
-                            </View> : <Text />
-                    }
-                    {/* ADD GROUP MODAL END */}
-
+                        {/* ADD GROUP MODAL END */}
+                    </ScrollView >
 
                     {/* PAGINATION VIEW START */}
                     {this.state.groupPageCount.length > 1 ?
@@ -387,7 +388,8 @@ class GroupView extends Component<IProps, IState> {
                             </TouchableOpacity>
                         </View> : <Text />}
                     {/* PAGINATION VIEW END */}
-                </ScrollView >
+
+                </View>
             )
 
     }
@@ -400,19 +402,22 @@ const mapStateToProps = ({ auth, group }: any): IReduxState => {
 export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup })(GroupView);
 
 const styles = StyleSheet.create({
+    mainViewContainer: { marginLeft: 70, height: 885, },
+    smMainViewContainer: { marginLeft: 70, height: 503 },
     innerContainer: {
         marginTop: 70,
-        marginLeft: 70,
-        padding: 50,
+        marginLeft: 30,
+        paddingRight: 30,
         display: "flex",
         height: "92.6vh",
 
     },
     smInnerContainer: {
-        marginLeft: 50,
+        marginLeft: 5,
         padding: 30,
         display: "flex",
         height: "77.6vh",
+
     },
 
     scene: {
@@ -440,7 +445,7 @@ const styles = StyleSheet.create({
         width: 500,
         height: 200,
         backgroundColor: '#ffffff',
-        marginBottom: 100,
+        marginBottom: 40,
         borderRadius: 5
     },
     smNestedGroupListView: {
@@ -604,7 +609,7 @@ const styles = StyleSheet.create({
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     goToGroupChatButton: { flexDirection: "row", paddingRight: 60 },
     smGoToGroupChatButton: { flexDirection: "column" },
-    pageCountTextStyle: {},
+    pageCountTextStyle: { color: "#ffffff" },
     blankTextStyle: {},
     paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: "99%" }
 });
