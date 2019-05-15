@@ -1,6 +1,7 @@
 export interface IAuth {
     authtoken: string | null,
-    error: ISignupError | null
+    error: ISignupError | null,
+    onToggleSideBar: boolean | null
 }
 
 export interface IReduxState {

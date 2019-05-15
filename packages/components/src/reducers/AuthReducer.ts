@@ -3,7 +3,8 @@ import { IAuth } from '../types'
 
 const initState: IAuth = {
     authtoken: null,
-    error: null
+    error: null,
+    onToggleSideBar: null
 }
 export default (state: IAuth = initState, action: AnyAction): IAuth => {
     switch (action.type) {
@@ -21,6 +22,11 @@ export default (state: IAuth = initState, action: AnyAction): IAuth => {
             return { ...initState };
         case 'RESET_FAIL':
             return { ...initState, error: action.payload };
+        case 'TOGGLE_SIDEBAR':
+            return {
+                ...state,
+                onToggleSideBar: action.payload
+            };
         default:
             return state;
     }

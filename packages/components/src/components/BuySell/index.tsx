@@ -684,6 +684,15 @@ const styles = StyleSheet.create({
         display: "flex",
         height: "77vh",
     },
+    hideSideBarSmInnerContainer: {
+        marginTop: 10,
+        marginLeft: 5,
+        marginRight: 7,
+        paddingRight: 7,
+        display: "flex",
+        height: "77vh",
+    },
+
     scene: {
         flex: 1,
     },

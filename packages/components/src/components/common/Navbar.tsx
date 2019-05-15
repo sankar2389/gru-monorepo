@@ -6,13 +6,15 @@ import { connect } from "react-redux";
 
 interface IProps extends RouteComponentProps {
     logoutUser: () => void,
-    clicked?: () => void
+    clicked?: () => void,
+    toggleSideBar: (onToggleSideBar: Boolean) => void
 };
 interface IState {
     search: string | undefined,
     viewBuySell: boolean,
     mouseEvent: string | undefined,
-    dWidth: any
+    dWidth: any,
+    onToggleSideBar: boolean
 }
 
 class NavbarComponent extends Component<IProps, IState> {
@@ -20,11 +22,13 @@ class NavbarComponent extends Component<IProps, IState> {
         search: undefined,
         viewBuySell: false,
         mouseEvent: "",
-        dWidth: ""
+        dWidth: "",
+        onToggleSideBar: true
     }
     constructor(props: IProps) {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
+        this.onPressToggleSideBar = this.onPressToggleSideBar.bind(this);
     }
     handleLogout() {
         this.props.logoutUser();
@@ -55,6 +59,15 @@ class NavbarComponent extends Component<IProps, IState> {
     }
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateDimension)
+    }
+
+    onPressToggleSideBar() {
+        this.setState({
+            onToggleSideBar: !this.state.onToggleSideBar
+        }, () => {
+            this.props.toggleSideBar(this.state.onToggleSideBar)
+        })
+
     }
 
 
@@ -115,7 +128,14 @@ class NavbarComponent extends Component<IProps, IState> {
 
                         </div>
                     </View>
+
+
+
                 </View>
+                {this.state.dWidth <= 700 ?
+                    <TouchableOpacity onPress={this.onPressToggleSideBar} style={{ position: "absolute", top: 15, right: 20, }}>
+                        <Text>{this.state.onToggleSideBar ? "Hide" : "Show"}</Text>
+                    </TouchableOpacity> : <Text />}
             </View >
         );
     }
@@ -209,7 +229,8 @@ const styles = StyleSheet.create({
     smNavButtonGroup: {
         paddingTop: 5,
         flexDirection: "row",
-        alignItems: "flex-start"
+        alignItems: "flex-start",
+        backgroundColor: "red"
     },
     navButton: {
         width: 30,

@@ -77,6 +77,19 @@ export const logoutUser = () => {
         logout(dispatch, '');
     }
 }
+
+
+
+export const toggleSideBar = (onToggleSideBar: Boolean) => {
+    return async (dispatch: Function) => {
+        console.log("onToggleSideBar", onToggleSideBar);
+        dispatch({
+            type: "TOGGLE_SIDEBAR",
+            payload: onToggleSideBar
+        })
+    }
+}
+
 export const forgotPass = (payload: IForgotPass) => {
     const { email } = payload;
     return (dispatch: Function) => {
