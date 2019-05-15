@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
         top: 155,
         left: 0,
         bottom: 0,
+
     },
     sidebarButtonCtnr: {
         backgroundColor: "#d72b2b",
