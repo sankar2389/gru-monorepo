@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         padding: 30,
         display: "flex",
-        height: "92.6vh",
+        height: "77.6vh",
     },
 
     scene: {
@@ -606,5 +606,5 @@ const styles = StyleSheet.create({
     smGoToGroupChatButton: { flexDirection: "column" },
     pageCountTextStyle: {},
     blankTextStyle: {},
-    paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: 800 }
+    paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: "99%" }
 });
