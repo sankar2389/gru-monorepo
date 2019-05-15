@@ -52,7 +52,7 @@ export const signupUser = (payload: ISignup) => {
     const { username, email, password } = payload;
     return (dispatch: Function) => {
         axios
-            .post(CMS_API +  'auth/local/register', {
+            .post(CMS_API + 'auth/local/register', {
                 username: username,
                 email: email,
                 password: password

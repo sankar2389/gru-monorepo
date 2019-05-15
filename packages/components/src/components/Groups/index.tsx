@@ -28,6 +28,7 @@ interface IState {
     limitDataOnPage: number,
     dropDown: number,
     selectedPaginatateNumber: number
+    dWidth: any
 }
 
 class GroupView extends Component<IProps, IState> {
@@ -41,7 +42,8 @@ class GroupView extends Component<IProps, IState> {
         endDataOnPage: 6,
         limitDataOnPage: 6,
         dropDown: -1,
-        selectedPaginatateNumber: 1
+        selectedPaginatateNumber: 1,
+        dWidth: ""
     }
     constructor(props: IProps) {
         super(props);
@@ -50,6 +52,7 @@ class GroupView extends Component<IProps, IState> {
     async componentDidMount() {
         const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
+        window.addEventListener("resize", this.updateDimension)
     }
 
     componentWillReceiveProps(newProps: any) {
@@ -180,7 +183,6 @@ class GroupView extends Component<IProps, IState> {
     onCancelModal = () => {
         this.setState({ modalVisible: false })
     }
-
     onPressVisibleModal = () => {
         this.setState({ modalVisible: true })
     }
@@ -201,6 +203,21 @@ class GroupView extends Component<IProps, IState> {
             })
     }
 
+    // CHECKPAGE LENGTH
+    componentWillMount() {
+        this.updateDimension()
+    }
+    updateDimension = () => {
+        this.setState({
+            dWidth: window.innerWidth
+        })
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimension)
+    }
+
+
+
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
@@ -217,10 +234,10 @@ class GroupView extends Component<IProps, IState> {
                 </View>
             ) :
             (
-                <View style={innerContainer}>
+                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
-                        <View style={styles.headerView}>
-                            <View style={styles.groupListLength}>
+                        <View style={this.state.dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
+                            <View>
                                 <Text style={styles.gorupPageHeadText}>List of Groups</Text>
                                 <Text>No of groups - {groups.length}</Text>
                             </View>
@@ -237,15 +254,17 @@ class GroupView extends Component<IProps, IState> {
                                 {groups.map((group, index) => {
                                     if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                         return (
-                                            <View style={styles.nestedGroupListView} key={index} >
-                                                <View style={styles.groupListMainContainer}>
+
+                                            <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index} >
+                                                {/* */}
+                                                <View style={this.state.dWidth <= 700 ? styles.smGroupListMainContainer : styles.groupListMainContainer}>
                                                     <TouchableOpacity onPress={() => this.onPressGoToGroupChat(group)}
-                                                        style={styles.goToGroupChatButton}>
-                                                        <View style={styles.textView}>
-                                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                        style={this.state.dWidth <= 700 ? styles.smGoToGroupChatButton : styles.goToGroupChatButton}>
+                                                        <View style={this.state.dWidth <= 700 ? styles.smTextView : styles.textView}>
+                                                            <Image style={this.state.dWidth <= 700 ? styles.smAvatarStyle : styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
                                                         </View>
 
-                                                        <View style={styles.textView}>
+                                                        <View style={this.state.dWidth <= 700 ? styles.smTextView : styles.textView}>
                                                             <Text style={styles.groupNameText}>
                                                                 {group.groupName}
                                                             </Text>
@@ -258,10 +277,10 @@ class GroupView extends Component<IProps, IState> {
                                                         </View>
                                                     </TouchableOpacity>
 
-                                                    <View style={styles.droupDownView}>
+                                                    <View style={this.state.dWidth <= 700 ? styles.smDroupDownView : styles.droupDownView}>
                                                         <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
                                                             ...
-                                                            </Text>
+                                                         </Text>
                                                         {this.state.dropDown === index ?
                                                             <View style={styles.dropdown}>
                                                                 <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
@@ -288,7 +307,7 @@ class GroupView extends Component<IProps, IState> {
                     {
                         this.state.modalVisible ?
                             <View style={styles.modalContainer}>
-                                <View style={styles.modalView}>
+                                <View style={this.state.dWidth <= 700 ? styles.smModalView : styles.modalView}>
                                     <View style={styles.modalCreateGroupView}>
                                         <Text style={styles.createGroupText}>Create Group</Text>
                                     </View>
@@ -307,7 +326,7 @@ class GroupView extends Component<IProps, IState> {
                                             }}
                                         />
                                     </View>
-                                    <View style={styles.buttonView}>
+                                    <View style={this.state.dWidth <= 700 ? styles.smButtonView : styles.buttonView}>
                                         <TouchableOpacity onPress={() => this.onCancelModal()}
                                             style={styles.modalCancelButton}>
                                             <Text style={styles.buttonText}>Cancel</Text>
@@ -368,9 +387,7 @@ class GroupView extends Component<IProps, IState> {
                             </TouchableOpacity>
                         </View> : <Text />}
                     {/* PAGINATION VIEW END */}
-
-
-                </View >
+                </ScrollView >
             )
 
     }
@@ -387,8 +404,17 @@ const styles = StyleSheet.create({
         marginTop: 70,
         marginLeft: 70,
         padding: 50,
-        display: "flex"
+        display: "flex",
+        height: "92.6vh",
+
     },
+    smInnerContainer: {
+        marginLeft: 50,
+        padding: 30,
+        display: "flex",
+        height: "92.6vh",
+    },
+
     scene: {
         flex: 1,
     },
@@ -404,6 +430,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexWrap: "wrap"
     },
+    smGroupListMainContainer: {
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: 'center',
+        flexWrap: "wrap"
+    },
     nestedGroupListView: {
         width: 500,
         height: 200,
@@ -411,7 +443,14 @@ const styles = StyleSheet.create({
         marginBottom: 100,
         borderRadius: 5
     },
-    groupListLength: { alignItems: "flex-start" },
+    smNestedGroupListView: {
+        width: "100%",
+        height: "15%",
+        backgroundColor: '#ffffff',
+        marginBottom: 20,
+        borderRadius: 5
+    },
+
     dropdownDots: {
         position: "absolute",
         right: 0,
@@ -433,9 +472,15 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         alignItems: "flex-start",
         //backgroundColor: "red"
-
+    },
+    smTextView: {
+        flex: 1,
+        marginTop: 40,
+        flexWrap: 'wrap',
+        alignItems: "center",
     },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
+    smHeaderView: { flexDirection: "column", alignItems: "center", marginBottom: 20 },
     addButtom: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5 },
     paginationButton: {
         marginRight: 20,
@@ -465,6 +510,15 @@ const styles = StyleSheet.create({
         marginLeft: 50
 
     },
+    smAvatarStyle: {
+        height: 80,
+        width: 80,
+        backgroundColor: "#bfbfbf",
+        borderRadius: 50,
+        alignItems: "center",
+
+
+    },
     button: {
         flex: 1,
         backgroundColor: "#cccccc"
@@ -488,6 +542,16 @@ const styles = StyleSheet.create({
         // left: 600,
         //borderWidth: 
     },
+    smModalView: {
+        backgroundColor: "#ffffff",
+        width: "99%",
+        height: 400,
+        position: "relative",
+        marginTop: 10,
+        marginLeft: "auto",
+        marginRight: "auto"
+    },
+
     modalCreateGroupView: {
         backgroundColor: "gray",
         alignItems: 'center',
@@ -517,6 +581,12 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 350, left: 300
     },
+    smButtonView: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "absolute",
+        top: 300, left: 40,
+    },
     buttonText: {
         color: "#ffffff"
     },
@@ -529,12 +599,12 @@ const styles = StyleSheet.create({
     groupNameText: { marginBottom: 10, flexWrap: "wrap", fontWeight: "900", padding: 0, marginLeft: 15 },
     groupDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
+    smDroupDownView: { marginTop: 10, marginRight: 10, backgroundColor: "green", position: "absolute", top: 0, right: 0 },
     createGroupText: { color: "#ffffff", fontSize: 20 },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     goToGroupChatButton: { flexDirection: "row", paddingRight: 60 },
-    pageCountTextStyle: {
-        color: "#ffffff"
-    },
+    smGoToGroupChatButton: { flexDirection: "column" },
+    pageCountTextStyle: {},
     blankTextStyle: {},
     paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: 800 }
 });

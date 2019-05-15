@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Button, AsyncStorage } from "react-native";
+import { View, Text, StyleSheet, TextInput, Button, AsyncStorage, TouchableOpacity } from "react-native";
 import { IReduxState, IAuth } from '../../types';
 import { connect } from 'react-redux';
 // @ts-ignore
@@ -42,35 +42,32 @@ class LoginScreen extends Component<IProps, IState> {
     }
     render() {
         const { email, password } = this.state;
-        const { loginViewStyle, loginBtnCtnr, formView, inputStyle, headerText, loginViewStyleFtr, h3, a, or } = styles;
+        const { inputStyle, loginViewStyleFtr, h3, a, or } = styles;
         return (
-            <View style={loginViewStyle}>
-                <View style={formView}>
-                    <View>
-                        <Text style={headerText}>GRU</Text>
-                        <TextInput
-                            value={email}
-                            placeholder={'Email address'}
-                            style={inputStyle}
-                            onChangeText={(text) => this.setState({ email: text })}
-                        />
-                        <TextInput
-                            value={password}
-                            placeholder={'Password'}
-                            secureTextEntry={true}
-                            style={inputStyle}
-                            onChangeText={(text) => this.setState({ password: text })}
-                        />
-                        <View style={loginBtnCtnr}>
-                            <Button
-                                onPress={() => this.login()}
-                                title="Login"
-                                color="#d72b2b"
-                                accessibilityLabel="Log in to the user panel"
-                            />
-                        </View>
-                        <Text style={a} onPress={() => this.props.history.push('/forget')}>Forget Password</Text>
-                    </View>
+            <View style={styles.loginViewStyle}>
+                <View style={styles.formView}>
+                    <Text>GRU</Text>
+                    <TextInput
+                        value={email}
+                        placeholder={'Email address'}
+                        style={inputStyle}
+                        onChangeText={(text) => this.setState({ email: text })}
+                    />
+                    <TextInput
+                        value={password}
+                        placeholder={'Password'}
+                        secureTextEntry={true}
+                        style={inputStyle}
+                        onChangeText={(text) => this.setState({ password: text })}
+                    />
+
+                    <TouchableOpacity style={styles.loginBtnCtnr} onPress={() => this.login()}>
+                        <Text style={{ color: "#ffffff" }}>
+                            LOGIN
+                        </Text>
+                    </TouchableOpacity>
+
+                    <Text onPress={() => this.props.history.push('/forget')}>Forget Password</Text>
                     <View style={loginViewStyleFtr}>
                         <Text style={or}>or</Text>
                         <View>
@@ -79,7 +76,10 @@ class LoginScreen extends Component<IProps, IState> {
                         </View>
                     </View>
                 </View>
-            </View>
+
+            </View >
+
+
         );
     }
 }
@@ -92,28 +92,24 @@ export default connect<IReduxState>(mapStateToProps, { loginUser })(LoginScreen)
 
 const styles = StyleSheet.create({
     loginViewStyle: {
-        minHeight: '100vh',
-        minWidth: '100vw',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: "center",
-        justifyContent: "center"
+        height: "100%", alignItems: "center", justifyContent: "center",
     },
     loginViewStyleFtr: {
+        marginTop: 60,
         width: '100%',
         position: 'absolute',
         left: 0,
-        bottom: 0,
+        top: 250,
         display: 'flex',
         flexDirection: 'column',
         alignItems: "center",
         justifyContent: "center",
         padding: 30,
-        backgroundColor: "#FFF9EA"
+        backgroundColor: "#FFF9EA",
+        borderRadius: 5
     },
     headerText: {
         color: '#d72b2b',
-        margin: 20,
         fontSize: 40
     },
     h3: {
@@ -130,22 +126,13 @@ const styles = StyleSheet.create({
         top: -8,
         color: '#878787',
     },
-    formView: {
-        width: '20vw',
-        height: '50vh',
-        backgroundColor: '#ffffff',
-        padding: 25
-    },
+    formView: { backgroundColor: "#ffffff", padding: 50, marginBottom: 90, borderRadius: 5 },
     inputStyle: {
         height: 30,
+        width: "100%",
         borderColor: '#ededed',
         borderBottomWidth: 1,
         margin: 15,
     },
-    loginBtnCtnr: {
-        display: 'flex',
-        width: '100%',
-        marginTop: 5,
-        marginBottom: 20
-    }
+    loginBtnCtnr: { backgroundColor: "#d72b2b", padding: 10, width: "110%", marginRight: 40, marginBottom: 15, marginTop: 10, borderRadius: 5 }
 })
