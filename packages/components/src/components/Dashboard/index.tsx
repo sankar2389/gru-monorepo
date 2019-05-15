@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
         marginLeft: 70,
         padding: 50,
         display: "flex",
-        backgroundColor: "green"
     },
     rateCardsContainer: {
         display: "flex",

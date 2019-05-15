@@ -318,9 +318,6 @@ class GroupView extends Component<IProps, IState> {
                                                 value={this.state.groupName}
                                                 placeholder={'Group Name'}
                                                 style={styles.inputStyle}
-                                                // onChangeText={groupName => {
-                                                // this.setState({ groupName: groupName });
-                                                // }}
                                                 onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
                                                 onSubmitEditing={() => {
                                                     this.onPressCreateGroup()
@@ -558,14 +555,13 @@ const styles = StyleSheet.create({
     },
 
     modalCreateGroupView: {
-        backgroundColor: "gray",
         alignItems: 'center',
         justifyContent: "center"
     },
     inputStyle: {
         height: 30,
         //borderBottomWidth: 1,
-        margin: 15,
+        //margin: 15,
         backgroundColor: "rgba(106,106,106,0.41)",
         borderRadius: 20,
         padding: 20,
@@ -605,7 +601,7 @@ const styles = StyleSheet.create({
     groupDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
     smDroupDownView: { marginTop: 10, marginRight: 10, backgroundColor: "green", position: "absolute", top: 0, right: 0 },
-    createGroupText: { color: "#ffffff", fontSize: 20 },
+    createGroupText: { fontSize: 20, marginTop: 20 },
     textInput: { flexDirection: "row", marginTop: 15, marginLeft: 20 },
     goToGroupChatButton: { flexDirection: "row", paddingRight: 60 },
     smGoToGroupChatButton: { flexDirection: "column" },
