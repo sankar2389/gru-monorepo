@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        paddingLeft: 150
+        paddingLeft: 100
     },
     smNavbar: {
         width: "100%",
