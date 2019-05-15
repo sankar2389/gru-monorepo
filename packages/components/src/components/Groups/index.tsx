@@ -611,5 +611,5 @@ const styles = StyleSheet.create({
     smGoToGroupChatButton: { flexDirection: "column" },
     pageCountTextStyle: { color: "#ffffff" },
     blankTextStyle: {},
-    paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: "99%" }
+    paginationView: { flexDirection: "row", padding: 20, marginLeft: 10, position: "absolute", top: "99%" }
 });

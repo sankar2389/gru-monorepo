@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet } from "react-native"
-import { RateCard, UserRatesCard, CalculateRate} from "../common";
+import { RateCard, UserRatesCard, CalculateRate } from "../common";
 import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
 import { IReduxState, InterfaceGRC } from "../../types";
@@ -13,7 +13,7 @@ interface IProps extends RouteComponentProps {
 }
 
 class Dashboard extends Component<IProps> {
-    
+
     constructor(props: IProps) {
         super(props);
     }
@@ -29,8 +29,8 @@ class Dashboard extends Component<IProps> {
         }).then((res: any) => {
             console.log('res :',res.data);
         });*/
-      }
-    
+    }
+
     handleClicked() {
         console.log("Button clicked");
     }
@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
         marginTop: 70,
         marginLeft: 70,
         padding: 50,
-        display: "flex"
+        display: "flex",
+        backgroundColor: "green"
     },
     rateCardsContainer: {
         display: "flex",

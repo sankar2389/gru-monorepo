@@ -901,5 +901,5 @@ const styles = StyleSheet.create({
         // marginLeft: 20,
         marginRight: 15
     },
-    paginationView: { flexDirection: "row", padding: 20, marginLeft: 100, position: "absolute", top: "99%" }
+    paginationView: { flexDirection: "row", padding: 20, marginLeft: 10, position: "absolute", top: "99%" }
 });
