@@ -55,6 +55,13 @@ class NavbarComponent extends Component<IProps, IState> {
     updateDimension = () => {
         this.setState({
             dWidth: window.innerWidth
+        }, () => {
+            if (this.state.dWidth >= 700) {
+                this.props.toggleSideBar(true)
+                this.setState({
+                    onToggleSideBar: true
+                })
+            }
         })
     }
     componentWillUnmount() {
@@ -230,7 +237,6 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         flexDirection: "row",
         alignItems: "flex-start",
-        backgroundColor: "red"
     },
     navButton: {
         width: 30,

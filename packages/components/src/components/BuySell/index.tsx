@@ -35,7 +35,8 @@ interface IState {
     editPrice: boolean,
     editIndex: any,
     userName: string,
-    dWidth: number
+    dWidth: number,
+    onToggleSideBar: boolean | null
 
 }
 
@@ -57,7 +58,8 @@ class BuySell extends Component<IProps> {
         editPrice: false,
         editIndex: "",
         userName: "",
-        dWidth: 700
+        dWidth: 700,
+        onToggleSideBar: null
     }
     constructor(props: IProps) {
         super(props);
@@ -673,26 +675,18 @@ const styles = StyleSheet.create({
         marginRight: 10,
         display: "flex",
         flexWrap: "wrap",
+        height: "92.6vh",
 
     },
     smInnerContainer: {
         marginTop: 10,
-        marginLeft: 25,
-        marginRight: 7,
-        paddingRight: 7,
-        paddingLeft: 50,
-        display: "flex",
-        height: "77vh",
-    },
-    hideSideBarSmInnerContainer: {
-        marginTop: 10,
         marginLeft: 5,
+        paddingLeft: 70,
         marginRight: 7,
         paddingRight: 7,
         display: "flex",
-        height: "77vh",
+        height: "76vh",
     },
-
     scene: {
         flex: 1,
     },
@@ -906,5 +900,5 @@ const styles = StyleSheet.create({
         // marginLeft: 20,
         marginRight: 15
     },
-    paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: 800 }
+    paginationView: { flexDirection: "row", padding: 20, position: "absolute", top: "99%" }
 });

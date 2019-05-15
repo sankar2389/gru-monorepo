@@ -134,7 +134,6 @@ class Sidebar extends Component<IProps, IState> {
 
 export { Sidebar }
 
-
 const styles = StyleSheet.create({
     sidebar: {
         width: 70,
