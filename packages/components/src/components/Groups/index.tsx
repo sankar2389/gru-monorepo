@@ -402,10 +402,10 @@ const mapStateToProps = ({ auth, group }: any): IReduxState => {
 export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup })(GroupView);
 
 const styles = StyleSheet.create({
-    mainViewContainer: { marginLeft: 70, height: 885, },
+    mainViewContainer: { marginLeft: 70, height: 810, marginTop: 70 },
     smMainViewContainer: { marginLeft: 70, height: 503 },
     innerContainer: {
-        marginTop: 70,
+        marginTop: 15,
         marginLeft: 30,
         paddingRight: 30,
         display: "flex",

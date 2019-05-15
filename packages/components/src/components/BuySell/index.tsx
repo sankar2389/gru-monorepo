@@ -667,10 +667,10 @@ const SellList = () => (
 );
 
 const styles = StyleSheet.create({
-    mainViewContainer: { marginLeft: 70, height: 885, },
+    mainViewContainer: { marginLeft: 70, height: 810, marginTop: 70 },
     smMainViewContainer: { marginLeft: 70, height: 490 },
     innerContainer: {
-        marginTop: 70,
+        marginTop: 10,
         marginLeft: 30,
         // paddingLeft: 50,
         marginRight: 10,
