@@ -462,7 +462,7 @@ class BuySell extends Component<IProps> {
                             {this.state.sellData.map((buyOrSell: any, index: number) => {
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
-                                        <View style={styles.nestedGroupListView} key={index}>
+                                        <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
                                             <View style={styles.imageAndNameView}>
                                                 <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
                                                 <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
@@ -472,32 +472,34 @@ class BuySell extends Component<IProps> {
                                                     asks
                                             </Text>
                                             </View>
-                                            <View style={styles.textItemView}>
-                                                <Text style={styles.buyOrSellText}>
-                                                    550gm
-                                            </Text>
-                                            </View>
-                                            <View style={styles.textItemView}>
-                                                <Text style={styles.buyOrSellText}>
-                                                    Gold
-                                            </Text>
-                                            </View>
-                                            <View style={styles.textItemView}>
-                                                {this.state.editPrice && this.state.editIndex == index ?
-                                                    <TextInput
-                                                        autoFocus={true}
-                                                        value={this.state.buyOrSellPrice}
-                                                        style={styles.editTextInput}
-                                                        onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                                        onSubmitEditing={() => {
-                                                            this.onPressUpdateSellPrice(buyOrSell._id)
-                                                        }}
-                                                    />
-                                                    :
+                                            <View style={styles.secontRowView}>
+                                                <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
-                                                        &#8377; {buyOrSell.price}
-                                                    </Text>
-                                                }
+                                                        550gm
+                                            </Text>
+                                                </View>
+                                                <View style={styles.textItemView}>
+                                                    <Text style={styles.buyOrSellText}>
+                                                        Gold
+                                            </Text>
+                                                </View>
+                                                <View style={styles.textItemView}>
+                                                    {this.state.editPrice && this.state.editIndex == index ?
+                                                        <TextInput
+                                                            autoFocus={true}
+                                                            value={this.state.buyOrSellPrice}
+                                                            style={styles.editTextInput}
+                                                            onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                                            onSubmitEditing={() => {
+                                                                this.onPressUpdateSellPrice(buyOrSell._id)
+                                                            }}
+                                                        />
+                                                        :
+                                                        <Text style={styles.buyOrSellText}>
+                                                            &#8377; {buyOrSell.price}
+                                                        </Text>
+                                                    }
+                                                </View>
                                             </View>
                                             {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
@@ -668,7 +670,7 @@ const SellList = () => (
 
 const styles = StyleSheet.create({
     mainViewContainer: { marginLeft: 70, height: 810, marginTop: 70 },
-    smMainViewContainer: { marginLeft: 70, height: 490 },
+    smMainViewContainer: { marginLeft: 70, height: 503 },
     innerContainer: {
         marginTop: 10,
         marginLeft: 30,
