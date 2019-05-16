@@ -16,7 +16,8 @@ interface IState {
     toggleSideBarState: boolean,
     animatedValue: any,
     range1: number | null,
-    range2: number | null
+    range2: number | null,
+    dWidth: any,
 }
 
 class Navigation extends Component<IProps> {
@@ -24,24 +25,26 @@ class Navigation extends Component<IProps> {
         toggleSideBarState: true,
         animatedValue: new Animated.Value(0),
         range1: null,
-        range2: null
+        range2: null,
+        dWidth: "",
     }
     constructor(props: IProps) {
         super(props);
     }
     componentWillReceiveProps(newProps: any) {
-        console.log("new", newProps.auth)
-        this.setState({
-            toggleSideBarState: newProps.auth.onToggleSideBar,
-            range1: newProps.auth.range1,
-            range2: newProps.auth.range2
-        }, () => {
-            if (this.state.toggleSideBarState) {
-                this.animate(Easing.out(Easing.quad))
-            } else {
-                this.animate(Easing.in(Easing.quad))
-            }
-        })
+        if (this.state.dWidth <= 700) {
+            this.setState({
+                toggleSideBarState: newProps.auth.onToggleSideBar,
+                range1: newProps.auth.range1,
+                range2: newProps.auth.range2
+            }, () => {
+                if (this.state.toggleSideBarState) {
+                    this.animate(Easing.out(Easing.quad))
+                } else {
+                    this.animate(Easing.in(Easing.quad))
+                }
+            })
+        }
     }
 
     animate(easing: any) {
@@ -56,6 +59,23 @@ class Navigation extends Component<IProps> {
         ).start()
     }
 
+    componentWillMount() {
+        this.updateDimension()
+    }
+
+    componentDidMount() {
+        window.addEventListener("resize", this.updateDimension)
+    }
+    updateDimension = () => {
+        this.setState({
+            dWidth: window.innerWidth
+        })
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimension)
+    }
+
+
     render() {
         const marginLeft = this.state.animatedValue.interpolate({
             inputRange: [0, 1],
@@ -66,7 +86,6 @@ class Navigation extends Component<IProps> {
                 <Animated.View style={{ marginLeft }} >
                     <Sidebar {...this.props} />
                 </Animated.View>
-
                 <Navbar {...this.props} />
             </View>
         )

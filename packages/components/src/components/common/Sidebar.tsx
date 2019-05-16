@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, AsyncStorage, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, AsyncStorage, Image, TouchableOpacity, Animated, Easing } from "react-native";
 import { RouteComponentProps } from "react-router";
 import { setTimeout } from "timers";
 
@@ -10,20 +10,21 @@ interface IProps extends RouteComponentProps {
 interface IState {
     sideBarBackgroundColor: string | undefined,
     dWidth: any,
-
-
+    spinValue: any
 }
 
 class Sidebar extends Component<IProps, IState> {
     state: IState = {
         sideBarBackgroundColor: undefined,
         dWidth: "",
+        spinValue: new Animated.Value(0)
     }
     constructor(props: IProps) {
         super(props)
         this._gotoBuySell = this._gotoBuySell.bind(this);
         this._gotoGroups = this._gotoGroups.bind(this);
         this._gotoDash = this._gotoDash.bind(this);
+
 
     }
     componentDidMount() {
@@ -33,7 +34,19 @@ class Sidebar extends Component<IProps, IState> {
             })
         }
         window.addEventListener("resize", this.updateDimension)
+        this.spin()
+    }
 
+    spin() {
+        this.state.spinValue.setValue(0)
+        Animated.timing(
+            this.state.spinValue,
+            {
+                toValue: 1,
+                duration: 4000,
+                easing: Easing.linear
+            }
+        ).start()
     }
 
     clicked() {
@@ -96,6 +109,10 @@ class Sidebar extends Component<IProps, IState> {
 
     render() {
         const { sidebar, sidebarButtonGroup, sidebarButtonCtnr, sidebarButton } = styles;
+        const spin = this.state.spinValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: ['0deg', '360deg']
+        })
         return (
             <View style={this.state.dWidth <= 700 ? styles.smSidebar : sidebar}>
                 <View style={sidebarButtonGroup}>
