@@ -465,7 +465,7 @@ class BuySell extends Component<IProps> {
                                         <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
                                             <View style={styles.imageAndNameView}>
                                                 <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
+                                                <Text style={styles.userNameText}>{buyOrSell.creatorObject !== undefined ? buyOrSell.creatorObject.username : ""}</Text>
                                             </View>
                                             <View style={styles.textItemView}>
                                                 <Text style={styles.buyOrSellText}>

@@ -400,7 +400,7 @@ export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGrou
 
 const styles = StyleSheet.create({
     mainViewContainer: { marginLeft: 70, height: 810, marginTop: 70 },
-    smMainViewContainer: { marginLeft: 70, height: 503 },
+    smMainViewContainer: { height: 503, zIndex: -1 },
     innerContainer: {
         marginTop: 15,
         marginLeft: 30,

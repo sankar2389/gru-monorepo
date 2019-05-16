@@ -90,7 +90,8 @@ class Sidebar extends Component<IProps, IState> {
     }
 
     onPressToggleSideBar = () => {
-        this.props.toggleSideBar(false)
+        if (this.state.dWidth <= 700)
+            this.props.toggleSideBar(false)
     }
 
     render() {
