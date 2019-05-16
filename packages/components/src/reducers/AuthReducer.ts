@@ -4,7 +4,9 @@ import { IAuth } from '../types'
 const initState: IAuth = {
     authtoken: null,
     error: null,
-    onToggleSideBar: null
+    onToggleSideBar: null,
+    range1: null,
+    range2: null
 }
 export default (state: IAuth = initState, action: AnyAction): IAuth => {
     switch (action.type) {
@@ -25,7 +27,9 @@ export default (state: IAuth = initState, action: AnyAction): IAuth => {
         case 'TOGGLE_SIDEBAR':
             return {
                 ...state,
-                onToggleSideBar: action.payload
+                onToggleSideBar: action.payload,
+                range1: action.range1,
+                range2: action.range2
             };
         default:
             return state;

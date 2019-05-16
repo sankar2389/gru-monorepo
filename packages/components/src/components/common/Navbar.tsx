@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 interface IProps extends RouteComponentProps {
     logoutUser: () => void,
     clicked?: () => void,
-    toggleSideBar: (onToggleSideBar: Boolean) => void
+    toggleSideBar: (onToggleSideBar: Boolean, range1: number, range2: number) => void
 };
 interface IState {
     search: string | undefined,
@@ -56,8 +56,8 @@ class NavbarComponent extends Component<IProps, IState> {
         this.setState({
             dWidth: window.innerWidth
         }, () => {
-            if (this.state.dWidth >= 700) {
-                this.props.toggleSideBar(true)
+            if (this.state.dWidth > 700) {
+                this.props.toggleSideBar(true, 0, 20)
                 this.setState({
                     onToggleSideBar: true
                 })
@@ -72,7 +72,12 @@ class NavbarComponent extends Component<IProps, IState> {
         this.setState({
             onToggleSideBar: !this.state.onToggleSideBar
         }, () => {
-            this.props.toggleSideBar(this.state.onToggleSideBar)
+            if (this.state.onToggleSideBar) {
+                this.props.toggleSideBar(this.state.onToggleSideBar, -70, 0)
+            } else {
+                this.props.toggleSideBar(this.state.onToggleSideBar, 0, -70)
+            }
+
         })
 
     }
