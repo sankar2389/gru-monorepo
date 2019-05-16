@@ -76,7 +76,13 @@ class NavbarComponent extends Component<IProps, IState> {
         })
 
     }
-
+    componentWillReceiveProps(newProps: any) {
+        if (newProps.auth) {
+            this.setState({
+                onToggleSideBar: newProps.auth.onToggleSideBar
+            })
+        }
+    }
 
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,

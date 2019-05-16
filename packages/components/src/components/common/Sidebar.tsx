@@ -1,20 +1,23 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, AsyncStorage, Image, TouchableOpacity } from "react-native";
 import { RouteComponentProps } from "react-router";
+import { setTimeout } from "timers";
 
-interface IProps extends RouteComponentProps { };
+interface IProps extends RouteComponentProps {
+    toggleSideBar: (onToggleSideBar: Boolean) => void
+};
 
 interface IState {
     sideBarBackgroundColor: string | undefined,
-    dWidth: any
+    dWidth: any,
+
 
 }
 
 class Sidebar extends Component<IProps, IState> {
     state: IState = {
         sideBarBackgroundColor: undefined,
-        dWidth: ""
-
+        dWidth: "",
     }
     constructor(props: IProps) {
         super(props)
@@ -30,6 +33,7 @@ class Sidebar extends Component<IProps, IState> {
             })
         }
         window.addEventListener("resize", this.updateDimension)
+
     }
 
     clicked() {
@@ -45,6 +49,7 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
+        setTimeout(() => { this.onPressToggleSideBar() }, 200)
     }
     _gotoGroups = () => {
         AsyncStorage.getItem('token')
@@ -56,6 +61,7 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
+        setTimeout(() => { this.onPressToggleSideBar() }, 200)
     }
     _gotoDash() {
         AsyncStorage.getItem('token')
@@ -67,6 +73,7 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
+        setTimeout(() => { this.onPressToggleSideBar() }, 200)
     }
 
     componentWillMount() {
@@ -80,6 +87,10 @@ class Sidebar extends Component<IProps, IState> {
     }
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateDimension)
+    }
+
+    onPressToggleSideBar = () => {
+        this.props.toggleSideBar(false)
     }
 
     render() {

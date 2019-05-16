@@ -32,7 +32,10 @@ class Navigation extends Component<IProps> {
     render() {
         return (
             <View>
-                {this.state.toggleSideBarState ? <Sidebar {...this.props} /> : <Text />}
+                {
+                    this.state.toggleSideBarState ?
+                        <Sidebar {...this.props} /> : <Text />
+                }
                 <Navbar {...this.props} />
             </View>
         )

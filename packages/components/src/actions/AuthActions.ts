@@ -82,7 +82,7 @@ export const logoutUser = () => {
 
 export const toggleSideBar = (onToggleSideBar: Boolean) => {
     return async (dispatch: Function) => {
-        console.log("onToggleSideBar", onToggleSideBar);
+        console.log("onToggleSideBarsssssssssss", onToggleSideBar);
         dispatch({
             type: "TOGGLE_SIDEBAR",
             payload: onToggleSideBar
