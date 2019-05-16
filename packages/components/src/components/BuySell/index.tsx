@@ -153,7 +153,7 @@ class BuySell extends Component<IProps> {
         }
         if (newProps.buyOrSell.buyOrSellData.sells !== undefined) {
             const { sellData } = this.state;
-            sellData.push(newProps.buyOrSell.buyOrSellData.sells);
+            //sellData.push(newProps.buyOrSell.buyOrSellData.sells);
             this.setState({
                 sellData: newProps.buyOrSell.buyOrSellData.sells, ...sellData,
                 dataFromCollection: "SELL_DATA"
@@ -338,6 +338,7 @@ class BuySell extends Component<IProps> {
 
 
     render() {
+        console.log("sellData", this.state.sellData)
         const { innerContainer } = styles;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
