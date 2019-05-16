@@ -82,7 +82,6 @@ export const logoutUser = () => {
 
 export const toggleSideBar = (onToggleSideBar: Boolean, range1: number, range2: number) => {
     return async (dispatch: Function) => {
-        console.log("onToggleSideBarsssssssssss", onToggleSideBar);
         dispatch({
             type: "TOGGLE_SIDEBAR",
             payload: onToggleSideBar,
@@ -104,7 +103,6 @@ export const forgotPass = (payload: IForgotPass) => {
                 resetSuccess(dispatch, response);
             })
             .catch((error: AxiosError) => {
-                console.log(error.response);
                 const err: any = error.response!.data
                 resetError(dispatch, err);
             })
