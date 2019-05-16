@@ -613,7 +613,7 @@ class BuySell extends Component<IProps> {
                 </ScrollView >
                 {/* PAGINATION VIEW START */}
                 {this.state.buyOrSellPageCount.length > 1 ?
-                    <View style={styles.paginationView}>
+                    <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
                         <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
                             <Text>{"<"}</Text>
                         </TouchableOpacity>
@@ -904,5 +904,12 @@ const styles = StyleSheet.create({
         // marginLeft: 20,
         marginRight: 15
     },
-    paginationView: { flexDirection: "row", padding: 20, marginLeft: 10, position: "absolute", top: "99%" }
+    paginationView: {
+        flexDirection: "row", padding: 20, justifyContent: "center", marginLeft: 10,
+        position: "absolute", top: "99%",
+    },
+    smPaginationView: {
+        flexDirection: "row", padding: 20, justifyContent: "center", alignItems: "center",
+        position: "absolute", top: "99%", width: "100%"
+    }
 });

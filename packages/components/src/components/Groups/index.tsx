@@ -345,7 +345,7 @@ class GroupView extends Component<IProps, IState> {
 
                     {/* PAGINATION VIEW START */}
                     {this.state.groupPageCount.length > 1 ?
-                        <View style={styles.paginationView}>
+                        <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
                             <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
                                 <Text>{"<"}</Text>
                             </TouchableOpacity>
@@ -605,5 +605,9 @@ const styles = StyleSheet.create({
     smGoToGroupChatButton: { flexDirection: "column" },
     pageCountTextStyle: { color: "#ffffff" },
     blankTextStyle: {},
-    paginationView: { flexDirection: "row", padding: 20, marginLeft: 10, position: "absolute", top: "99%" }
+    paginationView: { flexDirection: "row", padding: 20, marginLeft: 10, position: "absolute", top: "99%" },
+    smPaginationView: {
+        flexDirection: "row", padding: 20, justifyContent: "center", alignItems: "center",
+        position: "absolute", top: "99%", width: "100%"
+    }
 });
