@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router";
 import { setTimeout } from "timers";
 
 interface IProps extends RouteComponentProps {
-    toggleSideBar: (onToggleSideBar: Boolean) => void
+    toggleSideBar: (onToggleSideBar: Boolean, range1: number, range2: number) => void
 };
 
 interface IState {
@@ -62,7 +62,7 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
-        setTimeout(() => { this.onPressToggleSideBar() }, 200)
+        setTimeout(() => { this.onPressToggleSideBar() }, 100)
     }
     _gotoGroups = () => {
         AsyncStorage.getItem('token')
@@ -74,7 +74,8 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
-        setTimeout(() => { this.onPressToggleSideBar() }, 200)
+        setTimeout(() => { this.onPressToggleSideBar() }, 100)
+        //this.onPressToggleSideBar()
     }
     _gotoDash() {
         AsyncStorage.getItem('token')
@@ -86,7 +87,7 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
-        setTimeout(() => { this.onPressToggleSideBar() }, 200)
+        setTimeout(() => { this.onPressToggleSideBar() }, 100)
     }
 
     componentWillMount() {
@@ -104,7 +105,7 @@ class Sidebar extends Component<IProps, IState> {
 
     onPressToggleSideBar = () => {
         if (this.state.dWidth <= 700)
-            this.props.toggleSideBar(false)
+            this.props.toggleSideBar(false, 0, -70)
     }
 
     render() {

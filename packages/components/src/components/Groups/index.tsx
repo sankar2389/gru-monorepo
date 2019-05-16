@@ -410,11 +410,9 @@ const styles = StyleSheet.create({
 
     },
     smInnerContainer: {
-        marginLeft: 5,
         padding: 30,
         display: "flex",
         height: "77.6vh",
-
     },
 
     scene: {
