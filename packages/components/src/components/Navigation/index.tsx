@@ -82,8 +82,8 @@ class Navigation extends Component<IProps> {
             outputRange: [this.state.range1, this.state.range2]
         })
         return (
-            <View>
-                <Animated.View style={{ marginLeft }} >
+            <View style={{ backgroundColor: "red" }}>
+                <Animated.View style={[styles.block, marginLeft]} >
                     <Sidebar {...this.props} />
                 </Animated.View>
                 <Navbar {...this.props} />
@@ -100,8 +100,6 @@ export default connect<IReduxState>(mapStateToProps, { logoutUser, toggleSideBar
 
 const styles = StyleSheet.create({
     block: {
-        width: 50,
-        height: 50,
-        backgroundColor: 'red'
+        marginLeft: 0,
     }
 })
