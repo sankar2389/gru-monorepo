@@ -48,10 +48,14 @@ class LoginScreen extends Component<IProps, IState> {
                 <View style={styles.formView}>
                     <Text>GRU</Text>
                     <TextInput
+                        autoFocus={true}
                         value={email}
                         placeholder={'Email address'}
                         style={inputStyle}
                         onChangeText={(text) => this.setState({ email: text })}
+                        onSubmitEditing={() => {
+                            this.login()
+                        }}
                     />
                     <TextInput
                         value={password}
@@ -59,6 +63,9 @@ class LoginScreen extends Component<IProps, IState> {
                         secureTextEntry={true}
                         style={inputStyle}
                         onChangeText={(text) => this.setState({ password: text })}
+                        onSubmitEditing={() => {
+                            this.login()
+                        }}
                     />
 
                     <TouchableOpacity style={styles.loginBtnCtnr} onPress={() => this.login()}>

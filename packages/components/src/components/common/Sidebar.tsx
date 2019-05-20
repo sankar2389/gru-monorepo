@@ -1,26 +1,29 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, AsyncStorage, Image, TouchableOpacity } from "react-native";
 import { RouteComponentProps } from "react-router";
+import { setTimeout } from "timers";
 
-interface IProps extends RouteComponentProps { };
+interface IProps extends RouteComponentProps {
+    toggleSideBar: (onToggleSideBar: Boolean, range1: number, range2: number) => void
+};
 
 interface IState {
     sideBarBackgroundColor: string | undefined,
-    dWidth: any
+    dWidth: any,
 
 }
 
 class Sidebar extends Component<IProps, IState> {
     state: IState = {
         sideBarBackgroundColor: undefined,
-        dWidth: ""
-
+        dWidth: "",
     }
     constructor(props: IProps) {
         super(props)
         this._gotoBuySell = this._gotoBuySell.bind(this);
         this._gotoGroups = this._gotoGroups.bind(this);
         this._gotoDash = this._gotoDash.bind(this);
+
 
     }
     componentDidMount() {
@@ -31,7 +34,6 @@ class Sidebar extends Component<IProps, IState> {
         }
         window.addEventListener("resize", this.updateDimension)
     }
-
     clicked() {
         console.log("clicked")
     }
@@ -45,6 +47,7 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
+        setTimeout(() => { this.onPressToggleSideBar() }, 100)
     }
     _gotoGroups = () => {
         AsyncStorage.getItem('token')
@@ -56,6 +59,8 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
+        setTimeout(() => { this.onPressToggleSideBar() }, 100)
+        //this.onPressToggleSideBar()
     }
     _gotoDash() {
         AsyncStorage.getItem('token')
@@ -67,6 +72,7 @@ class Sidebar extends Component<IProps, IState> {
                     });
                 }
             })
+        setTimeout(() => { this.onPressToggleSideBar() }, 100)
     }
 
     componentWillMount() {
@@ -80,6 +86,11 @@ class Sidebar extends Component<IProps, IState> {
     }
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateDimension)
+    }
+
+    onPressToggleSideBar = () => {
+        if (this.state.dWidth <= 700)
+            this.props.toggleSideBar(false, 0, -70)
     }
 
     render() {
@@ -134,7 +145,6 @@ class Sidebar extends Component<IProps, IState> {
 
 export { Sidebar }
 
-
 const styles = StyleSheet.create({
     sidebar: {
         width: 70,
@@ -154,6 +164,7 @@ const styles = StyleSheet.create({
         top: 155,
         left: 0,
         bottom: 0,
+
     },
     sidebarButtonCtnr: {
         backgroundColor: "#d72b2b",

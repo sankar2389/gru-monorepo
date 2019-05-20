@@ -34,7 +34,7 @@ class UpdateGroup extends Component<IProps, IState> {
 
     render() {
         return (
-            <View>
+            <View style={styles.containerView}>
                 <Text>
                     UPDATE GROUP
             </Text>
@@ -83,6 +83,7 @@ const mapStateToProps = ({ auth }: any): IReduxState => {
 export default connect<IReduxState>(mapStateToProps, {})(UpdateGroup);
 
 const styles = StyleSheet.create({
+    containerView: { marginLeft: 50 },
     inputStyle: {
         height: 40,
         borderColor: 'gray',

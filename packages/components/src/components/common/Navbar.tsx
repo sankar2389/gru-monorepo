@@ -6,13 +6,15 @@ import { connect } from "react-redux";
 
 interface IProps extends RouteComponentProps {
     logoutUser: () => void,
-    clicked?: () => void
+    clicked?: () => void,
+    toggleSideBar: (onToggleSideBar: Boolean, range1: number, range2: number) => void
 };
 interface IState {
     search: string | undefined,
     viewBuySell: boolean,
     mouseEvent: string | undefined,
-    dWidth: any
+    dWidth: any,
+    onToggleSideBar: boolean
 }
 
 class NavbarComponent extends Component<IProps, IState> {
@@ -20,11 +22,13 @@ class NavbarComponent extends Component<IProps, IState> {
         search: undefined,
         viewBuySell: false,
         mouseEvent: "",
-        dWidth: ""
+        dWidth: "",
+        onToggleSideBar: true
     }
     constructor(props: IProps) {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
+        this.onPressToggleSideBar = this.onPressToggleSideBar.bind(this);
     }
     handleLogout() {
         this.props.logoutUser();
@@ -51,12 +55,39 @@ class NavbarComponent extends Component<IProps, IState> {
     updateDimension = () => {
         this.setState({
             dWidth: window.innerWidth
+        }, () => {
+            if (this.state.dWidth > 700) {
+                this.props.toggleSideBar(true, 0, 20)
+                this.setState({
+                    onToggleSideBar: true
+                })
+            }
         })
     }
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateDimension)
     }
 
+    onPressToggleSideBar() {
+        this.setState({
+            onToggleSideBar: !this.state.onToggleSideBar
+        }, () => {
+            if (this.state.onToggleSideBar) {
+                this.props.toggleSideBar(this.state.onToggleSideBar, -70, 0)
+            } else {
+                this.props.toggleSideBar(this.state.onToggleSideBar, 0, -70)
+            }
+
+        })
+
+    }
+    componentWillReceiveProps(newProps: any) {
+        if (newProps.auth) {
+            this.setState({
+                onToggleSideBar: newProps.auth.onToggleSideBar
+            })
+        }
+    }
 
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
@@ -115,7 +146,14 @@ class NavbarComponent extends Component<IProps, IState> {
 
                         </div>
                     </View>
+
+
+
                 </View>
+                {this.state.dWidth <= 700 ?
+                    <TouchableOpacity onPress={this.onPressToggleSideBar} style={{ position: "absolute", top: 15, right: 20, }}>
+                        <Text>{this.state.onToggleSideBar ? "Hide" : "Show"}</Text>
+                    </TouchableOpacity> : <Text />}
             </View >
         );
     }
@@ -138,7 +176,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        paddingLeft: 150
+        paddingLeft: 100
     },
     smNavbar: {
         width: "100%",
@@ -209,7 +247,7 @@ const styles = StyleSheet.create({
     smNavButtonGroup: {
         paddingTop: 5,
         flexDirection: "row",
-        alignItems: "flex-start"
+        alignItems: "flex-start",
     },
     navButton: {
         width: 30,
