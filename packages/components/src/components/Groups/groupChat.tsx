@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
-import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
+import { IReduxState, IGroup } from "../../types";
 import { connect } from "react-redux";
-import { UserRatesCard } from "../common";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Image, TextInput } from "react-native";
 import { getGroupsList } from "../../actions";
+import io from 'socket.io-client';
 import moment from "moment";
+const SOCKET_SERVER_API = process.env.SOCKET_SERVER_API;
 
 
 interface IProps extends RouteComponentProps {
@@ -39,6 +40,9 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     async componentDidMount() {
+        console.log(SOCKET_SERVER_API);
+        
+        const socket = io(SOCKET_SERVER_API + '');
         if (this.props.location.state.group.groupName) {
             this.setState({
                 groupName: this.props.location.state.group.groupName,

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { UserRatesCard } from "../common";
 import UpdateGroup from "./updateGroupComponent";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup } from '../../actions';
