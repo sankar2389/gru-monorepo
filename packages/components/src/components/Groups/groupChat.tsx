@@ -99,7 +99,6 @@ class GroupChat extends Component<IProps, IState> {
 
         return (
             <View style={styles.chatView}>
-
                 {/* LEFT SIDE MESSAGE PART START */}
                 <View style={styles.flexLeftView}>
                     <View style={styles.textAndAddButtonView}>
@@ -112,7 +111,6 @@ class GroupChat extends Component<IProps, IState> {
                             <Text style={styles.addButtonText}>+</Text>
                         </TouchableOpacity>
                     </View>
-
                     <View style={styles.chatTypeView}>
                         <TouchableOpacity style={this.state.chatButtonType === "all" ?
                             [styles.selectedChatButton, styles.chatTypeButton] : styles.chatTypeButton}
@@ -131,7 +129,6 @@ class GroupChat extends Component<IProps, IState> {
                             <Text>GROUP</Text>
                         </TouchableOpacity>
                     </View>
-
                     {/* MAP ON GROUP LIST */}
                     {groups.length > 0 ?
                         <View style={styles.groupView}>
