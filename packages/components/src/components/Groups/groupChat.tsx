@@ -42,10 +42,6 @@ class GroupChat extends Component<IProps, IState> {
     async componentDidMount() {
         const authtoken = await AsyncStorage.getItem('token')
         console.log(SOCKET_SERVER_API);
-        
-        const socket = io(SOCKET_SERVER_API + '', {
-            query: { token: authtoken }
-        });
         if (this.props.location.state.group.groupName) {
             this.setState({
                 groupName: this.props.location.state.group.groupName,
@@ -55,6 +51,13 @@ class GroupChat extends Component<IProps, IState> {
         }
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
+        const socket = io(SOCKET_SERVER_API + '', {
+            query: { token: authtoken },
+            transports: ['websocket']
+        });
+        socket.on('connect', () => {
+            console.log('connected');
+        })
     }
 
     onPressSetChatButton = (buttonType: string) => {

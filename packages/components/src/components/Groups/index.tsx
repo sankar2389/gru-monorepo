@@ -3,9 +3,8 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import UpdateGroup from "./updateGroupComponent";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup } from '../../actions';
-import { string } from "prop-types";
 import moment from "moment";
 
 interface IProps extends RouteComponentProps {
