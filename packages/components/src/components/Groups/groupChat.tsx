@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { getGroupsList } from "../../actions";
+import { getGroupsList, webSocketMiddleware } from "../../actions";
 import moment from "moment";
 import Peer from 'peerjs';
 import io from 'socket.io-client';
@@ -13,6 +13,7 @@ const CMS_API = process.env.CMS_API;
 interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
+    webSocketMiddleware: (type: string, groupName: string) => void
 
 };
 
@@ -50,6 +51,7 @@ class GroupChat extends Component<IProps, IState> {
         }
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
+        this.onPressSelectGroup(this.props.location.state.group)
     }
 
     onPressSetChatButton = (buttonType: string) => {
@@ -84,43 +86,9 @@ class GroupChat extends Component<IProps, IState> {
             createdAt: group.createdAt,
             members: group.members || 0
         })
-    }
+        this.props.webSocketMiddleware("CONNECT", "")
+        this.props.webSocketMiddleware("JOIN", group.groupName)
 
-    componentWillMount() {
-
-        const socket = io(CMS_API + '');
-        // socket.on("connection", (res: any) => {
-        //     console.log("socketId")
-        //     console.log("socketId", res.id)
-        // })
-
-        //socket.connect(Peer.id)
-
-        // const peer = new Peer({
-
-        // host: 'http://localhost:1337/', port: 3000, path: '/peerjs',
-        // debug: 3,
-        // config: {
-        //     'iceServers': [
-        //         { urls: 'stun:stun1.l.google.com:19302' },
-        //         { urls: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }
-        //     ]
-        // }
-        //  })
-        //console.log("peer", peer)
-
-
-
-        // var conn = peer.connect(peer.id)
-        // peer.on('open', function (id: string) {
-        //     console.log('My peer ID is: ' + id);
-        // });
-        // peer.on('connection', function (conn) {
-        //     conn.on('data', function (data) {
-        //         // Will print 'hi!'
-        //         console.log("data", data)
-        //     })
-        // })
     }
 
     render() {
@@ -280,7 +248,7 @@ const mapStateToProps = ({ auth, group }: any): IReduxState => {
     return { auth, group };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList })(GroupChat);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddleware })(GroupChat);
 
 const styles = StyleSheet.create({
     chatView: {

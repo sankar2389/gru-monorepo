@@ -38,6 +38,12 @@ export interface IGroup {
     error: Error | null
 }
 
+export interface IWEBRTC {
+    connected: boolean,
+    room_joined: boolean
+}
+
+
 export interface IGroupsInfo {
     _id: string,
     groupName: string,
