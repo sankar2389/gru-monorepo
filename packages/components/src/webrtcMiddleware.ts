@@ -2,12 +2,13 @@ import { AnyAction } from "redux";
 import { incommingMessage, datachannelOpened } from './actions';
 
 const webrtcMiddleware = (function () {
-    let RTCPeerConnection = window.RTCPeerConnection;
+    const RTCPeerConnection = window.RTCPeerConnection;
     let socketId: any;
     const configuration = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }] };
     // const connection = { 'optional': [{ 'DtlsSrtpKeyAgreement': true }, { 'RtpDataChannels': true }] };
     const peerconn = new RTCPeerConnection(configuration);
     // const sdpConstraints = { 'mandatory': { 'OfferToReceiveAudio': false, 'OfferToReceiveVideo': false } };
+    let dataChannel: RTCDataChannel
 
     peerconn.onnegotiationneeded = function (event) {
         console.log('onnegotiationneeded');
@@ -23,7 +24,7 @@ const webrtcMiddleware = (function () {
         console.log("logError", error);
     }
     function createOffer(store: any, socketId: any, action: AnyAction) {
-        const dataChannel = peerconn.createDataChannel("text_chan");
+        dataChannel = peerconn.createDataChannel("text_chan");
         peerconn.createOffer((desc) => {
             console.log('createOffer', desc);
             peerconn.setLocalDescription(desc, () => {
@@ -46,7 +47,6 @@ const webrtcMiddleware = (function () {
         dataChannel.onerror = function (error) {
             console.log("dataChannel.onerror", error);
         };
-        //peerconn.textDataChannel = dataChannel;
     }
     function exchange(store: any, data: any) {
         if (socketId === null) {
@@ -66,7 +66,11 @@ const webrtcMiddleware = (function () {
             }, logError);
         } else {
             console.log('exchange candidate');
-            peerconn.addIceCandidate(new RTCIceCandidate(data.candidate));
+            try {
+                peerconn.addIceCandidate(new RTCIceCandidate(data.candidate));
+            } catch (error) {
+                console.error(error);
+            }
         }
     }
     return (store: any) => (next: any) => (action: any) => {
@@ -79,10 +83,6 @@ const webrtcMiddleware = (function () {
         peerconn.ondatachannel = function (event) {
             console.log('ondatachannel');
             const receiveChannel = event.channel;
-            // if (!peerconn.textDataChannel) {
-            //     peerconn.textDataChannel = receiveChannel;
-            //     store.dispatch(datachannelOpened());
-            // }
             receiveChannel.onmessage = function (event) {
                 store.dispatch(incommingMessage(socketId, event.data));
             };
@@ -90,17 +90,14 @@ const webrtcMiddleware = (function () {
 
         switch (action.type) {
             case "CREATE_OFFER":
-                console.log("create_oFFer")
                 socketId = action.payload;
                 createOffer(store, socketId, action);
                 break;
             case "WEBTRC_EXCHANGE":
-                console.log("WEBTRC_EXCHANGE")
                 exchange(store, action.payload);
                 break;
             case "SEND_MESSAGE":
-                console.log("send messageddddddd", action.payload)
-                //peerconn.textDataChannel.send(action.payload);
+                dataChannel.send(action.payload);
                 break;
             default:
                 return next(action);
