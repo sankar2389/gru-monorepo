@@ -16,10 +16,20 @@ export const webSocketDisconnect = (type: string) => {
 }
 
 export const webSocketConnect = (type: string, socketId: any) => {
+    console.log("type", type)
     return (dispatch: Function) => {
         dispatch({
             type: type,
             payload: socketId
+        })
+    }
+}
+
+export const onSendMessage = (type: string, message: string) => {
+    return (dispatch: Function) => {
+        dispatch({
+            type: type,
+            payload: message
         })
     }
 }
@@ -59,11 +69,6 @@ export function roomMembers(socketIds: string) {
 }
 
 export function roomMember(socketId: string) {
-    /*AsyncStorage.getItem(MEMBERS_KEY, (err, data) => {
-        console.log(data);
-        const socketIds = JSON.parse(data);
-        socketIds.push(socketId);
-    })*/
     return {
         type: "SOCKETIDS",
         payload: socketId

@@ -1,14 +1,14 @@
 import { AnyAction } from 'redux'
-import { IWEBRTC } from '../types'
+import { IWebrtc } from '../types'
 
-const initState: IWEBRTC = {
+const initState: IWebrtc = {
     connected: false,
     socketids: [],
     message: {},
     datachan_stat: false,
     room_joined: false
 }
-export default (state: IWEBRTC = initState, action: AnyAction): IWEBRTC => {
+export default (state: IWebrtc = initState, action: AnyAction): IWebrtc => {
     switch (action.type) {
         case "CONNECTED":
             console.log("in reducer connected")

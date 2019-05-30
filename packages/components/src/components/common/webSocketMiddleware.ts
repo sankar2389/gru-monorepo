@@ -4,28 +4,26 @@ import { connecting, connected, disconnected, roomMembers, roomMember, roomJoin 
 
 export const MEMBERS_KEY = '@RNAWebRTCApp:room_members';
 export const ROOMS_KEY = '@RNAWebRTCApp:rooms';
+const SOCKET_SERVER_API = process.env.SOCKET_SERVER_API;
 
 const webSocketMiddleware = (function () {
     let socket: any
 
     const onOpen = (store: any) => (evt: any) => {
-        console.log("open")
         store.dispatch(connected);
     }
 
     const onClose = (store: any) => (evt: any) => {
-        console.log("closeeeeeeeeeeeeeeeeeeeeee")
         //Tell the store we've disconnected
         store.dispatch(disconnected);
     }
 
     const onExchangeMessage = (store: any) => (data: any) => {
-        // exchange webrtc data
         store.dispatch({ type: "WEBTRC_EXCHANGE", payload: data });
     }
 
     const onMembers = (store: any) => (socketId: any) => {
-        console.log("socketId", socketId);
+        console.log("found new member", socketId);
         let socketIds: any;
         AsyncStorage.getItem(MEMBERS_KEY, (err, data: any) => {
             if (data !== null) {
@@ -37,30 +35,46 @@ const webSocketMiddleware = (function () {
         })
     }
     return (store: any) => (next: any) => (action: any) => {
-        //console.log(action);
         switch (action.type) {
             case "CONNECT":
                 //Start a new connection to the server
-                console.log("socket", socket)
-                if (socket !== undefined) {
+                if (socket !== undefined && socket !== null) {
                     socket.close();
                 }
                 //Send an action that shows a "connecting..." status for now
                 store.dispatch(connecting);
-
-                //Attempt to connect (we could send a 'failed' action on error)
-                socket = io.connect('http://localhost:1337', { transports: ['websocket'] });
-                socket.on('connect', onOpen(store));
-                socket.on('leave', onClose(store));
-                socket.on('exchange', onExchangeMessage(store));
-                socket.on('new_member', onMembers(store));
+                try {
+                    //     //Attempt to connect (we could send a 'failed' action on error)
+                    AsyncStorage.getItem('token').then(token => {
+                        socket = io('http://localhost:4443' + '', {
+                            query: { token: token },
+                            transports: ['websocket']
+                        });
+                        // socket.on('connect', () => {
+                        //     console.log('connected');
+                        //     socket.emit('join', 'asdfq', (socketIds: any) => {
+                        //         store.dispatch(roomJoin);
+                        //         AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
+                        //         store.dispatch(roomMembers(socketIds));
+                        //     });
+                        // })
+                        socket.on('connect', onOpen(store));
+                        socket.on('leave', onClose(store));
+                        socket.on('exchange', onExchangeMessage(store));
+                        socket.on('new_member', onMembers(store));
+                    })
+                } catch (error) {
+                    console.error(error)
+                }
                 break;
 
             //The user wants us to disconnect
             case "DISCONNECT":
+                console.log("second socket", socket)
                 if (socket !== undefined || socket !== null) {
                     socket.close();
                 }
+
                 socket = null;
                 store.dispatch(disconnected);
                 break;
@@ -70,7 +84,27 @@ const webSocketMiddleware = (function () {
                 socket.emit('exchange', action.payload);
                 break;
             case "JOIN":
-                socket.emit('join', action.payload, (socketIds: any) => {
+                // try {
+                //     //     //Attempt to connect (we could send a 'failed' action on error)
+                //     AsyncStorage.getItem('token').then(token => {
+                //         socket = io('http://localhost:4443' + '', {
+                //             query: { token: token },
+                //             transports: ['websocket']
+                //         });
+                //         socket.on('connect', () => {
+                //             console.log('connected');
+                //             socket.emit('join', action.groupName, (socketIds: any) => {
+                //                 store.dispatch(roomJoin);
+                //                 AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
+                //                 store.dispatch(roomMembers(socketIds));
+                //             });
+                //         })
+
+                //     })
+                // } catch (error) {
+                //     console.error(error)
+                // }
+                socket.emit('join', action.groupName, (socketIds: any) => {
                     store.dispatch(roomJoin);
                     AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
                     store.dispatch(roomMembers(socketIds));

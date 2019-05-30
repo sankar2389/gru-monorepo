@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect } from "../../actions";
+import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage } from "../../actions";
 import moment from "moment";
 import Peer from 'peerjs';
 import io from 'socket.io-client';
@@ -15,7 +15,8 @@ interface IProps extends RouteComponentProps {
     getGroupsList: (creator: string) => void,
     webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void,
     webSocketDisconnect: (type: string) => void,
-    webSocketConnect: (type: string, socketId: any) => void
+    webSocketConnect: (type: string, socketId: any) => void,
+    onSendMessage: (type: string, replayText: string) => void
 
 };
 
@@ -26,6 +27,7 @@ interface IState {
     members: number,
     replyText: string,
     sendMessage: any,
+    socketids: any
 
 }
 
@@ -37,11 +39,21 @@ class GroupChat extends Component<IProps, IState> {
         members: 0,
         replyText: "",
         sendMessage: [],
+        socketids: []
 
     }
     constructor(props: IProps) {
         super(props);
 
+    }
+
+    componentWillReceiveProps(newProps: any) {
+        if (newProps.webrtc.socketids.length > 0) {
+            this.setState({
+                socketids: newProps.webrtc.socketids
+            })
+            console.log("newProps.webrtc.socketids", newProps.webrtc.socketids)
+        }
     }
 
     async componentDidMount() {
@@ -76,7 +88,8 @@ class GroupChat extends Component<IProps, IState> {
 
     onPressReplyMessage = () => {
         let sendMessage = this.state.sendMessage;
-        sendMessage.push(this.state.replyText)
+        sendMessage.push({ from: "seff", message: this.state.replyText })
+        this.props.onSendMessage("SEND_MESSAGE", this.state.replyText)
         this.setState({
             sendMessage: sendMessage,
             replyText: "",
@@ -89,9 +102,7 @@ class GroupChat extends Component<IProps, IState> {
             createdAt: group.createdAt,
             members: group.members || 0
         })
-        this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
         this.props.webSocketMiddlewareConnectOrJoin("JOIN", group.groupName)
-
     }
 
     onPressLeave = () => {
@@ -107,7 +118,15 @@ class GroupChat extends Component<IProps, IState> {
             createdAt: group.createdAt,
             members: group.members || 0
         })
-        this.props.webSocketConnect("CREATE_OFFER", group.groupName)
+        if (this.state.socketids.length > 0) {
+            this.props.webSocketConnect("CREATE_OFFER", this.state.socketids[0])
+        }
+    }
+
+    componentDidUpdate() {
+        if (this.state.socketids.length > 0) {
+            this.props.webSocketConnect("CREATE_OFFER", this.state.socketids[0])
+        }
     }
 
     render() {
@@ -277,11 +296,11 @@ class GroupChat extends Component<IProps, IState> {
     }
 }
 
-const mapStateToProps = ({ auth, group }: any): IReduxState => {
-    return { auth, group };
+const mapStateToProps = ({ auth, group, webrtc }: any): IReduxState => {
+    return { auth, group, webrtc };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect })(GroupChat);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage })(GroupChat);
 
 const styles = StyleSheet.create({
     chatView: {

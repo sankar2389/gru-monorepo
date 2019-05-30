@@ -6,7 +6,8 @@ export interface IAuth {
 export interface IReduxState {
     auth: IAuth,
     group?: IGroup,
-    buyOrSell?: any[]
+    buyOrSell?: any[],
+    webrtc: any[]
 }
 
 export interface ISignup {
@@ -38,7 +39,7 @@ export interface IGroup {
     error: Error | null
 }
 
-export interface IWEBRTC {
+export interface IWebrtc {
     connected: boolean,
     room_joined: boolean,
     socketids: any,
