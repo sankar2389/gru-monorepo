@@ -7,7 +7,7 @@ export interface IReduxState {
     auth: IAuth,
     group?: IGroup,
     buyOrSell?: any[],
-    webrtc: any[]
+    webrtc?: any[]
 }
 
 export interface ISignup {

@@ -2,11 +2,9 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { UserRatesCard } from "../common";
 import UpdateGroup from "./updateGroupComponent";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput } from "react-native";
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup, webSocketMiddlewareConnectOrJoin } from '../../actions';
-import { string } from "prop-types";
 import moment from "moment";
 
 interface IProps extends RouteComponentProps {
@@ -54,7 +52,6 @@ class GroupView extends Component<IProps, IState> {
         const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
         this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
-
     }
 
     componentWillReceiveProps(newProps: any) {
@@ -101,7 +98,7 @@ class GroupView extends Component<IProps, IState> {
 
     }
 
-    //pagination Next
+    // Pagination Next
     onPressPaginateNext() {
         if (this.state.endDataOnPage < this.props.group.groups.length) {
             this.setState({
@@ -127,7 +124,7 @@ class GroupView extends Component<IProps, IState> {
         }
     }
 
-    //Create group 
+    // Create group 
     async onPressCreateGroup() {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         if (this.state.groupName.length <= 60 && user.email) {
@@ -144,7 +141,7 @@ class GroupView extends Component<IProps, IState> {
     }
 
 
-    //Delete group
+    // Delete group
     onClickDeleteGroup(groupId: string, creator: string) {
         let confirms = confirm(`Delete confirmation \n Are you want to delete ?`)
         if (confirms) {
@@ -152,7 +149,7 @@ class GroupView extends Component<IProps, IState> {
         }
     }
 
-    //Edit group
+    // Edit group
     onClickEditGroup = (group: any) => {
         if (group) {
             this.setState({
@@ -270,7 +267,7 @@ class GroupView extends Component<IProps, IState> {
                                                             </Text>
                                                             <Text style={styles.groupDateTime}>
                                                                 {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-</Text>
+                                                            </Text>
                                                             <Text>
                                                                 {/* Image */}
                                                             </Text>
@@ -280,7 +277,7 @@ class GroupView extends Component<IProps, IState> {
                                                     <View style={styles.droupDownView}>
                                                         <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
                                                             ...
-</Text>
+                                                        </Text>
                                                         {this.state.dropDown === index ?
                                                             <View style={styles.dropdown}>
                                                                 <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
@@ -293,9 +290,7 @@ class GroupView extends Component<IProps, IState> {
                                                 </View>
 
                                             </View>
-
                                         )
-
                                     }
                                 })}
                             </View>
@@ -445,8 +440,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 40,
         flexWrap: 'wrap',
-        alignItems: "flex-start",
-        //backgroundColor: "red"
+        alignItems: "flex-start"
 
     },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },

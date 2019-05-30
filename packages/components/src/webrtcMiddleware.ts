@@ -1,8 +1,5 @@
 import { AnyAction } from "redux";
-
-//import { WEBTRC_EXCHANGE, CREATE_OFFER, EXCHANGE, SEND_MESSAGE } from './actions/types';
-import { incommingMessage, datachannelOpened } from '../../actions';
-//import { RTCPeerConnection, RTCSessionDescription, RTCIceCandidate } from 'react-native-webrtc';
+import { incommingMessage, datachannelOpened } from './actions';
 
 const webrtcMiddleware = (function () {
     let RTCPeerConnection = window.RTCPeerConnection;
@@ -21,12 +18,6 @@ const webrtcMiddleware = (function () {
     peerconn.onsignalingstatechange = function () {
         console.log('onsignalingstatechange');
     };
-    // peerconn.onaddstream = function () {
-    //     console.log('onaddstream');
-    // };
-    // peerconn.onremovestream = function () {
-    //     console.log('onremovestream');
-    // };
 
     function logError(error: any) {
         console.log("logError", error);
@@ -43,7 +34,7 @@ const webrtcMiddleware = (function () {
         dataChannel.onopen = function () {
             console.log('dataChannel.onopen');
             store.dispatch(datachannelOpened());
-            dataChannel.send("abcd")
+            dataChannel.send("hello message");
         };
         dataChannel.onclose = function () {
             console.log("dataChannel.onclose");
@@ -64,7 +55,6 @@ const webrtcMiddleware = (function () {
         if (data.sdp) {
             console.log('exchange sdp', data);
             peerconn.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
-                ;// if (peerconn.remoteDescription.type === "offer")
                 if (peerconn.remoteDescription)
                     peerconn.createAnswer((desc) => {
                         console.log('createAnswer', desc);
@@ -79,27 +69,6 @@ const webrtcMiddleware = (function () {
             peerconn.addIceCandidate(new RTCIceCandidate(data.candidate));
         }
     }
-    // function exchange(store: any, data: any) {
-    //     if (socketId === null) {
-    //         socketId = data.from;
-    //     }
-    //     if (data.sdp) {
-    //         console.log('exchange sdp', data);
-    //         peerconn.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
-    //             if (peerconn.remoteDescription)
-    //                 peerconn.createAnswer((desc) => {
-    //                     console.log('createAnswer', desc);
-    //                     peerconn.setLocalDescription(desc, () => {
-    //                         console.log('setLocalDescription', peerconn.localDescription);
-    //                         store.dispatch({ type: "EXCHANGE", payload: { 'to': data.from, 'sdp': peerconn.localDescription } });
-    //                     }, logError);
-    //                 }, logError);
-    //         }, logError);
-    //     } else {
-    //         console.log('exchange candidate');
-    //         peerconn.addIceCandidate(new RTCIceCandidate(data.candidate));
-    //     }
-    // }
     return (store: any) => (next: any) => (action: any) => {
         peerconn.onicecandidate = function (event) {
             console.log('onicecandidate');

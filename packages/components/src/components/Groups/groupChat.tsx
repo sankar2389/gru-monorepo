@@ -5,9 +5,6 @@ import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage } from "../../actions";
 import moment from "moment";
-import Peer from 'peerjs';
-import io from 'socket.io-client';
-const CMS_API = process.env.CMS_API;
 
 
 interface IProps extends RouteComponentProps {
