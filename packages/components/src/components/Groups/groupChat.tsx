@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { getGroupsList, webSocketMiddleware } from "../../actions";
+import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect } from "../../actions";
 import moment from "moment";
 import Peer from 'peerjs';
 import io from 'socket.io-client';
@@ -13,7 +13,9 @@ const CMS_API = process.env.CMS_API;
 interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
-    webSocketMiddleware: (type: string, groupName: string) => void
+    webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void,
+    webSocketDisconnect: (type: string) => void,
+    webSocketConnect: (type: string, socketId: any) => void
 
 };
 
@@ -23,7 +25,8 @@ interface IState {
     createdAt: any,
     members: number,
     replyText: string,
-    sendMessage: any
+    sendMessage: any,
+
 }
 
 class GroupChat extends Component<IProps, IState> {
@@ -33,7 +36,7 @@ class GroupChat extends Component<IProps, IState> {
         createdAt: "",
         members: 0,
         replyText: "",
-        sendMessage: []
+        sendMessage: [],
 
     }
     constructor(props: IProps) {
@@ -86,9 +89,25 @@ class GroupChat extends Component<IProps, IState> {
             createdAt: group.createdAt,
             members: group.members || 0
         })
-        this.props.webSocketMiddleware("CONNECT", "")
-        this.props.webSocketMiddleware("JOIN", group.groupName)
+        this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
+        this.props.webSocketMiddlewareConnectOrJoin("JOIN", group.groupName)
 
+    }
+
+    onPressLeave = () => {
+        this.props.webSocketDisconnect("DISCONNECT")
+        this.setState({
+            groupName: "",
+            createdAt: "",
+        })
+    }
+    onPressConnect = (group: any, socketId: any) => {
+        this.setState({
+            groupName: group.groupName,
+            createdAt: group.createdAt,
+            members: group.members || 0
+        })
+        this.props.webSocketConnect("CREATE_OFFER", group.groupName)
     }
 
     render() {
@@ -155,6 +174,19 @@ class GroupChat extends Component<IProps, IState> {
                                                     <Text>
                                                         Last message
                                                         </Text>
+                                                    <View style={{ width: "105%", alignItems: "flex-end" }}>
+                                                        {this.state.groupName === group.groupName ?
+                                                            <TouchableOpacity onPress={() => this.onPressLeave()}>
+                                                                <Text>Leave</Text>
+                                                            </TouchableOpacity>
+                                                            :
+                                                            <TouchableOpacity onPress={() => this.onPressConnect(group, "socketId")}>
+                                                                <Text>Connect</Text>
+                                                            </TouchableOpacity>
+                                                        }
+
+
+                                                    </View>
                                                 </View>
                                             </View>
                                         </TouchableOpacity>
@@ -171,19 +203,20 @@ class GroupChat extends Component<IProps, IState> {
 
                 {/* RIGHT SIDE MESSAGE PART START */}
                 <View style={styles.rightSideView}>
-                    <View style={styles.rightSideListView}>
-                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                        <View style={styles.groupNameView}>
-                            <Text style={styles.groupNameText}>
-                                {this.state.groupName}
-                            </Text>
-
-                            <Text style={styles.groupDateTime}>
-                                {moment(this.state.createdAt).fromNow()} {""}
-                                {moment(this.state.createdAt).format('h:mm')} | {this.state.members} Members
+                    {this.state.groupName.length > 0 ?
+                        <View style={styles.rightSideListView}>
+                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                            <View style={styles.groupNameView}>
+                                <Text style={styles.groupNameText}>
+                                    {this.state.groupName}
                                 </Text>
-                        </View>
-                    </View>
+
+                                <Text style={styles.groupDateTime}>
+                                    {moment(this.state.createdAt).fromNow()} {""}
+                                    {moment(this.state.createdAt).format('h:mm')} | {this.state.members} Members
+                                </Text>
+                            </View>
+                        </View> : <Text>There is no connected group</Text>}
 
                     <View style={styles.messageView}>
                         <View style={styles.receiveMessageView}>
@@ -248,7 +281,7 @@ const mapStateToProps = ({ auth, group }: any): IReduxState => {
     return { auth, group };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddleware })(GroupChat);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect })(GroupChat);
 
 const styles = StyleSheet.create({
     chatView: {

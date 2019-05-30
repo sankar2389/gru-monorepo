@@ -40,7 +40,10 @@ export interface IGroup {
 
 export interface IWEBRTC {
     connected: boolean,
-    room_joined: boolean
+    room_joined: boolean,
+    socketids: any,
+    message: any,
+    datachan_stat: boolean,
 }
 
 

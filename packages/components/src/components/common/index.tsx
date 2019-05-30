@@ -4,3 +4,4 @@ export * from "./RateCard";
 export * from "./UserRatesCard";
 export * from "./CalculateRate";
 export * from "./TabView";
+export * from "./webSocketMiddleware"
