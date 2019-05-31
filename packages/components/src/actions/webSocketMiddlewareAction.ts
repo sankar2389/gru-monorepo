@@ -1,5 +1,6 @@
 
 export const webSocketMiddlewareConnectOrJoin = (type: string, groupName: string) => {
+    console.log("type", type)
     return (dispatch: Function) => {
         dispatch({
             type: type,
@@ -16,7 +17,6 @@ export const webSocketDisconnect = (type: string) => {
 }
 
 export const webSocketConnect = (type: string, socketId: any) => {
-    console.log("type", type)
     return (dispatch: Function) => {
         dispatch({
             type: type,
@@ -35,21 +35,18 @@ export const onSendMessage = (type: string, message: string) => {
 }
 
 export const connecting = (dispatch: any) => {
-    console.log("CONNECTING in action")
     dispatch({
         type: "CONNECTING"
     });
 }
 
 export const connected = (dispatch: any) => {
-    console.log("connected in action")
     dispatch({
         type: "CONNECTED"
     });
 }
 
 export const disconnected = (dispatch: any) => {
-    console.log("close in action")
     dispatch({
         type: "DISCONNECTED"
     });
@@ -61,7 +58,6 @@ export const roomJoin = (dispatch: any) => {
     });
 }
 export function roomMembers(socketIds: string) {
-    console.log("room members")
     return {
         type: "SOCKETIDS",
         payload: socketIds

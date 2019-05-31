@@ -11,7 +11,6 @@ const initState: IWebrtc = {
 export default (state: IWebrtc = initState, action: AnyAction): IWebrtc => {
     switch (action.type) {
         case "CONNECTED":
-            console.log("in reducer connected")
             return { ...state, connected: true };
         case "DISCONNECTED":
             return { ...state, connected: false, room_joined: false };

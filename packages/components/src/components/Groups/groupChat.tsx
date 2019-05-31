@@ -49,7 +49,6 @@ class GroupChat extends Component<IProps, IState> {
             this.setState({
                 socketids: newProps.webrtc.socketids
             })
-            console.log("newProps.webrtc.socketids", newProps.webrtc.socketids)
         }
     }
 
@@ -110,6 +109,7 @@ class GroupChat extends Component<IProps, IState> {
         })
     }
     onPressConnect = (group: any, socketId: any) => {
+        console.log("state", this.state.socketids)
         this.setState({
             groupName: group.groupName,
             createdAt: group.createdAt,
