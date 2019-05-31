@@ -7,7 +7,6 @@ const webrtcMiddleware = (function () {
     const configuration = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }] };
     // const connection = { 'optional': [{ 'DtlsSrtpKeyAgreement': true }, { 'RtpDataChannels': true }] };
     const peerconn = new RTCPeerConnection(configuration);
-    // const sdpConstraints = { 'mandatory': { 'OfferToReceiveAudio': false, 'OfferToReceiveVideo': false } };
     let dataChannel: RTCDataChannel
 
     peerconn.onnegotiationneeded = function (event) {
@@ -25,26 +24,29 @@ const webrtcMiddleware = (function () {
     }
     function createOffer(store: any, socketId: any, action: AnyAction) {
         dataChannel = peerconn.createDataChannel("text_chan");
-        peerconn.createOffer((desc) => {
-            console.log('createOffer', desc);
-            peerconn.setLocalDescription(desc, () => {
+        peerconn.createOffer()
+            .then(offer => {
+                console.log('createOffer', offer);
+                peerconn.setLocalDescription(offer);
+            })
+            .then(() => {
                 store.dispatch({ type: "EXCHANGE", payload: { 'to': action.payload, 'sdp': peerconn.localDescription } })
-            }, logError);
-        }, logError);
+            })
+            .catch(logError)
 
-        dataChannel.onopen = function () {
-            console.log('dataChannel.onopen');
+        dataChannel.onopen = () => {
+            console.log('%c dataChannel.onopen', 'background: #222; color: #bada55');
             store.dispatch(datachannelOpened());
             dataChannel.send("hello message");
         };
-        dataChannel.onclose = function () {
-            console.log("dataChannel.onclose");
+        dataChannel.onclose = () => {
+            console.log('%c dataChannel.onclose', 'background: #222; color: #bada55');
         };
-        dataChannel.onmessage = function (event) {
+        dataChannel.onmessage = (event) => {
             console.log("dataChannel.onmessage:", event.data);
             store.dispatch(incommingMessage(socketId, event.data));
         };
-        dataChannel.onerror = function (error) {
+        dataChannel.onerror = (error) => {
             console.log("dataChannel.onerror", error);
         };
     }
@@ -65,8 +67,8 @@ const webrtcMiddleware = (function () {
                     }, logError);
             }, logError);
         } else {
-            console.log('exchange candidate');
             try {
+                console.log('exchange candidate');
                 peerconn.addIceCandidate(new RTCIceCandidate(data.candidate));
             } catch (error) {
                 console.error(error);
