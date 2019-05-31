@@ -9,6 +9,7 @@ const webrtcMiddleware = (function () {
     const peerconn = new RTCPeerConnection(configuration);
     let dataChannel: RTCDataChannel
 
+
     peerconn.onnegotiationneeded = function (event) {
         console.log('onnegotiationneeded');
     };
@@ -26,11 +27,13 @@ const webrtcMiddleware = (function () {
     var count = 0;
     function createOffer(store: any, socketId: any, action: AnyAction) {
         dataChannel = peerconn.createDataChannel("text_chan");
+
         if (count === 0) {
             count++
         } else {
             return
         }
+        /** Create local offer */
         peerconn.createOffer()
             .then(offer => {
                 console.log('createOffer', offer);
@@ -38,16 +41,17 @@ const webrtcMiddleware = (function () {
                 peerconn.setLocalDescription(new RTCSessionDescription(offer));
             })
             .then(() => {
+
                 console.log("peerconn.localDescription", peerconn.localDescription)
                 store.dispatch({ type: "EXCHANGE", payload: { 'to': action.payload, 'sdp': peerconn.localDescription } })
+
             })
             .catch(logError)
 
-
-        dataChannel.onopen = () => {
-            console.log("onOpennnnnnnnnnnnnnnnnnnnnnnnnnnn")
-            console.log('%c dataChannel.onopen', 'background: #222; color: #bada55');
-            store.dispatch(datachannelOpened());
+        dataChannel.onopen = function (event) {
+            console.log("onOpennnnnnnnnnnnnnnnnnnnnnnnnnnn11111111111111111111111")
+            // console.log('%c dataChannel.onopen', 'background: #222; color: #bada55');
+            // store.dispatch(datachannelOpened());
             dataChannel.send("hello message");
         };
         dataChannel.onclose = () => {
@@ -64,6 +68,7 @@ const webrtcMiddleware = (function () {
         };
     }
 
+
     var count1 = 0
     function exchange(store: any, data: any) {
         const peerconn = new RTCPeerConnection(configuration);
@@ -78,7 +83,6 @@ const webrtcMiddleware = (function () {
 
         if (data.sdp) {
             // const peerconn = new RTCPeerConnection(configuration);
-
             console.log('exchange sdp', data);
             peerconn.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
                 console.log("peerconn.remoteDescription", peerconn.remoteDescription)
@@ -115,6 +119,7 @@ const webrtcMiddleware = (function () {
             };
         }
 
+
         switch (action.type) {
             case "CREATE_OFFER":
                 socketId = action.payload;
@@ -125,6 +130,8 @@ const webrtcMiddleware = (function () {
                 break;
             case "SEND_MESSAGE":
                 dataChannel.send(action.payload);
+                //store.dispatch(incommingMessage(socketId, action.payload));
+                //peerconn.textDataChannel.send(action.payload);
                 break;
             default:
                 return next(action);
