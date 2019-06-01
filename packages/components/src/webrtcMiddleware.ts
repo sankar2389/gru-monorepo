@@ -98,7 +98,7 @@ const webrtcMiddleware = (() => {
             }
         }
     }
-    return (store: any, data: any) => (next: any) => (action: any) => {
+    return (store: any) => (next: any) => (action: any) => {
         peerconn.onicecandidate = function (event) {
             console.log('onicecandidate');
             if (event.candidate && socketId && socketId !== null) {
