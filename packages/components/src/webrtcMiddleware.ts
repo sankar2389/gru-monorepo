@@ -33,24 +33,21 @@ const webrtcMiddleware = (() => {
             return
         }
         /** Create local offer */
-        peerconn.createOffer()
+        peerconn.createOffer({ voiceActivityDetection: false })
             .then(offer => {
                 console.log('createOffer', offer);
-                // peerconn.setLocalDescription(offer); 
                 peerconn.setLocalDescription(new RTCSessionDescription(offer));
             })
             .then(() => {
                 console.log("peerconn.localDescription", peerconn.localDescription)
                 store.dispatch({ type: "EXCHANGE", payload: { 'to': action.payload, 'sdp': peerconn.localDescription } })
-
             })
             .catch(logError)
 
         dataChannel.onopen = function (event) {
-            console.log("onOpennnnnnnnnnnnnnnnnnnnnnnnnnnn11111111111111111111111")
-            // console.log('%c dataChannel.onopen', 'background: #222; color: #bada55');
+            console.log('%c dataChannel.onopen', 'background: #222; color: #bada55');
             // store.dispatch(datachannelOpened());
-            dataChannel.send("hello message");
+            // dataChannel.send("hello message");
         };
         dataChannel.onclose = () => {
             console.log('%c dataChannel.onclose', 'background: #222; color: #bada55');
@@ -61,26 +58,16 @@ const webrtcMiddleware = (() => {
             store.dispatch(incommingMessage(socketId, event.data));
         };
         dataChannel.onerror = (error) => {
-            console.log("errorrrrrr", error)
             console.log("dataChannel.onerror", error);
         };
     }
 
-
-    var count1 = 0
     function exchange(store: any, data: any) {
-        //const peerconn = new RTCPeerConnection(configuration);
-        if (count1 === 0) {
-            count1++
-        } else {
-            return
-        }
         if (!socketId || socketId === null) {
             socketId = data.from;
         }
 
         if (data.sdp) {
-            const peerconn = new RTCPeerConnection(configuration);
             console.log('exchange sdp', data);
             peerconn.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
                 if (peerconn.remoteDescription)
@@ -94,7 +81,7 @@ const webrtcMiddleware = (() => {
             try {
                 peerconn.addIceCandidate(new RTCIceCandidate(data.candidate));
             } catch (error) {
-                console.error("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", error);
+                console.error(error);
             }
         }
     }
