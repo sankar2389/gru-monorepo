@@ -16,6 +16,11 @@ interface IProps extends RouteComponentProps {
     onSendMessage: (replayText: string) => void
 };
 
+interface IMsg {
+    from: string,
+    message: string
+}
+
 interface IState {
     chatButtonType: string,
     groupName: "",
@@ -24,7 +29,8 @@ interface IState {
     replyText: string,
     sendMessage: any,
     socketids: any,
-    groups: any
+    groups: any,
+    messages: IMsg[]
 }
 
 class GroupChat extends Component<IProps, IState> {
@@ -36,7 +42,8 @@ class GroupChat extends Component<IProps, IState> {
         replyText: "",
         sendMessage: [],
         socketids: [],
-        groups: []
+        groups: [],
+        messages: []
     }
     constructor(props: IProps) {
         super(props);
@@ -45,14 +52,19 @@ class GroupChat extends Component<IProps, IState> {
     componentWillReceiveProps(newProps: any) {
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
-            const { socketids } = newProps.webrtc;
+            const { messages } = this.state;
+            const { socketids, message } = newProps.webrtc;
             socketids.forEach((sid: any, i: number) => {
                 groups[i].socketid = sid;
                 groups[i].connected = false;
             });
+            if (Object.entries(message).length > 0 && message.constructor === Object) {
+                messages.push(message)
+            }
             this.setState({
                 socketids: newProps.webrtc.socketids,
-                groups
+                groups,
+                messages
             });
         }
     }
@@ -136,8 +148,7 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     render() {
-        const { groups } = this.state;
-
+        const { groups, messages } = this.state;
         return (
             <View style={styles.chatView}>
 
@@ -243,32 +254,27 @@ class GroupChat extends Component<IProps, IState> {
                         </View> : <Text>There is no connected group</Text>}
 
                     <View style={styles.messageView}>
-                        <View style={styles.receiveMessageView}>
-                            <Text style={styles.receiveMessaageText}>
-                                Receive message Receive message  Receive message Receive message  Receive message Receive message Receive message Receive message Receive message Receive message
-                            </Text>
-                        </View>
-                        {this.state.sendMessage.length > 0 ?
-                            <View style={styles.sendMessageView}>
-                                {this.state.sendMessage.map((sendMsg: string, index: number) => {
-                                    return (
-                                        <Text style={styles.sendMessageText} key={index}>
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"}
-                                        </Text>
-                                    )
-                                })}
-
-                            </View>
-                            :
-                            <Text />
+                        {
+                            messages.length > 0 &&
+                                <View style={styles.receiveMessageView}>
+                                    <Text style={styles.receiveMessaageText}>
+                                        {messages[0].message}
+                                    </Text>
+                                </View>
+                        }
+                        {
+                            this.state.sendMessage.length > 0 ?
+                                <View style={styles.sendMessageView}>
+                                    {this.state.sendMessage.map((sendMsg: any, index: number) => {
+                                        return (
+                                            <Text style={styles.sendMessageText} key={index}>
+                                                {sendMsg.message}
+                                            </Text>
+                                        )
+                                    })}
+                                </View>
+                                :
+                                <Text />
                         }
                     </View>
 

@@ -62,7 +62,6 @@ const webSocketMiddleware = (function () {
                 if (socket !== undefined || socket !== null) {
                     socket.close();
                 }
-
                 socket = null;
                 store.dispatch(disconnected);
                 break;
