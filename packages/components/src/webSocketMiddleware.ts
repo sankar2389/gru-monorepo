@@ -25,7 +25,9 @@ const webSocketMiddleware = (function () {
     const onMembers = (store: any) => (socketId: any) => {
         let socketIds: any;
         AsyncStorage.getItem(MEMBERS_KEY, (err, data: any) => {
-            if (data !== null) {
+            console.log(data);
+            
+            if (data && data !== null) {
                 socketIds = JSON.parse(data);
             }
             socketIds.push(socketId);
@@ -44,7 +46,7 @@ const webSocketMiddleware = (function () {
                 try {
                     //Attempt to connect (we could send a 'failed' action on error)
                     AsyncStorage.getItem('token').then(token => {
-                        socket = io('http://192.168.0.7:4443' + '', {
+                        socket = io('http://192.168.0.11:4443' + '', {
                             query: { token: token },
                             transports: ['websocket']
                         });

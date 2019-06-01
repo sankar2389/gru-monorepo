@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage } from "../../actions";
+import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage, connected } from "../../actions";
 import moment from "moment";
 
 
@@ -11,10 +11,9 @@ interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
     webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void,
-    webSocketDisconnect: (type: string) => void,
-    webSocketConnect: (type: string, socketId: any) => void,
-    onSendMessage: (type: string, replayText: string) => void
-
+    webSocketDisconnect: () => void,
+    webSocketConnect: (socketId: any) => void,
+    onSendMessage: (replayText: string) => void
 };
 
 interface IState {
@@ -24,8 +23,8 @@ interface IState {
     members: number,
     replyText: string,
     sendMessage: any,
-    socketids: any
-
+    socketids: any,
+    groups: any
 }
 
 class GroupChat extends Component<IProps, IState> {
@@ -36,19 +35,25 @@ class GroupChat extends Component<IProps, IState> {
         members: 0,
         replyText: "",
         sendMessage: [],
-        socketids: []
-
+        socketids: [],
+        groups: []
     }
     constructor(props: IProps) {
         super(props);
-
     }
 
     componentWillReceiveProps(newProps: any) {
         if (newProps.webrtc.socketids.length > 0) {
+            const { groups } = this.props.group;
+            const { socketids } = newProps.webrtc;
+            socketids.forEach((sid: any, i: number) => {
+                groups[i].socketid = sid;
+                groups[i].connected = false;
+            });
             this.setState({
-                socketids: newProps.webrtc.socketids
-            })
+                socketids: newProps.webrtc.socketids,
+                groups
+            });
         }
     }
 
@@ -62,7 +67,7 @@ class GroupChat extends Component<IProps, IState> {
         }
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
-        this.onPressSelectGroup(this.props.location.state.group)
+        this.joinGroup(this.props.location.state.group);
     }
 
     onPressSetChatButton = (buttonType: string) => {
@@ -85,14 +90,14 @@ class GroupChat extends Component<IProps, IState> {
     onPressReplyMessage = () => {
         let sendMessage = this.state.sendMessage;
         sendMessage.push({ from: "seff", message: this.state.replyText })
-        this.props.onSendMessage("SEND_MESSAGE", this.state.replyText)
+        this.props.onSendMessage(this.state.replyText)
         this.setState({
             sendMessage: sendMessage,
             replyText: "",
         })
     }
 
-    onPressSelectGroup = (group: any) => {
+    joinGroup = (group: any) => {
         this.setState({
             groupName: group.groupName,
             createdAt: group.createdAt,
@@ -101,33 +106,40 @@ class GroupChat extends Component<IProps, IState> {
         this.props.webSocketMiddlewareConnectOrJoin("JOIN", group.groupName)
     }
 
-    onPressLeave = () => {
-        this.props.webSocketDisconnect("DISCONNECT")
+    onPressSelectGroup = (group: any) => {
+        this.joinGroup(group);
+    }
+
+    onPressLeave = (groupIndex: number) => {
+        console.log("leaving...");
+        
+        this.props.webSocketDisconnect()
+        const { groups } = this.state;
+        groups[groupIndex].connected = false;
         this.setState({
             groupName: "",
             createdAt: "",
+            groups
         })
     }
-    onPressConnect = (group: any, socketId: any) => {
-        console.log("state", this.state.socketids)
+    onPressConnect = (groupIndex: number, socketId: any) => {
+        console.log("connected sockets", this.state.socketids)
+        const { groups } = this.state;
+        const group = groups[groupIndex];
+        groups[groupIndex].connected = true;
         this.setState({
             groupName: group.groupName,
             createdAt: group.createdAt,
-            members: group.members || 0
+            members: group.members || 0,
+            groups
         })
         if (this.state.socketids.length > 0) {
-            this.props.webSocketConnect("CREATE_OFFER", this.state.socketids[0])
-        }
-    }
-
-    componentDidUpdate() {
-        if (this.state.socketids.length > 0) {
-            this.props.webSocketConnect("CREATE_OFFER", this.state.socketids[0])
+            this.props.webSocketConnect(socketId)
         }
     }
 
     render() {
-        const { groups } = this.props.group;
+        const { groups } = this.state;
 
         return (
             <View style={styles.chatView}>
@@ -168,7 +180,7 @@ class GroupChat extends Component<IProps, IState> {
                     {groups.length > 0 ?
                         <View style={styles.groupView}>
                             {
-                                groups.map((group, index) => {
+                                groups.map((group: any, index: number) => {
                                     return (
                                         <TouchableOpacity key={index} onPress={() => this.onPressSelectGroup(group)}>
                                             <View style={this.state.groupName === group.groupName ?
@@ -176,7 +188,7 @@ class GroupChat extends Component<IProps, IState> {
                                                 <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
 
                                                 <View style={styles.groupNameView}>
-                                                    <View style={{ flexDirection: "row", }}>
+                                                    <View style={{ flexDirection: "row" }}>
                                                         <Text style={styles.groupNameText}>
                                                             {group.groupName}
                                                         </Text>
@@ -184,24 +196,23 @@ class GroupChat extends Component<IProps, IState> {
                                                             <Text style={styles.memberLengthText}>16</Text>
                                                         </View>
                                                     </View>
+                                                    <View style={{ flexDirection: "row" }}>
+                                                        <Text>{group.socketid}</Text>
+                                                    </View>
                                                     <Text style={styles.groupDateTime}>
                                                         {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
                                                         </Text>
-                                                    <Text>
-                                                        Last message
-                                                        </Text>
+                                                    <Text>Last message</Text>
                                                     <View style={{ width: "105%", alignItems: "flex-end" }}>
-                                                        {this.state.groupName === group.groupName ?
-                                                            <TouchableOpacity onPress={() => this.onPressLeave()}>
+                                                        {group.connected === true ?
+                                                            <TouchableOpacity onPress={() => this.onPressLeave(index)}>
                                                                 <Text>Leave</Text>
                                                             </TouchableOpacity>
                                                             :
-                                                            <TouchableOpacity onPress={() => this.onPressConnect(group, "socketId")}>
+                                                            <TouchableOpacity onPress={() => this.onPressConnect(index, group.socketId)}>
                                                                 <Text>Connect</Text>
                                                             </TouchableOpacity>
                                                         }
-
-
                                                     </View>
                                                 </View>
                                             </View>

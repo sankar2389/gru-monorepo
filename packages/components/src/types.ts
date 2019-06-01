@@ -54,7 +54,9 @@ export interface IGroupsInfo {
     creator: string,
     createdAt: any,
     users: string[],
-    members: any[]
+    members: any[],
+    socketid?: string,
+    connected?: boolean
 }
 
 export interface ICreateGrpError extends Error { }

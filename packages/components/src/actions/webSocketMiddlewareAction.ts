@@ -8,27 +8,27 @@ export const webSocketMiddlewareConnectOrJoin = (type: string, groupName: string
         })
     }
 }
-export const webSocketDisconnect = (type: string) => {
+export const webSocketDisconnect = () => {
     return (dispatch: Function) => {
         dispatch({
-            type: type
+            type: "DISCONNECT"
         })
     }
 }
 
-export const webSocketConnect = (type: string, socketId: any) => {
+export const webSocketConnect = (socketId: any) => {
     return (dispatch: Function) => {
         dispatch({
-            type: type,
+            type: "CREATE_OFFER",
             payload: socketId
         })
     }
 }
 
-export const onSendMessage = (type: string, message: string) => {
+export const onSendMessage = (message: string) => {
     return (dispatch: Function) => {
         dispatch({
-            type: type,
+            type: "SEND_MESSAGE",
             payload: message
         })
     }
