@@ -5,7 +5,6 @@ const webrtcMiddleware = (() => {
     const RTCPeerConnection = window.RTCPeerConnection;
     let socketId: string;
     const configuration = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }] };
-    // const connection = { 'optional': [{ 'DtlsSrtpKeyAgreement': true }, { 'RtpDataChannels': true }] };
     const peerconn = new RTCPeerConnection(configuration);
     let dataChannel: RTCDataChannel
 
@@ -20,45 +19,38 @@ const webrtcMiddleware = (() => {
         console.log('onsignalingstatechange');
     };
 
-
-    function logError(error: any) {
-        console.log("logError", error.message);
+    function logError(error: Error) {
+        console.error(error.message);
     }
-    var count = 0;
-    function createOffer(store: any, socketId: string, action: AnyAction) {
+
+    function createOffer(store: any, action: AnyAction) {
+        socketId = action.payload;
         dataChannel = peerconn.createDataChannel("text_chan");
-        if (count === 0) {
-            count++
-        } else {
-            return
-        }
+        
         /** Create local offer */
         peerconn.createOffer({ voiceActivityDetection: false })
             .then(offer => {
-                console.log('createOffer', offer);
                 peerconn.setLocalDescription(new RTCSessionDescription(offer));
             })
             .then(() => {
-                console.log("peerconn.localDescription", peerconn.localDescription)
                 store.dispatch({ type: "EXCHANGE", payload: { 'to': action.payload, 'sdp': peerconn.localDescription } })
             })
             .catch(logError)
 
         dataChannel.onopen = function (event) {
-            console.log('%c dataChannel.onopen', 'background: #222; color: #bada55');
-            // store.dispatch(datachannelOpened());
-            // dataChannel.send("hello message");
+            console.log('%c dataChannel.onopen      ', 'background: #62BD96; color: #000');
+            store.dispatch(datachannelOpened());
         };
         dataChannel.onclose = () => {
-            console.log('%c dataChannel.onclose', 'background: #222; color: #bada55');
+            console.log('%c dataChannel.onclose     ', 'background: #62BD96; color: #000');
         };
 
         dataChannel.onmessage = (event) => {
-            console.log("dataChannel.onmessage:", event.data);
+            console.log('%c dataChannel.onmessage:  ', 'background: #62BD96; color: #000', event.data);
             store.dispatch(incommingMessage(socketId, event.data));
         };
         dataChannel.onerror = (error) => {
-            console.log("dataChannel.onerror", error);
+            console.log('%c dataChannel.onerror:    ', 'background: #F15839; color: #000', error);
         };
     }
 
@@ -87,13 +79,12 @@ const webrtcMiddleware = (() => {
     }
     return (store: any) => (next: any) => (action: any) => {
         peerconn.onicecandidate = function (event) {
-            console.log('onicecandidate');
+            console.log('%c onicecandidate      ', 'background: #62BD96; color: #000');
             if (event.candidate && socketId && socketId !== null) {
                 store.dispatch({ type: "EXCHANGE", payload: { 'to': socketId, 'candidate': event.candidate } })
             }
         };
         peerconn.ondatachannel = function (event) {
-            console.log('ondatachannel');
             const receiveChannel = event.channel;
             receiveChannel.onmessage = function (event) {
                 store.dispatch(incommingMessage(socketId, event.data));
@@ -103,16 +94,13 @@ const webrtcMiddleware = (() => {
 
         switch (action.type) {
             case "CREATE_OFFER":
-                socketId = action.payload;
-                createOffer(store, socketId, action);
+                createOffer(store, action);
                 break;
             case "WEBTRC_EXCHANGE":
                 exchange(store, action.payload);
                 break;
             case "SEND_MESSAGE":
                 dataChannel.send(action.payload);
-                //store.dispatch(incommingMessage(socketId, action.payload));
-                //peerconn.textDataChannel.send(action.payload);
                 break;
             default:
                 return next(action);
