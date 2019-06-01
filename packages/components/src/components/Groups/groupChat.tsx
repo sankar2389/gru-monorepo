@@ -111,8 +111,6 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     onPressLeave = (groupIndex: number) => {
-        console.log("leaving...");
-        
         this.props.webSocketDisconnect()
         const { groups } = this.state;
         groups[groupIndex].connected = false;
@@ -122,8 +120,7 @@ class GroupChat extends Component<IProps, IState> {
             groups
         })
     }
-    onPressConnect = (groupIndex: number, socketId: any) => {
-        console.log("connected sockets", this.state.socketids)
+    onPressConnect = (groupIndex: number, socketId: string) => {
         const { groups } = this.state;
         const group = groups[groupIndex];
         groups[groupIndex].connected = true;
@@ -209,7 +206,7 @@ class GroupChat extends Component<IProps, IState> {
                                                                 <Text>Leave</Text>
                                                             </TouchableOpacity>
                                                             :
-                                                            <TouchableOpacity onPress={() => this.onPressConnect(index, group.socketId)}>
+                                                            <TouchableOpacity onPress={() => this.onPressConnect(index, group.socketid)}>
                                                                 <Text>Connect</Text>
                                                             </TouchableOpacity>
                                                         }

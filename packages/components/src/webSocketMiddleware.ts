@@ -25,8 +25,6 @@ const webSocketMiddleware = (function () {
     const onMembers = (store: any) => (socketId: any) => {
         let socketIds: any;
         AsyncStorage.getItem(MEMBERS_KEY, (err, data: any) => {
-            console.log(data);
-            
             if (data && data !== null) {
                 socketIds = JSON.parse(data);
             }

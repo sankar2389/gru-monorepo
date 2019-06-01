@@ -1,9 +1,9 @@
 import { AnyAction } from "redux";
 import { incommingMessage, datachannelOpened } from './actions';
 
-const webrtcMiddleware = (function () {
+const webrtcMiddleware = (() => {
     const RTCPeerConnection = window.RTCPeerConnection;
-    let socketId: any;
+    let socketId: string;
     const configuration = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }] };
     // const connection = { 'optional': [{ 'DtlsSrtpKeyAgreement': true }, { 'RtpDataChannels': true }] };
     const peerconn = new RTCPeerConnection(configuration);
@@ -25,9 +25,8 @@ const webrtcMiddleware = (function () {
         console.log("logError", error.message);
     }
     var count = 0;
-    function createOffer(store: any, socketId: any, action: AnyAction) {
+    function createOffer(store: any, socketId: string, action: AnyAction) {
         dataChannel = peerconn.createDataChannel("text_chan");
-
         if (count === 0) {
             count++
         } else {
@@ -41,7 +40,6 @@ const webrtcMiddleware = (function () {
                 peerconn.setLocalDescription(new RTCSessionDescription(offer));
             })
             .then(() => {
-
                 console.log("peerconn.localDescription", peerconn.localDescription)
                 store.dispatch({ type: "EXCHANGE", payload: { 'to': action.payload, 'sdp': peerconn.localDescription } })
 
@@ -71,43 +69,39 @@ const webrtcMiddleware = (function () {
 
     var count1 = 0
     function exchange(store: any, data: any) {
-        const peerconn = new RTCPeerConnection(configuration);
+        //const peerconn = new RTCPeerConnection(configuration);
         if (count1 === 0) {
             count1++
         } else {
             return
         }
-        if (socketId === null) {
+        if (!socketId || socketId === null) {
             socketId = data.from;
         }
 
         if (data.sdp) {
-            // const peerconn = new RTCPeerConnection(configuration);
+            const peerconn = new RTCPeerConnection(configuration);
             console.log('exchange sdp', data);
             peerconn.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
-                console.log("peerconn.remoteDescription", peerconn.remoteDescription)
                 if (peerconn.remoteDescription)
                     peerconn.createAnswer((desc) => {
-                        console.log('createAnswer', desc);
                         peerconn.setLocalDescription(desc, () => {
-                            console.log('setLocalDescription', peerconn.localDescription);
                             store.dispatch({ type: "EXCHANGE", payload: { 'to': data.from, 'sdp': peerconn.localDescription } });
                         }, logError);
                     }, logError);
             }, logError);
         } else {
             try {
-                console.log('exchange candidate');
                 peerconn.addIceCandidate(new RTCIceCandidate(data.candidate));
             } catch (error) {
                 console.error("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", error);
             }
         }
     }
-    return (store: any) => (next: any) => (action: any) => {
+    return (store: any, data: any) => (next: any) => (action: any) => {
         peerconn.onicecandidate = function (event) {
             console.log('onicecandidate');
-            if (event.candidate && socketId !== null) {
+            if (event.candidate && socketId && socketId !== null) {
                 store.dispatch({ type: "EXCHANGE", payload: { 'to': socketId, 'candidate': event.candidate } })
             }
         };
