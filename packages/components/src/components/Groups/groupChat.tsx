@@ -50,6 +50,7 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     componentWillReceiveProps(newProps: any) {
+        console.log("newPop", newProps.webrtc)
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
@@ -253,14 +254,14 @@ class GroupChat extends Component<IProps, IState> {
                             </View>
                         </View> : <Text>There is no connected group</Text>}
 
-                    <View style={styles.messageView}>
+                    {/* <View style={styles.messageView}>
                         {
                             messages.length > 0 &&
-                                <View style={styles.receiveMessageView}>
-                                    <Text style={styles.receiveMessaageText}>
-                                        {messages[0].message}
-                                    </Text>
-                                </View>
+                            <View style={styles.receiveMessageView}>
+                                <Text style={styles.receiveMessaageText}>
+                                    {messages[0].message}
+                                </Text>
+                            </View>
                         }
                         {
                             this.state.sendMessage.length > 0 ?
@@ -276,6 +277,41 @@ class GroupChat extends Component<IProps, IState> {
                                 :
                                 <Text />
                         }
+                    </View> */}
+                    <View style={styles.messageView}>
+                        <View style={styles.innerMessageView}>
+                            <View style={styles.receiveMessageView}>
+                                <Text style={styles.receiveMessaageText}>
+                                    receive
+                                </Text>
+                            </View>
+                            <View style={styles.sendMessageView}>
+                                <Text style={styles.sendMessageText}>
+                                    send
+                                 </Text>
+                            </View>
+                            <View style={styles.sendMessageView}>
+                                <Text style={styles.sendMessageText}>
+                                    send send send send send send send send send send send send send
+                                 </Text>
+                            </View>
+                            <View style={styles.receiveMessageView}>
+                                <Text style={styles.receiveMessaageText}>
+                                    receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive
+                                </Text>
+                            </View>
+                            <View style={styles.sendMessageView}>
+                                <Text style={styles.sendMessageText}>
+                                    send send send send send send send send send send send send send
+                                 </Text>
+                            </View>
+                            <View style={styles.receiveMessageView}>
+                                <Text style={styles.receiveMessaageText}>
+                                    receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive
+                                </Text>
+                            </View>
+
+                        </View>
                     </View>
 
 
@@ -371,18 +407,21 @@ const styles = StyleSheet.create({
     memberLengthText: { color: "#ffffff" },
     rightSideView: { flex: 5, },
     messageView: {
-        paddingLeft: 20, paddingRight: 100, marginTop: 20, height: "70%",
-        backgroundColor: "#f0f0f0", overflowY: "scroll"
+        // paddingLeft: 20, paddingRight: 100, marginTop: 20, height: "70%",
+        //  
+        height: "70%", backgroundColor: "#f0f0f0", overflowY: "scroll",
     },
+    innerMessageView: { justifyContent: "space-between" },
     receiveMessageView: {
-        alignItems: "flex-start", paddingTop: 15, marginRight: 650,
+        //alignItems: "flex-start", paddingBottom: 25, marginRight: 650,
+        margin: 10, width: "40%"
     },
-    sendMessageView: { alignItems: "flex-start", paddingTop: 15, marginLeft: 650, },
+    sendMessageView: { alignSelf: "flex-end", margin: 10, width: "40%" },
     messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0" },
     writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, margin: 5 },
-    receiveMessaageText: { backgroundColor: "#DCDCDC", borderRadius: 10, padding: 10, },
+    receiveMessaageText: { alignSelf: "flex-start", backgroundColor: "#DCDCDC", padding: 10, borderRadius: 10 },
     sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5 },
-    sendMessageText: { backgroundColor: "#ffffff", borderRadius: 10, padding: 10, margin: 5 },
+    sendMessageText: { alignSelf: "flex-end", backgroundColor: "#ffffff", padding: 10, borderRadius: 10 },
     sendButtom: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "#DC143C", borderRadius: 5 },
     sendButtonDisable: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "gray", borderRadius: 5 },
     sendButtonText: { fontStyle: "italic", fontFamily: "Open Sans", color: "#ffffff" }
