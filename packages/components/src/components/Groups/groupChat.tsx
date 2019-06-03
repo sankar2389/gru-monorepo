@@ -45,7 +45,7 @@ class GroupChat extends Component<IProps, IState> {
         sendMessage: [],
         socketids: [],
         groups: [],
-        messages: [],
+        messages: [{ from: "self", time: new Date(), message: "hello" }, { from: "sef", time: new Date(), message: "hello" }],
     }
     constructor(props: IProps) {
         super(props);
@@ -261,13 +261,20 @@ class GroupChat extends Component<IProps, IState> {
                                 {messages.map((msg, index) => {
                                     return (
                                         <View style={msg.from === "self" ? styles.sendMessageView : styles.receiveMessageView} key={index}>
-                                            <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
-                                                {msg.message}
-                                                {`\n`}
+                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                            <View>
+                                                <Text style={{ marginLeft: 10 }}>
+                                                    {"User Name"}
+                                                </Text>{}
+                                                <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
+
+                                                    {msg.message}
+
+                                                </Text>
                                                 <Text style={styles.messageTimeText} >
                                                     {moment(msg.time).format('LT')}
                                                 </Text>
-                                            </Text>
+                                            </View>
                                         </View>
                                     )
                                 })}
@@ -374,16 +381,19 @@ const styles = StyleSheet.create({
     innerMessageView: { justifyContent: "space-between" },
     receiveMessageView: {
         //alignItems: "flex-start", paddingBottom: 25, marginRight: 650,
-        margin: 10, width: "40%"
+        width: "40%", backgroundColor: "#DCDCDC", borderRadius: 10, paddingTop: 10, paddingBottom: 10, flexDirection: "row", paddingLeft: 5
     },
-    messageTimeText: { fontSize: 12 },
+    messageTimeText: { fontSize: 12, alignSelf: "flex-start", marginLeft: 9 },
     // receiveMessaageTimeText: { fontSize: 12 },
-    sendMessageView: { alignSelf: "flex-end", margin: 10, width: "40%" },
+    sendMessageView: {
+        alignSelf: "flex-end", flexDirection: "row", width: "40%", backgroundColor: "#ffffff",
+        borderRadius: 10, paddingTop: 10, paddingBottom: 10, paddingLeft: 5
+    },
     messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0" },
     writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, margin: 5 },
-    receiveMessaageText: { alignSelf: "flex-start", backgroundColor: "#DCDCDC", padding: 10, borderRadius: 10 },
+    receiveMessaageText: { alignSelf: "flex-start", marginLeft: 10 },
     sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5 },
-    sendMessageText: { alignSelf: "flex-end", backgroundColor: "#ffffff", padding: 10, borderRadius: 10 },
+    sendMessageText: { alignSelf: "flex-start", marginLeft: 10 },
     sendButtom: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "#DC143C", borderRadius: 5 },
     sendButtonDisable: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "gray", borderRadius: 5 },
     sendButtonText: { fontStyle: "italic", fontFamily: "Open Sans", color: "#ffffff" }
