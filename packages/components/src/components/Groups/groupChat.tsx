@@ -18,7 +18,8 @@ interface IProps extends RouteComponentProps {
 
 interface IMsg {
     from: string,
-    message: string
+    message: string,
+    time: any
 }
 
 interface IState {
@@ -30,7 +31,8 @@ interface IState {
     sendMessage: any,
     socketids: any,
     groups: any,
-    messages: IMsg[]
+    messages: IMsg[],
+
 }
 
 class GroupChat extends Component<IProps, IState> {
@@ -43,14 +45,13 @@ class GroupChat extends Component<IProps, IState> {
         sendMessage: [],
         socketids: [],
         groups: [],
-        messages: []
+        messages: [],
     }
     constructor(props: IProps) {
         super(props);
     }
 
     componentWillReceiveProps(newProps: any) {
-        console.log("newPop", newProps.webrtc)
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
@@ -102,7 +103,7 @@ class GroupChat extends Component<IProps, IState> {
 
     onPressReplyMessage = () => {
         let messages = this.state.messages;
-        messages.push({ from: "self", message: this.state.replyText })
+        messages.push({ from: "self", time: new Date(), message: this.state.replyText })
         this.props.onSendMessage(this.state.replyText)
         this.setState({
             messages: messages,
@@ -257,11 +258,15 @@ class GroupChat extends Component<IProps, IState> {
                     <View style={styles.messageView}>
                         {messages.length > 0 ?
                             <View style={styles.innerMessageView}>
-                                {messages.map(msg => {
+                                {messages.map((msg, index) => {
                                     return (
-                                        <View style={msg.from === "self" ? styles.sendMessageView : styles.receiveMessageView}>
+                                        <View style={msg.from === "self" ? styles.sendMessageView : styles.receiveMessageView} key={index}>
                                             <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
                                                 {msg.message}
+                                                {`\n`}
+                                                <Text style={styles.messageTimeText} >
+                                                    {moment(msg.time).format('LT')}
+                                                </Text>
                                             </Text>
                                         </View>
                                     )
@@ -371,6 +376,8 @@ const styles = StyleSheet.create({
         //alignItems: "flex-start", paddingBottom: 25, marginRight: 650,
         margin: 10, width: "40%"
     },
+    messageTimeText: { fontSize: 12 },
+    // receiveMessaageTimeText: { fontSize: 12 },
     sendMessageView: { alignSelf: "flex-end", margin: 10, width: "40%" },
     messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0" },
     writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, margin: 5 },
