@@ -26,7 +26,7 @@ const webrtcMiddleware = (() => {
     function createOffer(store: any, action: AnyAction) {
         socketId = action.payload;
         dataChannel = peerconn.createDataChannel("text_chan");
-        
+
         /** Create local offer */
         peerconn.createOffer({ voiceActivityDetection: false })
             .then(offer => {
