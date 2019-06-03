@@ -32,6 +32,7 @@ interface IState {
     socketids: any,
     groups: any,
     messages: IMsg[],
+    groupConnected: boolean
 
 }
 
@@ -45,7 +46,8 @@ class GroupChat extends Component<IProps, IState> {
         sendMessage: [],
         socketids: [],
         groups: [],
-        messages: [{ from: "self", time: new Date(), message: "hello" }, { from: "sef", time: new Date(), message: "hello" }],
+        messages: [{ from: "self", time: new Date(), message: "hello" }, { from: "self", time: new Date(), message: "hello" }, { from: "sef", time: new Date(), message: "hello" }, { from: "sef", time: new Date(), message: "hello" }],
+        groupConnected: false
     }
     constructor(props: IProps) {
         super(props);
@@ -142,7 +144,8 @@ class GroupChat extends Component<IProps, IState> {
             groupName: group.groupName,
             createdAt: group.createdAt,
             members: group.members || 0,
-            groups
+            groups,
+            groupConnected: true
         })
         if (this.state.socketids.length > 0) {
             this.props.webSocketConnect(socketId)
@@ -281,27 +284,27 @@ class GroupChat extends Component<IProps, IState> {
                             </View> :
                             <Text />}
                     </View>
+                    {this.state.groupConnected ?
+                        <View style={styles.messageWriteView}>
+                            <TextInput style={styles.writeMessageTextInput}
+                                //ref={component => this._root = component}
+                                autoFocus={true}
+                                placeholder={"Write a reply..."}
+                                multiline={true}
+                                numberOfLines={4}
+                                value={this.state.replyText}
+                                onChangeText={(replyText) => this.onHandelChangeReplyInput(replyText)}
+                            />
+                            <View style={styles.sendButtonView}>
+                                <TouchableOpacity style={this.state.replyText ? styles.sendButtom : styles.sendButtonDisable}
+                                    onPress={() => this.onPressReplyMessage()}
+                                    disabled={this.state.replyText ? false : true}
+                                >
+                                    <Text style={styles.sendButtonText}>Reply</Text>
+                                </TouchableOpacity>
+                            </View>
 
-                    <View style={styles.messageWriteView}>
-                        <TextInput style={styles.writeMessageTextInput}
-                            //ref={component => this._root = component}
-                            autoFocus={true}
-                            placeholder={"Write a reply..."}
-                            multiline={true}
-                            numberOfLines={4}
-                            value={this.state.replyText}
-                            onChangeText={(replyText) => this.onHandelChangeReplyInput(replyText)}
-                        />
-                        <View style={styles.sendButtonView}>
-                            <TouchableOpacity style={this.state.replyText ? styles.sendButtom : styles.sendButtonDisable}
-                                onPress={() => this.onPressReplyMessage()}
-                                disabled={this.state.replyText ? false : true}
-                            >
-                                <Text style={styles.sendButtonText}>Reply</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                    </View>
+                        </View> : <Text />}
 
                 </View>
                 {/* RIGHT SIDE MESSAGE PART END */}
@@ -381,13 +384,13 @@ const styles = StyleSheet.create({
     innerMessageView: { justifyContent: "space-between" },
     receiveMessageView: {
         //alignItems: "flex-start", paddingBottom: 25, marginRight: 650,
-        width: "40%", backgroundColor: "#DCDCDC", borderRadius: 10, paddingTop: 10, paddingBottom: 10, flexDirection: "row", paddingLeft: 5
+        width: "40%", backgroundColor: "#DCDCDC", borderRadius: 10, paddingTop: 10, paddingBottom: 10, flexDirection: "row", paddingLeft: 5, marginBottom: 10
     },
     messageTimeText: { fontSize: 12, alignSelf: "flex-start", marginLeft: 9 },
     // receiveMessaageTimeText: { fontSize: 12 },
     sendMessageView: {
         alignSelf: "flex-end", flexDirection: "row", width: "40%", backgroundColor: "#ffffff",
-        borderRadius: 10, paddingTop: 10, paddingBottom: 10, paddingLeft: 5
+        borderRadius: 10, paddingTop: 10, paddingBottom: 10, paddingLeft: 5, marginBottom: 5
     },
     messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0" },
     writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, margin: 5 },
