@@ -101,11 +101,11 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     onPressReplyMessage = () => {
-        let sendMessage = this.state.sendMessage;
-        sendMessage.push({ from: "seff", message: this.state.replyText })
+        let messages = this.state.messages;
+        messages.push({ from: "self", message: this.state.replyText })
         this.props.onSendMessage(this.state.replyText)
         this.setState({
-            sendMessage: sendMessage,
+            messages: messages,
             replyText: "",
         })
     }
@@ -254,66 +254,21 @@ class GroupChat extends Component<IProps, IState> {
                             </View>
                         </View> : <Text>There is no connected group</Text>}
 
-                    {/* <View style={styles.messageView}>
-                        {
-                            messages.length > 0 &&
-                            <View style={styles.receiveMessageView}>
-                                <Text style={styles.receiveMessaageText}>
-                                    {messages[0].message}
-                                </Text>
-                            </View>
-                        }
-                        {
-                            this.state.sendMessage.length > 0 ?
-                                <View style={styles.sendMessageView}>
-                                    {this.state.sendMessage.map((sendMsg: any, index: number) => {
-                                        return (
-                                            <Text style={styles.sendMessageText} key={index}>
-                                                {sendMsg.message}
-                                            </Text>
-                                        )
-                                    })}
-                                </View>
-                                :
-                                <Text />
-                        }
-                    </View> */}
                     <View style={styles.messageView}>
-                        <View style={styles.innerMessageView}>
-                            <View style={styles.receiveMessageView}>
-                                <Text style={styles.receiveMessaageText}>
-                                    receive
-                                </Text>
-                            </View>
-                            <View style={styles.sendMessageView}>
-                                <Text style={styles.sendMessageText}>
-                                    send
-                                 </Text>
-                            </View>
-                            <View style={styles.sendMessageView}>
-                                <Text style={styles.sendMessageText}>
-                                    send send send send send send send send send send send send send
-                                 </Text>
-                            </View>
-                            <View style={styles.receiveMessageView}>
-                                <Text style={styles.receiveMessaageText}>
-                                    receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive
-                                </Text>
-                            </View>
-                            <View style={styles.sendMessageView}>
-                                <Text style={styles.sendMessageText}>
-                                    send send send send send send send send send send send send send
-                                 </Text>
-                            </View>
-                            <View style={styles.receiveMessageView}>
-                                <Text style={styles.receiveMessaageText}>
-                                    receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive receive
-                                </Text>
-                            </View>
-
-                        </View>
+                        {messages.length > 0 ?
+                            <View style={styles.innerMessageView}>
+                                {messages.map(msg => {
+                                    return (
+                                        <View style={msg.from === "self" ? styles.sendMessageView : styles.receiveMessageView}>
+                                            <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
+                                                {msg.message}
+                                            </Text>
+                                        </View>
+                                    )
+                                })}
+                            </View> :
+                            <Text />}
                     </View>
-
 
                     <View style={styles.messageWriteView}>
                         <TextInput style={styles.writeMessageTextInput}

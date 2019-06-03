@@ -71,11 +71,11 @@ const webSocketMiddleware = (function () {
                 socket.emit('exchange', action.payload);
                 break;
             case "JOIN":
-                // socket.emit('join', action.groupName, (socketIds: any) => {
-                //     store.dispatch(roomJoin);
-                //     AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-                //     store.dispatch(roomMembers(socketIds));
-                // });
+                socket.emit('join', action.groupName, (socketIds: any) => {
+                    store.dispatch(roomJoin);
+                    AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
+                    store.dispatch(roomMembers(socketIds));
+                });
                 break;
             //This action is irrelevant to us, pass it on to the next middleware
             default:
