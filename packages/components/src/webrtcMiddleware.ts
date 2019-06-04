@@ -91,7 +91,6 @@ const webrtcMiddleware = (() => {
             };
         }
 
-
         switch (action.type) {
             case "CREATE_OFFER":
                 createOffer(store, action);

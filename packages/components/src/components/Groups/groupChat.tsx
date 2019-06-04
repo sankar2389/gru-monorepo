@@ -13,13 +13,14 @@ interface IProps extends RouteComponentProps {
     webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void,
     webSocketDisconnect: () => void,
     webSocketConnect: (socketId: any) => void,
-    onSendMessage: (replayText: string) => void
+    onSendMessage: (groupId: string, replayText: string) => void
 };
 
 interface IMsg {
     from: string,
     message: string,
-    time: any
+    time: any,
+    groupId: string
 }
 
 interface IState {
@@ -32,7 +33,8 @@ interface IState {
     socketids: any,
     groups: any,
     messages: IMsg[],
-    groupConnected: boolean
+    groupConnected: boolean,
+    groupId: string
 
 }
 
@@ -46,8 +48,9 @@ class GroupChat extends Component<IProps, IState> {
         sendMessage: [],
         socketids: [],
         groups: [],
-        messages: [{ from: "self", time: new Date(), message: "hello" }, { from: "self", time: new Date(), message: "hello" }, { from: "sef", time: new Date(), message: "hello" }, { from: "sef", time: new Date(), message: "hello" }],
-        groupConnected: false
+        messages: [],
+        groupConnected: false,
+        groupId: ""
     }
     constructor(props: IProps) {
         super(props);
@@ -105,8 +108,8 @@ class GroupChat extends Component<IProps, IState> {
 
     onPressReplyMessage = () => {
         let messages = this.state.messages;
-        messages.push({ from: "self", time: new Date(), message: this.state.replyText })
-        this.props.onSendMessage(this.state.replyText)
+        messages.push({ from: "self", time: new Date(), groupId: this.state.groupId, message: this.state.replyText })
+        this.props.onSendMessage(this.state.groupId, this.state.replyText)
         this.setState({
             messages: messages,
             replyText: "",
@@ -133,7 +136,8 @@ class GroupChat extends Component<IProps, IState> {
         this.setState({
             groupName: "",
             createdAt: "",
-            groups
+            groups,
+            groupConnected: false
         })
     }
     onPressConnect = (groupIndex: number, socketId: string) => {
@@ -145,7 +149,8 @@ class GroupChat extends Component<IProps, IState> {
             createdAt: group.createdAt,
             members: group.members || 0,
             groups,
-            groupConnected: true
+            groupConnected: true,
+            groupId: group._id
         })
         if (this.state.socketids.length > 0) {
             this.props.webSocketConnect(socketId)
@@ -268,11 +273,9 @@ class GroupChat extends Component<IProps, IState> {
                                             <View>
                                                 <Text style={{ marginLeft: 10 }}>
                                                     {"User Name"}
-                                                </Text>{}
+                                                </Text>
                                                 <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
-
                                                     {msg.message}
-
                                                 </Text>
                                                 <Text style={styles.messageTimeText} >
                                                     {moment(msg.time).format('LT')}

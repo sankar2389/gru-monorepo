@@ -25,11 +25,12 @@ export const webSocketConnect = (socketId: any) => {
     }
 }
 
-export const onSendMessage = (message: string) => {
+export const onSendMessage = (groupId: string, message: string) => {
     return (dispatch: Function) => {
         dispatch({
             type: "SEND_MESSAGE",
-            payload: message
+            payload: message,
+            groupId: groupId
         })
     }
 }
