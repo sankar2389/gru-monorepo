@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
-import { IReduxState, IGroup } from "../../types";
+import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage, connected } from "../../actions";
 import moment from "moment";
+
+
+
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
@@ -56,7 +59,6 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     componentWillReceiveProps(newProps: any) {
-        console.log("newProps", newProps.group)
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
@@ -86,6 +88,7 @@ class GroupChat extends Component<IProps, IState> {
         }
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
+        this.joinGroup(this.props.location.state.group);
     }
 
     onPressSetChatButton = (buttonType: string) => {
@@ -158,9 +161,9 @@ class GroupChat extends Component<IProps, IState> {
 
     render() {
         const { groups, messages } = this.state;
-        console.log("groups", groups)
         return (
             <View style={styles.chatView}>
+
                 {/* LEFT SIDE MESSAGE PART START */}
                 <View style={styles.flexLeftView}>
                     <View style={styles.textAndAddButtonView}>
@@ -173,6 +176,7 @@ class GroupChat extends Component<IProps, IState> {
                             <Text style={styles.addButtonText}>+</Text>
                         </TouchableOpacity>
                     </View>
+
                     <View style={styles.chatTypeView}>
                         <TouchableOpacity style={this.state.chatButtonType === "all" ?
                             [styles.selectedChatButton, styles.chatTypeButton] : styles.chatTypeButton}
@@ -191,6 +195,7 @@ class GroupChat extends Component<IProps, IState> {
                             <Text>GROUP</Text>
                         </TouchableOpacity>
                     </View>
+
                     {/* MAP ON GROUP LIST */}
                     {groups.length > 0 ?
                         <View style={styles.groupView}>
