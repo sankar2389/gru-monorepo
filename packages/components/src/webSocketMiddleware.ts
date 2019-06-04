@@ -4,7 +4,7 @@ import { connecting, connected, disconnected, roomMembers, roomMember, roomJoin 
 
 export const MEMBERS_KEY = '@RNAWebRTCApp:room_members';
 export const ROOMS_KEY = '@RNAWebRTCApp:rooms';
-const SOCKET_SERVER_API = process.env.SOCKET_SERVER_API;
+
 
 const webSocketMiddleware = (function () {
     let socket: any
@@ -36,6 +36,7 @@ const webSocketMiddleware = (function () {
     return (store: any) => (next: any) => (action: any) => {
         switch (action.type) {
             case "CONNECT":
+                console.log("connect")
                 // Start a new connection to the server
                 if (socket !== undefined && socket !== null) {
                     socket.close();

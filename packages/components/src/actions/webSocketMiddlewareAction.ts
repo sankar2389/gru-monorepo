@@ -1,6 +1,5 @@
 
 export const webSocketMiddlewareConnectOrJoin = (type: string, groupName: string) => {
-    console.log("type", type)
     return (dispatch: Function) => {
         dispatch({
             type: type,
