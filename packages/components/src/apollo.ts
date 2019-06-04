@@ -4,7 +4,6 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 const CMS_API = process.env.CMS_API;
 const GRAPHQL_ENDPOINT = CMS_API + 'graphql';
 const createApolloClient = (token: string) => {
-  //console.log(GRAPHQL_ENDPOINT);
   const link = new HttpLink({
     uri: GRAPHQL_ENDPOINT,
     headers: {

@@ -7,6 +7,7 @@ import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, T
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup, webSocketMiddlewareConnectOrJoin } from '../../actions';
 import moment from "moment";
 
+
 interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
@@ -27,8 +28,10 @@ interface IState {
     limitDataOnPage: number,
     dropDown: number,
     selectedPaginatateNumber: number,
-    socketConnection: boolean
+    socketConnection: boolean,
+    dWidth: any
 }
+
 
 class GroupView extends Component<IProps, IState> {
     state: IState = {
@@ -42,8 +45,10 @@ class GroupView extends Component<IProps, IState> {
         limitDataOnPage: 9,
         dropDown: -1,
         selectedPaginatateNumber: 1,
-        socketConnection: false
+        socketConnection: false,
+        dWidth: ""
     }
+
     constructor(props: IProps) {
         super(props);
         this.onPressGoToGroupChat = this.onPressGoToGroupChat.bind(this);
@@ -52,6 +57,21 @@ class GroupView extends Component<IProps, IState> {
         const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
         this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
+        window.addEventListener("resize", this.updateDimension)
+    }
+
+
+    // CHECKPAGE LENGTH
+    componentWillMount() {
+        this.updateDimension()
+    }
+    updateDimension = () => {
+        this.setState({
+            dWidth: window.innerWidth
+        })
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimension)
     }
 
     componentWillReceiveProps(newProps: any) {
@@ -245,57 +265,10 @@ class GroupView extends Component<IProps, IState> {
                             </View>
                         </View>
 
-                        {groups.length > 0 ?
-                            <View style={styles.groupListMainContainer}>
-                                {groups.map((group, index) => {
-                                    if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
-                                        return (
 
-                                            <View style={styles.nestedGroupListView} key={index} >
-                                                {/* */}
-                                                <View style={styles.groupListMainContainer}>
-                                                    <TouchableOpacity onPress={() => this.onPressGoToGroupChat(group)}
-                                                        style={styles.goToGroupChatButton}>
-                                                        <View style={styles.textView}>
-                                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                        </View>
 
-                                                        <View style={styles.textView}>
-                                                            <Text style={styles.groupNameText}>
-                                                                {group.groupName}
-                                                            </Text>
-                                                            <Text style={styles.groupDateTime}>
-                                                                {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                                            </Text>
-                                                            <Text>
-                                                                {/* Image */}
-                                                            </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
 
-                                                    <View style={styles.droupDownView}>
-                                                        <Text onPress={() => this.handelDropdownClick(index)} style={styles.dropdownDots}>
-                                                            ...
-                                                        </Text>
-                                                        {this.state.dropDown === index ?
-                                                            <View style={styles.dropdown}>
-                                                                <ul style={{ listStyleType: "none", padding: 5, textAlign: "left", margin: 5 }}>
-                                                                    <li onClick={() => this.onClickEditGroup(group)} style={{ cursor: "pointer" }}>Edit</li>
-                                                                    <li onClick={() => this.onClickDeleteGroup(group._id, group.creator)} style={{ cursor: "pointer" }}>Delete</li>
-                                                                </ul>
-                                                            </View> : <Text />
-                                                        }
-                                                    </View>
-                                                </View>
 
-                                            </View>
-                                        )
-                                    }
-                                })}
-                            </View>
-                            :
-                            <Text />
-                        }
                     </View>
 
                     {/* ADD GROUP MODAL START */}
