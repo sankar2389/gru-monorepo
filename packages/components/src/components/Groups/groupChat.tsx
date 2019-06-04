@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
         padding: 20,
         width: "70%",
     },
-    flexLeftView: { flex: 1.5 },
+    flexLeftView: { flex: 1.8, height: "82vh" },
     textAndAddButtonView: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
     addButton: { backgroundColor: "tomato", padding: 10, borderRadius: 50, height: 40, width: 40 },
     addButtonText: { color: "#ffffff", fontWeight: "900", fontSize: 18 },
