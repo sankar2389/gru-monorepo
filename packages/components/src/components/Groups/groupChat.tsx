@@ -6,9 +6,6 @@ import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, T
 import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage, connected } from "../../actions";
 import moment from "moment";
 
-
-
-
 interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
@@ -247,7 +244,6 @@ class GroupChat extends Component<IProps, IState> {
                 </View>
                 {/* LEFT SIDE MESSAGE PART END */}
 
-
                 {/* RIGHT SIDE MESSAGE PART START */}
                 <View style={styles.rightSideView}>
                     {this.state.groupName.length > 0 ?
@@ -337,7 +333,8 @@ const styles = StyleSheet.create({
         paddingRight: 50,
         paddingBottom: 50,
         display: "flex",
-        flexDirection: "row", flex: 1
+        flexDirection: "row", flex: 1,
+        height: "92.5vh"
     },
     inputStyle: {
         height: 30,
@@ -401,10 +398,10 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end", flexDirection: "row", width: "40%", backgroundColor: "#ffffff",
         borderRadius: 10, paddingTop: 10, paddingBottom: 10, paddingLeft: 5, marginBottom: 5
     },
-    messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0" },
+    messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0", padding: 9 },
     writeMessageTextInput: { width: "92%", height: 60, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, },
     receiveMessaageText: { alignSelf: "flex-start", marginLeft: 10 },
-    sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5 },
+    sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5, padding: 10 },
     sendMessageText: { alignSelf: "flex-start", marginLeft: 10 },
     sendButtom: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "#DC143C", borderRadius: 5 },
     sendButtonDisable: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "gray", borderRadius: 5 },
