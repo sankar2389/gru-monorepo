@@ -287,27 +287,31 @@ class GroupChat extends Component<IProps, IState> {
                             </View> :
                             <Text />}
                     </View>
-                    {this.state.groupConnected ?
-                        <View style={styles.messageWriteView}>
-                            <TextInput style={styles.writeMessageTextInput}
-                                //ref={component => this._root = component}
-                                autoFocus={true}
-                                placeholder={"Write a reply..."}
-                                multiline={true}
-                                numberOfLines={4}
-                                value={this.state.replyText}
-                                onChangeText={(replyText) => this.onHandelChangeReplyInput(replyText)}
-                            />
-                            <View style={styles.sendButtonView}>
-                                <TouchableOpacity style={this.state.replyText ? styles.sendButtom : styles.sendButtonDisable}
-                                    onPress={() => this.onPressReplyMessage()}
-                                    disabled={this.state.replyText ? false : true}
-                                >
-                                    <Text style={styles.sendButtonText}>Reply</Text>
-                                </TouchableOpacity>
-                            </View>
 
-                        </View> : <Text />}
+                    <View style={styles.messageWriteView}>
+                        <TextInput style={styles.writeMessageTextInput}
+                            //ref={component => this._root = component}
+                            autoFocus={true}
+                            editable={this.state.groupConnected ? true : false}
+                            placeholder={this.state.groupConnected ? "Write a reply..." : "Unable to establish connection to the messaging server. Please reload and try again."}
+                            //multiline={true}
+                            numberOfLines={4}
+                            value={this.state.replyText}
+                            onChangeText={(replyText) => this.onHandelChangeReplyInput(replyText)}
+                            onSubmitEditing={() => {
+                                this.onPressReplyMessage()
+                            }}
+                        />
+                        <View style={styles.sendButtonView}>
+                            <TouchableOpacity style={this.state.replyText ? styles.sendButtom : styles.sendButtonDisable}
+                                onPress={() => this.onPressReplyMessage()}
+                                disabled={this.state.replyText ? false : true}
+                            >
+                                <Text style={styles.sendButtonText}>Reply</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                    </View>
 
                 </View>
                 {/* RIGHT SIDE MESSAGE PART END */}
@@ -396,7 +400,7 @@ const styles = StyleSheet.create({
         borderRadius: 10, paddingTop: 10, paddingBottom: 10, paddingLeft: 5, marginBottom: 5
     },
     messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0" },
-    writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, margin: 5 },
+    writeMessageTextInput: { width: "92%", height: 60, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, },
     receiveMessaageText: { alignSelf: "flex-start", marginLeft: 10 },
     sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5 },
     sendMessageText: { alignSelf: "flex-start", marginLeft: 10 },
