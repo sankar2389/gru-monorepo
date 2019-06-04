@@ -2,12 +2,11 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { UserRatesCard } from "../common";
 import UpdateGroup from "./updateGroupComponent";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup } from '../../actions';
-import { string } from "prop-types";
+import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup, webSocketMiddlewareConnectOrJoin } from '../../actions';
 import moment from "moment";
+
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
@@ -15,6 +14,7 @@ interface IProps extends RouteComponentProps {
     createGroup: (groupData: any) => void,
     onDeleteGroup: (groupId: string, creator: string) => void,
     onUpdateGroup: (groupId: string, groupName: string, creator: string) => void,
+    webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void,
 };
 
 interface IState {
@@ -27,9 +27,11 @@ interface IState {
     endDataOnPage: number,
     limitDataOnPage: number,
     dropDown: number,
-    selectedPaginatateNumber: number
+    selectedPaginatateNumber: number,
+    socketConnection: boolean,
     dWidth: any
 }
+
 
 class GroupView extends Component<IProps, IState> {
     state: IState = {
@@ -43,8 +45,10 @@ class GroupView extends Component<IProps, IState> {
         limitDataOnPage: 9,
         dropDown: -1,
         selectedPaginatateNumber: 1,
+        socketConnection: false,
         dWidth: ""
     }
+
     constructor(props: IProps) {
         super(props);
         this.onPressGoToGroupChat = this.onPressGoToGroupChat.bind(this);
@@ -52,8 +56,24 @@ class GroupView extends Component<IProps, IState> {
     async componentDidMount() {
         const user: IStrapiUser = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
+        this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
         window.addEventListener("resize", this.updateDimension)
     }
+
+
+    // CHECKPAGE LENGTH
+    componentWillMount() {
+        this.updateDimension()
+    }
+    updateDimension = () => {
+        this.setState({
+            dWidth: window.innerWidth
+        })
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimension)
+    }
+
 
     componentWillReceiveProps(newProps: any) {
         let groupPageCount = []
@@ -78,6 +98,12 @@ class GroupView extends Component<IProps, IState> {
         this.setState({
             groupPageCount: groupPageCount
         })
+
+        if (newProps.webrtc.connected) {
+            this.setState({
+                socketConnection: true
+            })
+        }
     }
 
     onPressPaginate(pageCount: number) {
@@ -92,7 +118,7 @@ class GroupView extends Component<IProps, IState> {
 
     }
 
-    //pagination Next
+    // Pagination Next
     onPressPaginateNext() {
         if (this.state.endDataOnPage < this.props.group.groups.length) {
             this.setState({
@@ -118,7 +144,7 @@ class GroupView extends Component<IProps, IState> {
         }
     }
 
-    //Create group 
+    // Create group 
     async onPressCreateGroup() {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         if (this.state.groupName.length <= 60 && user.email) {
@@ -135,7 +161,7 @@ class GroupView extends Component<IProps, IState> {
     }
 
 
-    //Delete group
+    // Delete group
     onClickDeleteGroup(groupId: string, creator: string) {
         let confirms = confirm(`Delete confirmation \n Are you want to delete ?`)
         if (confirms) {
@@ -143,7 +169,7 @@ class GroupView extends Component<IProps, IState> {
         }
     }
 
-    //Edit group
+    // Edit group
     onClickEditGroup = (group: any) => {
         if (group) {
             this.setState({
@@ -192,30 +218,21 @@ class GroupView extends Component<IProps, IState> {
     }
 
     onPressGoToGroupChat = (group: any) => {
-        AsyncStorage.getItem('token')
-            .then((authtoken: string | null) => {
-                if (authtoken) {
-                    this.props.history.push({
-                        pathname: '/secure/group-chat',
-                        state: { authtoken, group }
-                    });
-                }
-            })
-    }
+        if (this.state.socketConnection) {
+            AsyncStorage.getItem('token')
+                .then((authtoken: string | null) => {
+                    if (authtoken) {
+                        this.props.history.push({
+                            pathname: '/secure/group-chat',
+                            state: { authtoken, group }
+                        });
+                    }
+                })
+        } else {
+            alert("Socket connection is not established")
+        }
 
-    // CHECKPAGE LENGTH
-    componentWillMount() {
-        this.updateDimension()
     }
-    updateDimension = () => {
-        this.setState({
-            dWidth: window.innerWidth
-        })
-    }
-    componentWillUnmount() {
-        window.removeEventListener("resize", this.updateDimension)
-    }
-
 
 
     render() {
@@ -392,11 +409,11 @@ class GroupView extends Component<IProps, IState> {
     }
 }
 
-const mapStateToProps = ({ auth, group }: any): IReduxState => {
-    return { auth, group };
+const mapStateToProps = ({ auth, group, webrtc }: any): IReduxState => {
+    return { auth, group, webrtc };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup })(GroupView);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup, webSocketMiddlewareConnectOrJoin })(GroupView);
 
 const styles = StyleSheet.create({
     mainViewContainer: { marginLeft: 70, height: 810, marginTop: 70 },

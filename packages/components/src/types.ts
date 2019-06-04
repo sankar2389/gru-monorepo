@@ -8,7 +8,8 @@ export interface IAuth {
 export interface IReduxState {
     auth: IAuth,
     group?: IGroup,
-    buyOrSell?: any[]
+    buyOrSell?: any[],
+    webrtc?: any[]
 }
 
 export interface ISignup {
@@ -40,13 +41,24 @@ export interface IGroup {
     error: Error | null
 }
 
+export interface IWebrtc {
+    connected: boolean,
+    room_joined: boolean,
+    socketids: any,
+    message: any,
+    datachan_stat: boolean,
+}
+
+
 export interface IGroupsInfo {
     _id: string,
     groupName: string,
     creator: string,
     createdAt: any,
     users: string[],
-    members: any[]
+    members: any[],
+    socketid?: string,
+    connected?: boolean
 }
 
 export interface ICreateGrpError extends Error { }

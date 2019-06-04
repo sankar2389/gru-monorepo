@@ -2,17 +2,25 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
-import { UserRatesCard } from "../common";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { getGroupsList } from "../../actions";
+import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage, connected } from "../../actions";
 import moment from "moment";
-
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
     getGroupsList: (creator: string) => void,
-
+    webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void,
+    webSocketDisconnect: () => void,
+    webSocketConnect: (socketId: any) => void,
+    onSendMessage: (groupId: string, replayText: string) => void
 };
+
+interface IMsg {
+    from: string,
+    message: string,
+    time: any,
+    groupId: string
+}
 
 interface IState {
     chatButtonType: string,
@@ -20,7 +28,13 @@ interface IState {
     createdAt: any,
     members: number,
     replyText: string,
-    sendMessage: any
+    sendMessage: any,
+    socketids: any,
+    groups: any,
+    messages: IMsg[],
+    groupConnected: boolean,
+    groupId: string
+
 }
 
 class GroupChat extends Component<IProps, IState> {
@@ -30,12 +44,35 @@ class GroupChat extends Component<IProps, IState> {
         createdAt: "",
         members: 0,
         replyText: "",
-        sendMessage: []
-
+        sendMessage: [],
+        socketids: [],
+        groups: [],
+        messages: [],
+        groupConnected: false,
+        groupId: ""
     }
     constructor(props: IProps) {
         super(props);
+    }
 
+    componentWillReceiveProps(newProps: any) {
+        if (newProps.webrtc.socketids.length > 0) {
+            const { groups } = this.props.group;
+            const { messages } = this.state;
+            const { socketids, message } = newProps.webrtc;
+            socketids.forEach((sid: any, i: number) => {
+                groups[i].socketid = sid;
+                groups[i].connected = false;
+            });
+            if (Object.entries(message).length > 0 && message.constructor === Object) {
+                messages.push(message)
+            }
+            this.setState({
+                socketids: newProps.webrtc.socketids,
+                groups,
+                messages
+            });
+        }
     }
 
     async componentDidMount() {
@@ -48,6 +85,7 @@ class GroupChat extends Component<IProps, IState> {
         }
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
+        this.joinGroup(this.props.location.state.group);
     }
 
     onPressSetChatButton = (buttonType: string) => {
@@ -68,28 +106,65 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     onPressReplyMessage = () => {
-        let sendMessage = this.state.sendMessage;
-        sendMessage.push(this.state.replyText)
+        let messages = this.state.messages;
+        messages.push({ from: "self", time: new Date(), groupId: this.state.groupId, message: this.state.replyText })
+        this.props.onSendMessage(this.state.groupId, this.state.replyText)
         this.setState({
-            sendMessage: sendMessage,
+            messages: messages,
             replyText: "",
         })
-        //this._root.focus()
-
     }
 
-    onPressSelectGroup = (group: any) => {
+    joinGroup = (group: any) => {
         this.setState({
             groupName: group.groupName,
             createdAt: group.createdAt,
             members: group.members || 0
         })
+        this.props.webSocketMiddlewareConnectOrJoin("JOIN", group.groupName)
     }
 
+    onPressSelectGroup = (group: any) => {
+        this.joinGroup(group);
+    }
+
+    onPressLeave = (groupIndex: number) => {
+        this.props.webSocketDisconnect()
+        const { groups } = this.state;
+        groups[groupIndex].connected = false;
+        this.setState({
+            groupName: "",
+            createdAt: "",
+            groups,
+            groupConnected: false
+        })
+    }
+    onPressConnect = (groupIndex: number, socketId: string) => {
+        const { groups } = this.state;
+        const group = groups[groupIndex];
+        // groups[groupIndex].connected = true;
+        for (let i = 0; i < groups.length; i++) {
+            if (i === groupIndex) {
+                groups[i].connected = true;
+            } else {
+                groups[i].connected = false;
+            }
+        }
+        this.setState({
+            groupName: group.groupName,
+            createdAt: group.createdAt,
+            members: group.members || 0,
+            groups,
+            groupConnected: true,
+            groupId: group._id
+        })
+        if (this.state.socketids.length > 0) {
+            this.props.webSocketConnect(socketId)
+        }
+    }
 
     render() {
-        const { groups } = this.props.group;
-
+        const { groups, messages } = this.state;
         return (
             <View style={styles.chatView}>
 
@@ -129,7 +204,7 @@ class GroupChat extends Component<IProps, IState> {
                     {groups.length > 0 ?
                         <View style={styles.groupView}>
                             {
-                                groups.map((group, index) => {
+                                groups.map((group: any, index: number) => {
                                     return (
                                         <TouchableOpacity key={index} onPress={() => this.onPressSelectGroup(group)}>
                                             <View style={this.state.groupName === group.groupName ?
@@ -137,7 +212,7 @@ class GroupChat extends Component<IProps, IState> {
                                                 <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
 
                                                 <View style={styles.groupNameView}>
-                                                    <View style={{ flexDirection: "row", }}>
+                                                    <View style={{ flexDirection: "row" }}>
                                                         <Text style={styles.groupNameText}>
                                                             {group.groupName}
                                                         </Text>
@@ -145,12 +220,24 @@ class GroupChat extends Component<IProps, IState> {
                                                             <Text style={styles.memberLengthText}>16</Text>
                                                         </View>
                                                     </View>
+                                                    <View style={{ flexDirection: "row" }}>
+                                                        <Text>{group.socketid}</Text>
+                                                    </View>
                                                     <Text style={styles.groupDateTime}>
                                                         {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
                                                         </Text>
-                                                    <Text>
-                                                        Last message
-                                                        </Text>
+                                                    <Text>Last message</Text>
+                                                    <View style={{ width: "105%", alignItems: "flex-end" }}>
+                                                        {group.connected === true ?
+                                                            <TouchableOpacity onPress={() => this.onPressLeave(index)}>
+                                                                <Text>Leave</Text>
+                                                            </TouchableOpacity>
+                                                            :
+                                                            <TouchableOpacity onPress={() => this.onPressConnect(index, group.socketid)}>
+                                                                <Text>Connect</Text>
+                                                            </TouchableOpacity>
+                                                        }
+                                                    </View>
                                                 </View>
                                             </View>
                                         </TouchableOpacity>
@@ -164,63 +251,61 @@ class GroupChat extends Component<IProps, IState> {
                 </View>
                 {/* LEFT SIDE MESSAGE PART END */}
 
-
                 {/* RIGHT SIDE MESSAGE PART START */}
                 <View style={styles.rightSideView}>
-                    <View style={styles.rightSideListView}>
-                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                        <View style={styles.groupNameView}>
-                            <Text style={styles.groupNameText}>
-                                {this.state.groupName}
-                            </Text>
-
-                            <Text style={styles.groupDateTime}>
-                                {moment(this.state.createdAt).fromNow()} {""}
-                                {moment(this.state.createdAt).format('h:mm')} | {this.state.members} Members
+                    {this.state.groupName.length > 0 ?
+                        <View style={styles.rightSideListView}>
+                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                            <View style={styles.groupNameView}>
+                                <Text style={styles.groupNameText}>
+                                    {this.state.groupName}
                                 </Text>
-                        </View>
-                    </View>
+
+                                <Text style={styles.groupDateTime}>
+                                    {moment(this.state.createdAt).fromNow()} {""}
+                                    {moment(this.state.createdAt).format('h:mm')} | {this.state.members} Members
+                                </Text>
+                            </View>
+                        </View> : <Text>There is no connected group</Text>}
 
                     <View style={styles.messageView}>
-                        <View style={styles.receiveMessageView}>
-                            <Text style={styles.receiveMessaageText}>
-                                Receive message Receive message  Receive message Receive message  Receive message Receive message Receive message Receive message Receive message Receive message
-                            </Text>
-                        </View>
-                        {this.state.sendMessage.length > 0 ?
-                            <View style={styles.sendMessageView}>
-                                {this.state.sendMessage.map((sendMsg: string, index: number) => {
+                        {messages.length > 0 ?
+                            <View style={styles.innerMessageView}>
+                                {messages.map((msg, index) => {
                                     return (
-                                        <Text style={styles.sendMessageText} key={index}>
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"}
-                                            {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"} {"sendMsg"}
-                                        </Text>
+                                        <View style={msg.from === "self" ? styles.sendMessageView : styles.receiveMessageView} key={index}>
+                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                            <View>
+                                                <Text style={{ marginLeft: 10 }}>
+                                                    {"User Name"}
+                                                </Text>
+                                                <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
+                                                    {msg.message}
+                                                </Text>
+                                                <Text style={styles.messageTimeText} >
+                                                    {moment(msg.time).format('LT')}
+                                                </Text>
+                                            </View>
+                                        </View>
                                     )
                                 })}
-
-                            </View>
-                            :
-                            <Text />
-                        }
+                            </View> :
+                            <Text />}
                     </View>
-
 
                     <View style={styles.messageWriteView}>
                         <TextInput style={styles.writeMessageTextInput}
                             //ref={component => this._root = component}
                             autoFocus={true}
-                            placeholder={"Write a reply..."}
-                            multiline={true}
+                            editable={this.state.groupConnected ? true : false}
+                            placeholder={this.state.groupConnected ? "Write a reply..." : "Unable to establish connection to the messaging server. Please reload and try again."}
+                            //multiline={true}
                             numberOfLines={4}
                             value={this.state.replyText}
                             onChangeText={(replyText) => this.onHandelChangeReplyInput(replyText)}
+                            onSubmitEditing={() => {
+                                this.onPressReplyMessage()
+                            }}
                         />
                         <View style={styles.sendButtonView}>
                             <TouchableOpacity style={this.state.replyText ? styles.sendButtom : styles.sendButtonDisable}
@@ -240,11 +325,11 @@ class GroupChat extends Component<IProps, IState> {
     }
 }
 
-const mapStateToProps = ({ auth, group }: any): IReduxState => {
-    return { auth, group };
+const mapStateToProps = ({ auth, group, webrtc }: any): IReduxState => {
+    return { auth, group, webrtc };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList })(GroupChat);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage })(GroupChat);
 
 const styles = StyleSheet.create({
     chatView: {
@@ -255,7 +340,8 @@ const styles = StyleSheet.create({
         paddingRight: 50,
         paddingBottom: 50,
         display: "flex",
-        flexDirection: "row", flex: 1
+        flexDirection: "row", flex: 1,
+        height: "92.5vh"
     },
     inputStyle: {
         height: 30,
@@ -304,18 +390,26 @@ const styles = StyleSheet.create({
     memberLengthText: { color: "#ffffff" },
     rightSideView: { flex: 5, },
     messageView: {
-        paddingLeft: 20, paddingRight: 100, marginTop: 20, height: "70%",
-        backgroundColor: "#f0f0f0", overflowY: "scroll"
+        // paddingLeft: 20, paddingRight: 100, marginTop: 20, height: "70%",
+        //  
+        height: "70%", backgroundColor: "#f0f0f0", overflowY: "scroll",
     },
+    innerMessageView: { justifyContent: "space-between" },
     receiveMessageView: {
-        alignItems: "flex-start", paddingTop: 15, marginRight: 650,
+        //alignItems: "flex-start", paddingBottom: 25, marginRight: 650,
+        width: "40%", backgroundColor: "#DCDCDC", borderRadius: 10, paddingTop: 10, paddingBottom: 10, flexDirection: "row", paddingLeft: 5, marginBottom: 10
     },
-    sendMessageView: { alignItems: "flex-start", paddingTop: 15, marginLeft: 650, },
-    messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0" },
-    writeMessageTextInput: { width: "92%", height: "70%", marginTop: 5, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, margin: 5 },
-    receiveMessaageText: { backgroundColor: "#DCDCDC", borderRadius: 10, padding: 10, },
-    sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5 },
-    sendMessageText: { backgroundColor: "#ffffff", borderRadius: 10, padding: 10, margin: 5 },
+    messageTimeText: { fontSize: 12, alignSelf: "flex-start", marginLeft: 9 },
+    // receiveMessaageTimeText: { fontSize: 12 },
+    sendMessageView: {
+        alignSelf: "flex-end", flexDirection: "row", width: "40%", backgroundColor: "#ffffff",
+        borderRadius: 10, paddingTop: 10, paddingBottom: 10, paddingLeft: 5, marginBottom: 5
+    },
+    messageWriteView: { alignItems: "center", backgroundColor: "#f0f0f0", padding: 9 },
+    writeMessageTextInput: { width: "92%", height: 60, backgroundColor: "#ffffff", borderRadius: 5, padding: 10, },
+    receiveMessaageText: { alignSelf: "flex-start", marginLeft: 10 },
+    sendButtonView: { width: "92%", alignItems: "flex-end", marginTop: 5, padding: 10 },
+    sendMessageText: { alignSelf: "flex-start", marginLeft: 10 },
     sendButtom: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "#DC143C", borderRadius: 5 },
     sendButtonDisable: { paddingLeft: 20, paddingRight: 20, paddingTop: 10, paddingBottom: 10, backgroundColor: "gray", borderRadius: 5 },
     sendButtonText: { fontStyle: "italic", fontFamily: "Open Sans", color: "#ffffff" }
