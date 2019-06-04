@@ -142,7 +142,14 @@ class GroupChat extends Component<IProps, IState> {
     onPressConnect = (groupIndex: number, socketId: string) => {
         const { groups } = this.state;
         const group = groups[groupIndex];
-        groups[groupIndex].connected = true;
+        // groups[groupIndex].connected = true;
+        for (let i = 0; i < groups.length; i++) {
+            if (i === groupIndex) {
+                groups[i].connected = true;
+            } else {
+                groups[i].connected = false;
+            }
+        }
         this.setState({
             groupName: group.groupName,
             createdAt: group.createdAt,
