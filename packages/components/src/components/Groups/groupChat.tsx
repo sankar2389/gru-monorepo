@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage, connected } from "../../actions";
 import moment from "moment";
+import { any } from "prop-types";
 //import CustomMessage from "../common/customMessage"
 
 interface IProps extends RouteComponentProps {
@@ -63,7 +64,14 @@ class GroupChat extends Component<IProps, IState> {
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
-            const { socketids, message } = newProps.webrtc;
+            const { socketids, socketid, message } = newProps.webrtc;
+
+            // groups.forEach((gorup: any, i: number) => {
+            //     if (gorup.groupName === this.props.location.state.group.groupName) {
+            //         groups[i].socketid = socketid;
+            //         groups[i].connected = true;
+            //     }
+            // })
             socketids.forEach((sid: any, i: number) => {
                 groups[i].socketid = sid;
                 groups[i].connected = false;
@@ -84,7 +92,7 @@ class GroupChat extends Component<IProps, IState> {
         }
     }
 
-    componentWillMount() {
+    async componentWillMount() {
         console.log("connecttttttt will mount")
         this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
     }
@@ -136,7 +144,6 @@ class GroupChat extends Component<IProps, IState> {
             createdAt: group.createdAt,
             members: group.members || 0
         })
-        console.log("jonnnnnnnnnnn")
         this.props.webSocketMiddlewareConnectOrJoin("JOIN", group.groupName)
     }
 
@@ -175,6 +182,8 @@ class GroupChat extends Component<IProps, IState> {
             groupId: group._id
         })
         if (this.state.socketids.length > 0) {
+            this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
+            this.joinGroup(this.props.location.state.group);
             this.props.webSocketConnect(socketId)
         }
     }
@@ -185,6 +194,7 @@ class GroupChat extends Component<IProps, IState> {
                 <View style={styles.groupView}>
                     {
                         this.state.groups.map((group: any, index: number) => {
+                            // if (group.groupName !== this.state.groupName) {
                             return (
                                 <TouchableOpacity key={index} onPress={() => this.onPressSelectGroup(group)}>
                                     <View style={this.state.groupName === group.groupName ?
@@ -205,7 +215,7 @@ class GroupChat extends Component<IProps, IState> {
                                             </View>
                                             <Text style={styles.groupDateTime}>
                                                 {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                            </Text>
+                                                </Text>
                                             <Text>Last message</Text>
                                             <View style={{ width: "105%", alignItems: "flex-end" }}>
                                                 {group.connected === true ?
@@ -222,6 +232,8 @@ class GroupChat extends Component<IProps, IState> {
                                     </View>
                                 </TouchableOpacity>
                             )
+                            // }
+
                         })
                     }
                 </View>
@@ -292,7 +304,6 @@ class GroupChat extends Component<IProps, IState> {
 
     render() {
         const { groups, messages } = this.state;
-        console.log("socketids", this.state.socketids)
         return (
             <View style={styles.mainView}>
                 <View style={styles.chatView}>

@@ -28,9 +28,10 @@ const webSocketMiddleware = (function () {
             if (data && data !== null) {
                 socketIds = JSON.parse(data);
             }
+
             socketIds.push(socketId);
             AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-            store.dispatch(roomMembers(socketIds));
+            store.dispatch(roomMembers(socketIds, socketId));
         })
     }
     return (store: any) => (next: any) => (action: any) => {
@@ -76,7 +77,7 @@ const webSocketMiddleware = (function () {
                     socket.emit('join', action.groupName, (socketIds: any) => {
                         store.dispatch(roomJoin);
                         AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-                        store.dispatch(roomMembers(socketIds));
+                        store.dispatch(roomMembers(socketIds, ""));
                     });
                 }
                 break;

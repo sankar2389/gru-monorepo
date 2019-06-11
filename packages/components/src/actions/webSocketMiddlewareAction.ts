@@ -57,10 +57,11 @@ export const roomJoin = (dispatch: any) => {
         type: "ROOM_JOIN"
     });
 }
-export function roomMembers(socketIds: string) {
+export function roomMembers(socketIds: string, socketId: string) {
     return {
         type: "SOCKETIDS",
-        payload: socketIds
+        payload: socketIds,
+        socketId: socketId
     }
 }
 
