@@ -37,10 +37,12 @@ interface IState {
     groupConnected: boolean,
     groupId: string,
     connectionMessage: boolean,
+    socketId: string,
+    people: string
 
 }
 
-class GroupChat extends Component<IProps, IState> {
+class Chat extends Component<IProps, IState> {
     state: IState = {
         chatButtonType: "group",
         groupName: "",
@@ -54,6 +56,8 @@ class GroupChat extends Component<IProps, IState> {
         groupConnected: false,
         groupId: "",
         connectionMessage: false,
+        socketId: "",
+        people: ""
 
     }
     constructor(props: IProps) {
@@ -82,7 +86,8 @@ class GroupChat extends Component<IProps, IState> {
             this.setState({
                 socketids,
                 groups,
-                messages
+                messages,
+                socketId: socketid
             });
         }
         if (newProps.webrtc.connected) {
@@ -112,8 +117,10 @@ class GroupChat extends Component<IProps, IState> {
     }
 
     onPressSetChatButton = (buttonType: string) => {
+        this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
         this.setState({
-            chatButtonType: buttonType
+            chatButtonType: buttonType,
+
         })
     }
 
@@ -182,10 +189,23 @@ class GroupChat extends Component<IProps, IState> {
             groupId: group._id
         })
         if (this.state.socketids.length > 0) {
-            this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
-            this.joinGroup(this.props.location.state.group);
             this.props.webSocketConnect(socketId)
         }
+    }
+
+    onPressConnectPeople = (group: any) => {
+        this.setState({
+            groupName: group.groupName,
+            createdAt: "",
+            groupConnected: true,
+        })
+
+        this.joinGroup(group.groupName);
+        if (this.state.socketId) {
+            console.log("this.state.socketId", this.state.socketId)
+            this.props.webSocketConnect(this.state.socketId)
+        }
+
     }
 
     renderGroupChat() {
@@ -242,7 +262,7 @@ class GroupChat extends Component<IProps, IState> {
         )
     }
 
-    renderPeopleChat() {
+    renderPeopleChat = () => {
         return (
             this.state.groups.length > 0 ?
                 <View style={styles.groupView}>
@@ -271,7 +291,7 @@ class GroupChat extends Component<IProps, IState> {
                                                         <Text>Leave</Text>
                                                     </TouchableOpacity>
                                                     :
-                                                    <TouchableOpacity onPress={() => this.onPressConnect(index, group.socketid)}>
+                                                    <TouchableOpacity onPress={() => this.onPressConnectPeople(group)}>
                                                         <Text>Connect</Text>
                                                     </TouchableOpacity>
                                                 }
@@ -285,6 +305,7 @@ class GroupChat extends Component<IProps, IState> {
                 </View>
                 :
                 <Text />
+
         )
     }
 
@@ -351,7 +372,7 @@ class GroupChat extends Component<IProps, IState> {
 
                     {/* RIGHT SIDE MESSAGE PART START */}
                     <View style={styles.rightSideView}>
-                        {this.state.groupName.length > 0 ?
+                        {this.state.groupName ?
                             <View style={styles.rightSideListView}>
                                 <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
                                 <View style={styles.groupNameView}>
@@ -437,7 +458,7 @@ const mapStateToProps = ({ auth, group, webrtc }: any): IReduxState => {
     return { auth, group, webrtc };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage })(GroupChat);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage })(Chat);
 
 const styles = StyleSheet.create({
     mainView: {

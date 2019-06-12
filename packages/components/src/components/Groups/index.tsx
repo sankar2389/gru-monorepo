@@ -223,7 +223,7 @@ class GroupView extends Component<IProps, IState> {
                 .then((authtoken: string | null) => {
                     if (authtoken) {
                         this.props.history.push({
-                            pathname: '/secure/group-chat',
+                            pathname: '/secure/chat',
                             state: { authtoken, group }
                         });
                     }

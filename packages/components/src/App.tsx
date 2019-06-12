@@ -9,7 +9,7 @@ import UserRegScreen from './components/UserReg';
 import Dashboard from './components/Dashboard';
 import BuySell from './components/BuySell';
 import GroupView from './components/Groups';
-import GroupChat from "./components/Groups/groupChat";
+import Chat from "./components/Groups/Chat";
 
 import './App.css';
 import Navigation from './components/Navigation';
@@ -27,7 +27,7 @@ export function App() {
           <PrivateRoute path="/secure/dashboard" component={Dashboard} />
           <PrivateRoute path="/secure/buysell" component={BuySell} />
           <PrivateRoute path="/secure/groups" component={GroupView} />
-          <PrivateRoute path="/secure/group-chat" component={GroupChat} />
+          <PrivateRoute path="/secure/chat" component={Chat} />
         </Router>
       </div>
     </Provider>
