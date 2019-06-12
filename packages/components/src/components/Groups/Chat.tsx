@@ -7,6 +7,8 @@ import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, w
 import moment from "moment";
 import { any } from "prop-types";
 import PeopleChat from "./peopleChat"
+import GroupChat from "./groupChat"
+
 //import CustomMessage from "../common/customMessage"
 
 interface IProps extends RouteComponentProps {
@@ -217,77 +219,22 @@ class Chat extends Component<IProps, IState> {
 
     }
 
-    renderGroupChat() {
-        return (
-            this.state.groups.length > 0 ?
-                <View style={styles.groupView}>
-                    {
-                        this.state.groups.map((group: any, index: number) => {
-                            // if (group.groupName !== this.state.groupName) {
-                            return (
-                                <TouchableOpacity key={index} onPress={() => this.onPressSelectGroupOrPeople(group, "group")}>
-                                    <View style={this.state.groupName === group.groupName ?
-                                        [styles.groupListView, styles.selectedGroup] : styles.groupListView}>
-                                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-
-                                        <View style={styles.groupNameView}>
-                                            <View style={{ flexDirection: "row" }}>
-                                                <Text style={styles.groupNameText}>
-                                                    {group.groupName}
-                                                </Text>
-                                                <View style={styles.memberLenght}>
-                                                    <Text style={styles.memberLengthText}>16</Text>
-                                                </View>
-                                            </View>
-                                            <View style={{ flexDirection: "row" }}>
-                                                <Text>{group.socketid}</Text>
-                                            </View>
-                                            <Text style={styles.groupDateTime}>
-                                                {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                                </Text>
-                                            <Text>Last message</Text>
-                                            <View style={{ width: "105%", alignItems: "flex-end" }}>
-                                                {group.connected === true ?
-                                                    <TouchableOpacity onPress={() => this.onPressLeave(index)}>
-                                                        <Text>Leave</Text>
-                                                    </TouchableOpacity>
-                                                    :
-                                                    <TouchableOpacity onPress={() => this.onPressConnect(index, group.socketid)}>
-                                                        <Text>Connect</Text>
-                                                    </TouchableOpacity>
-                                                }
-                                            </View>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            )
-                            // }
-
-                        })
-                    }
-                </View>
-                :
-                <Text />
-        )
-    }
-
-
-    renderAllChat() {
-        return (
-            <Text>All</Text>
-        )
-    }
 
     renderChat() {
         switch (this.state.chatButtonType) {
-            case "group": return this.renderGroupChat();
+            case "group": return <GroupChat
+                groupName={this.state.groupName}
+                groups={this.state.groups}
+                onPressSelectGroupOrPeople={this.onPressSelectGroupOrPeople}
+
+            />;
             case "people": return <PeopleChat
                 peopleName={this.state.groupName}
                 groups={this.state.groups}
                 onPressSelectGroupOrPeople={this.onPressSelectGroupOrPeople}
 
             />;
-
+            case "all": return <Text>All</Text>;
         }
     }
 
