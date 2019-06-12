@@ -66,7 +66,9 @@ const webrtcMiddleware = (() => {
                 if (peerconn.remoteDescription)
                     peerconn.createAnswer((desc) => {
                         peerconn.setLocalDescription(desc, () => {
+                            console.log("descccccccccccc", desc)
                             store.dispatch({ type: "EXCHANGE", payload: { 'to': data.from, 'sdp': peerconn.localDescription } });
+
                         }, logError);
                     }, logError);
             }, logError);

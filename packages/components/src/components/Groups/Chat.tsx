@@ -75,6 +75,7 @@ class Chat extends Component<IProps, IState> {
             const { groups } = this.props.group;
             const { messages } = this.state;
             const { socketids, socketid, message, connected } = newProps.webrtc;
+            console.log("messssssssssage", message)
 
             // groups.forEach((gorup: any, i: number) => {
             //     if (gorup.groupName === this.props.location.state.group.groupName) {
@@ -87,6 +88,8 @@ class Chat extends Component<IProps, IState> {
                 groups[i].connected = false;
             });
             if (Object.entries(message).length > 0 && message.constructor === Object) {
+                messages.push(message)
+            } else {
                 messages.push(message)
             }
             this.setState({
@@ -134,7 +137,11 @@ class Chat extends Component<IProps, IState> {
                 return;
             }
 
+        } else if (buttonType === "group") {
+            this.props.webSocketMiddlewareConnectOrJoin("JOIN", "Group")
         }
+
+
     }
 
     async onPressGetGroupDetails() {
@@ -171,8 +178,6 @@ class Chat extends Component<IProps, IState> {
         if (type === "group") {
             this.joinGroup(joinName);
         } else {
-            this.props.webSocketDisconnect();
-            this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
             this.joinGroup(joinName);
         }
     }
