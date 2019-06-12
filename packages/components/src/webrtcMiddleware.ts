@@ -24,6 +24,7 @@ const webrtcMiddleware = (() => {
     }
 
     function createOffer(store: any, action: AnyAction) {
+        console.log("annnnnnnnn", action)
         socketId = action.payload;
         dataChannel = peerconn.createDataChannel("text_chan");
 

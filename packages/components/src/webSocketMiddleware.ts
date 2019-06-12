@@ -1,6 +1,7 @@
 import { AsyncStorage } from 'react-native';
 import io from 'socket.io-client';
 import { connecting, connected, disconnected, roomMembers, roomMember, roomJoin } from './actions/index';
+import { string } from 'prop-types';
 
 export const MEMBERS_KEY = '@RNAWebRTCApp:room_members';
 export const ROOMS_KEY = '@RNAWebRTCApp:rooms';
@@ -28,8 +29,8 @@ const webSocketMiddleware = (function () {
             if (data && data !== null) {
                 socketIds = JSON.parse(data);
             }
-
             socketIds.push(socketId);
+            //socketIds = socketIds.filter((socket: string) => socket === socketId),
             AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
             store.dispatch(roomMembers(socketIds, socketId));
         })

@@ -42,7 +42,8 @@ interface IState {
     groupId: string,
     connectionMessage: boolean,
     socketId: string,
-    people: string
+    people: string,
+    peopleTabCount: number
 
 }
 
@@ -61,7 +62,8 @@ class Chat extends Component<IProps, IState> {
         groupId: "",
         connectionMessage: false,
         socketId: "",
-        people: ""
+        people: "",
+        peopleTabCount: 0
 
     }
     constructor(props: IProps) {
@@ -72,7 +74,7 @@ class Chat extends Component<IProps, IState> {
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
-            const { socketids, socketid, message } = newProps.webrtc;
+            const { socketids, socketid, message, connected } = newProps.webrtc;
 
             // groups.forEach((gorup: any, i: number) => {
             //     if (gorup.groupName === this.props.location.state.group.groupName) {
@@ -120,14 +122,19 @@ class Chat extends Component<IProps, IState> {
     }
 
     onPressSetChatButton = (buttonType: string) => {
-        //this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
-        if (buttonType === "people") {
-            this.props.webSocketMiddlewareConnectOrJoin("JOIN", "COMMONPEOPLE")
-        }
         this.setState({
             chatButtonType: buttonType,
 
         })
+        if (buttonType === "people") {
+            if (this.state.peopleTabCount === 0) {
+                this.setState({ peopleTabCount: 1 })
+                this.props.webSocketMiddlewareConnectOrJoin("JOIN", "COMMONPEOPLE")
+            } else {
+                return;
+            }
+
+        }
     }
 
     async onPressGetGroupDetails() {
