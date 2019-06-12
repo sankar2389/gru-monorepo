@@ -14,7 +14,7 @@ export default (state: IWebrtc = initState, action: AnyAction): IWebrtc => {
         case "CONNECTED":
             return { ...state, connected: true };
         case "DISCONNECTED":
-            return { ...state, connected: false, room_joined: false };
+            return { ...state, connected: false, room_joined: false, socketids: [] };
         case "SOCKETIDS":
             return { ...state, socketids: action.payload, socketid: action.socketId };
         case "MESSAGE":

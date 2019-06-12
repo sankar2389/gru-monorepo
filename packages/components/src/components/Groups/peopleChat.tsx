@@ -9,7 +9,7 @@ import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, T
 interface IProps {
     groups: any,
     peopleName: string,
-    onPressSelectGroupOrPeople: Function
+    onPressConnect: Function
 
 }
 interface IState {
@@ -33,7 +33,7 @@ class PeopleChat extends Component<IProps, IState> {
                     {
                         this.props.groups.map((group: any, index: number) => {
                             return (
-                                <TouchableOpacity key={index} onPress={() => this.props.onPressSelectGroupOrPeople(group, "people")}>
+                                <TouchableOpacity key={index} onPress={() => this.props.onPressConnect(index, group.socketid)}>
                                     <View style={styles.groupListView}>
                                         <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
                                         <View style={styles.groupNameView}>

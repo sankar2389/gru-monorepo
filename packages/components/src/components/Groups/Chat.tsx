@@ -102,7 +102,6 @@ class Chat extends Component<IProps, IState> {
     }
 
     async componentWillMount() {
-        console.log("connecttttttt will mount")
         this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
     }
 
@@ -123,7 +122,7 @@ class Chat extends Component<IProps, IState> {
     onPressSetChatButton = (buttonType: string) => {
         //this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
         if (buttonType === "people") {
-            this.props.webSocketMiddlewareConnectOrJoin("JOIN", "commonPeople")
+            this.props.webSocketMiddlewareConnectOrJoin("JOIN", "COMMONPEOPLE")
         }
         this.setState({
             chatButtonType: buttonType,
@@ -165,6 +164,8 @@ class Chat extends Component<IProps, IState> {
         if (type === "group") {
             this.joinGroup(joinName);
         } else {
+            this.props.webSocketDisconnect();
+            this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
             this.joinGroup(joinName);
         }
     }
@@ -204,20 +205,20 @@ class Chat extends Component<IProps, IState> {
         }
     }
 
-    onPressConnectPeople = (group: any) => {
-        this.setState({
-            groupName: group.groupName,
-            createdAt: "",
-            groupConnected: true,
-        })
+    // onPressConnectPeople = (group: any) => {
+    //     this.setState({
+    //         groupName: group.groupName,
+    //         createdAt: "",
+    //         groupConnected: true,
+    //     })
 
-        this.joinGroup(group.groupName);
-        if (this.state.socketId) {
-            console.log("this.state.socketId", this.state.socketId)
-            this.props.webSocketConnect(this.state.socketId)
-        }
+    //     this.joinGroup(group.groupName);
+    //     if (this.state.socketId) {
+    //         console.log("this.state.socketId", this.state.socketId)
+    //         this.props.webSocketConnect(this.state.socketId)
+    //     }
 
-    }
+    // }
 
 
     renderChat() {
@@ -231,7 +232,7 @@ class Chat extends Component<IProps, IState> {
             case "people": return <PeopleChat
                 peopleName={this.state.groupName}
                 groups={this.state.groups}
-                onPressSelectGroupOrPeople={this.onPressSelectGroupOrPeople}
+                onPressConnect={this.onPressConnect}
 
             />;
             case "all": return <Text>All</Text>;
