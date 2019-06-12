@@ -88,6 +88,8 @@ const webrtcMiddleware = (() => {
             }
         };
         peerconn.ondatachannel = function (event) {
+
+            console.log("evetnnnnt", event)
             const receiveChannel = event.channel;
             receiveChannel.onmessage = function (event) {
                 store.dispatch(incommingMessage(socketId, event.data));

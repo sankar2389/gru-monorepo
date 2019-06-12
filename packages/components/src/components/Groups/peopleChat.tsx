@@ -33,8 +33,10 @@ class PeopleChat extends Component<IProps, IState> {
                     {
                         this.props.groups.map((group: any, index: number) => {
                             return (
-                                <TouchableOpacity key={index} onPress={() => this.props.onPressConnect(index, group.socketid)}>
-                                    <View style={styles.groupListView}>
+                                <TouchableOpacity key={index} onPress={() => this.props.onPressConnect(index, group.socketid)}
+                                    disabled={this.props.peopleName == group.groupName ? true : false}>
+                                    <View style={this.props.peopleName === group.groupName ?
+                                        [styles.groupListView, styles.selectedGroup] : styles.groupListView}>
                                         <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
                                         <View style={styles.groupNameView}>
                                             <View style={{ flexDirection: "row" }}>
