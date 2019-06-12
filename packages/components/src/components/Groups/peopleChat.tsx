@@ -6,44 +6,50 @@ import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, T
 
 //import CustomMessage from "../common/customMessage"
 
+interface IProps {
+    groups: any,
+    peopleName: string,
+    onPressSelectGroupOrPeople: Function
 
-interface IState { }
+}
+interface IState {
+    peopleName: string,
+}
 
-class PeopleChat extends Component<IState> {
+class PeopleChat extends Component<IProps, IState> {
     state: IState = {
+        peopleName: this.props.peopleName || "",
     }
+    constructor(props: IProps) {
+        super(props);
 
+    }
     render() {
         // const { groups, messages } = this.props;
+        console.log(this.state.peopleName)
         return (
             this.props.groups.length > 0 ?
                 <View style={styles.groupView}>
                     {
-                        this.state.groups.map((group: any, index: number) => {
-                            // if (group.groupName !== this.state.groupName) {
+                        this.props.groups.map((group: any, index: number) => {
                             return (
-                                <TouchableOpacity key={index} onPress={() => this.onPressSelectGroup(group)}>
-                                    <View style={this.state.groupName === group.groupName ?
-                                        [styles.groupListView, styles.selectedGroup] : styles.groupListView}>
+                                <TouchableOpacity key={index} onPress={() => this.props.onPressSelectGroupOrPeople(group, "people")}>
+                                    <View style={styles.groupListView}>
                                         <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-
                                         <View style={styles.groupNameView}>
                                             <View style={{ flexDirection: "row" }}>
                                                 <Text style={styles.groupNameText}>
                                                     {group.groupName}
                                                 </Text>
-                                                <View style={styles.memberLenght}>
-                                                    <Text style={styles.memberLengthText}>16</Text>
-                                                </View>
                                             </View>
                                             <View style={{ flexDirection: "row" }}>
                                                 <Text>{group.socketid}</Text>
                                             </View>
-                                            <Text style={styles.groupDateTime}>
+                                            {/* <Text style={styles.groupDateTime}>
                                                 {moment(group.createdAt).fromNow()} {moment(group.createdAt).format('h:mm')} | {group.members.length} Members
-                                                </Text>
+                                                </Text> */}
                                             <Text>Last message</Text>
-                                            <View style={{ width: "105%", alignItems: "flex-end" }}>
+                                            {/* <View style={{ width: "105%", alignItems: "flex-end" }}>
                                                 {group.connected === true ?
                                                     <TouchableOpacity onPress={() => this.onPressLeave(index)}>
                                                         <Text>Leave</Text>
@@ -53,13 +59,11 @@ class PeopleChat extends Component<IState> {
                                                         <Text>Connect</Text>
                                                     </TouchableOpacity>
                                                 }
-                                            </View>
+                                            </View> */}
                                         </View>
                                     </View>
                                 </TouchableOpacity>
                             )
-                            // }
-
                         })
                     }
                 </View>

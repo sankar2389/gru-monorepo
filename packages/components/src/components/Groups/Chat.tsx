@@ -119,7 +119,10 @@ class Chat extends Component<IProps, IState> {
     }
 
     onPressSetChatButton = (buttonType: string) => {
-        this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
+        //this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
+        if (buttonType === "people") {
+            this.props.webSocketMiddlewareConnectOrJoin("JOIN", "commonPeople")
+        }
         this.setState({
             chatButtonType: buttonType,
 
@@ -156,8 +159,12 @@ class Chat extends Component<IProps, IState> {
         this.props.webSocketMiddlewareConnectOrJoin("JOIN", group.groupName)
     }
 
-    onPressSelectGroup = (group: any) => {
-        this.joinGroup(group);
+    onPressSelectGroupOrPeople = (joinName: any, type: string) => {
+        if (type === "group") {
+            this.joinGroup(joinName);
+        } else {
+            this.joinGroup(joinName);
+        }
     }
 
     onPressLeave = (groupIndex: number) => {
@@ -218,7 +225,7 @@ class Chat extends Component<IProps, IState> {
                         this.state.groups.map((group: any, index: number) => {
                             // if (group.groupName !== this.state.groupName) {
                             return (
-                                <TouchableOpacity key={index} onPress={() => this.onPressSelectGroup(group)}>
+                                <TouchableOpacity key={index} onPress={() => this.onPressSelectGroupOrPeople(group, "group")}>
                                     <View style={this.state.groupName === group.groupName ?
                                         [styles.groupListView, styles.selectedGroup] : styles.groupListView}>
                                         <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
@@ -274,7 +281,12 @@ class Chat extends Component<IProps, IState> {
     renderChat() {
         switch (this.state.chatButtonType) {
             case "group": return this.renderGroupChat();
-            case "people": return <PeopleChat groups={this.state.groups} />;
+            case "people": return <PeopleChat
+                peopleName={this.state.groupName}
+                groups={this.state.groups}
+                onPressSelectGroupOrPeople={this.onPressSelectGroupOrPeople}
+
+            />;
 
         }
     }
