@@ -6,6 +6,7 @@ import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, T
 import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage, connected } from "../../actions";
 import moment from "moment";
 import { any } from "prop-types";
+import PeopleChat from "./peopleChat"
 //import CustomMessage from "../common/customMessage"
 
 interface IProps extends RouteComponentProps {
@@ -14,7 +15,8 @@ interface IProps extends RouteComponentProps {
     webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void,
     webSocketDisconnect: () => void,
     webSocketConnect: (socketId: any) => void,
-    onSendMessage: (groupId: string, replayText: string) => void
+    onSendMessage: (groupId: string, replayText: string) => void,
+    groups: any
 };
 
 interface IMsg {
@@ -262,52 +264,6 @@ class Chat extends Component<IProps, IState> {
         )
     }
 
-    renderPeopleChat = () => {
-        return (
-            this.state.groups.length > 0 ?
-                <View style={styles.groupView}>
-                    {
-                        this.state.groups.map((group: any, index: number) => {
-                            return (
-                                <TouchableOpacity key={index} onPress={() => this.onPressSelectGroup(group)}>
-                                    <View style={this.state.groupName === group.groupName ?
-                                        [styles.groupListView, styles.selectedGroup] : styles.groupListView}>
-                                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-
-                                        <View style={styles.groupNameView}>
-                                            <View style={{ flexDirection: "row" }}>
-                                                <Text style={styles.groupNameText}>
-                                                    {group.groupName}
-                                                </Text>
-                                            </View>
-                                            <View style={{ flexDirection: "row" }}>
-                                                <Text>{group.socketid}</Text>
-                                            </View>
-
-                                            <Text>Last people message</Text>
-                                            <View style={{ width: "105%", alignItems: "flex-end" }}>
-                                                {group.connected === true ?
-                                                    <TouchableOpacity onPress={() => this.onPressLeave(index)}>
-                                                        <Text>Leave</Text>
-                                                    </TouchableOpacity>
-                                                    :
-                                                    <TouchableOpacity onPress={() => this.onPressConnectPeople(group)}>
-                                                        <Text>Connect</Text>
-                                                    </TouchableOpacity>
-                                                }
-                                            </View>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            )
-                        })
-                    }
-                </View>
-                :
-                <Text />
-
-        )
-    }
 
     renderAllChat() {
         return (
@@ -318,8 +274,8 @@ class Chat extends Component<IProps, IState> {
     renderChat() {
         switch (this.state.chatButtonType) {
             case "group": return this.renderGroupChat();
-            case "people": return this.renderPeopleChat();
-            case "all": return this.renderAllChat();
+            case "people": return <PeopleChat groups={this.state.groups} />;
+
         }
     }
 
