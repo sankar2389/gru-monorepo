@@ -30,15 +30,13 @@ const webSocketMiddleware = (function () {
                 socketIds = JSON.parse(data);
             }
             socketIds.push(socketId);
-            //socketIds = socketIds.filter((socket: string) => socket === socketId),
             AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-            store.dispatch(roomMembers(socketIds, socketId));
+            store.dispatch(roomMembers(socketIds));
         })
     }
     return (store: any) => (next: any) => (action: any) => {
         switch (action.type) {
             case "CONNECT":
-                console.log("connect")
                 // Start a new connection to the server
                 if (socket !== undefined && socket !== null) {
                     socket.close();
@@ -78,7 +76,7 @@ const webSocketMiddleware = (function () {
                     socket.emit('join', action.groupName, (socketIds: any) => {
                         store.dispatch(roomJoin);
                         AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-                        store.dispatch(roomMembers(socketIds, ""));
+                        store.dispatch(roomMembers(socketIds));
                     });
                 }
                 break;

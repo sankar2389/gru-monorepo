@@ -24,7 +24,6 @@ const webrtcMiddleware = (() => {
     }
 
     function createOffer(store: any, action: AnyAction) {
-        console.log("annnnnnnnn", action)
         socketId = action.payload;
         dataChannel = peerconn.createDataChannel("text_chan");
 
@@ -56,7 +55,6 @@ const webrtcMiddleware = (() => {
     }
 
     function exchange(store: any, data: any) {
-        console.log("data", data)
         if (!socketId || socketId === null) {
             socketId = data.from;
         }
@@ -64,6 +62,7 @@ const webrtcMiddleware = (() => {
         if (data.sdp) {
             console.log('exchange sdp', data);
             peerconn.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
+                console.log("peerconn.remoteDescription", peerconn.remoteDescription)
                 if (peerconn.remoteDescription)
                     peerconn.createAnswer((desc) => {
                         peerconn.setLocalDescription(desc, () => {
@@ -89,11 +88,8 @@ const webrtcMiddleware = (() => {
             }
         };
         peerconn.ondatachannel = function (event) {
-
-            console.log("evetnnnnt", event)
             const receiveChannel = event.channel;
             receiveChannel.onmessage = function (event) {
-                console.log("in event", event)
                 store.dispatch(incommingMessage(socketId, event.data));
             };
         }
@@ -106,15 +102,12 @@ const webrtcMiddleware = (() => {
                 exchange(store, action.payload);
                 break;
             case "SEND_MESSAGE":
-                console.log("dataaaaaaaaaaaaChannel", dataChannel.readyState)
                 if (dataChannel.readyState === "open") {
                     dataChannel.send(JSON.stringify(action.payload));
                 } else {
                     alert("Please connect one first")
                     // dataChannel.send(action.payload);
                 }
-
-
                 break;
             default:
                 return next(action);

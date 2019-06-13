@@ -41,8 +41,7 @@ interface IState {
     groupConnected: boolean,
     groupId: string,
     connectionMessage: boolean,
-    socketId: string,
-    people: string,
+    // people: string,
     peopleTabCount: number,
     messageBackup: any
 
@@ -62,8 +61,7 @@ class Chat extends Component<IProps, IState> {
         groupConnected: false,
         groupId: "",
         connectionMessage: false,
-        socketId: "",
-        people: "",
+        // people: "",
         peopleTabCount: 0,
         messageBackup: []
 
@@ -76,7 +74,7 @@ class Chat extends Component<IProps, IState> {
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
-            const { socketids, socketid, message } = newProps.webrtc;
+            const { socketids, message } = newProps.webrtc;
             socketids.forEach((sid: any, i: number) => {
                 groups[i].socketid = sid;
                 groups[i].connected = false;
@@ -100,7 +98,6 @@ class Chat extends Component<IProps, IState> {
                 socketids,
                 groups,
                 messages,
-                socketId: socketid
             });
         }
         if (newProps.webrtc.connected) {
@@ -267,8 +264,6 @@ class Chat extends Component<IProps, IState> {
         return (
             <View style={styles.mainView}>
                 <View style={styles.chatView}>
-
-
                     {/* LEFT SIDE MESSAGE PART START */}
                     <View style={styles.flexLeftView}>
                         <View style={styles.textAndAddButtonView}>
@@ -301,13 +296,11 @@ class Chat extends Component<IProps, IState> {
                             </TouchableOpacity>
                         </View>
 
-
-                        {/* MAP ON Chat LIST */}
+                        {/* START CHAT TYPE RENDER */}
                         {this.renderChat()}
-                        {/* END MAP ON CHAT LIST */}
+                        {/* END CHAT TYPE RENDER */}
                     </View>
                     {/* LEFT SIDE MESSAGE PART END */}
-
 
                     {/* RIGHT SIDE MESSAGE PART START */}
                     <View style={styles.rightSideView}>
