@@ -65,12 +65,12 @@ export function roomMembers(socketIds: string, socketId: string) {
     }
 }
 
-export function roomMember(socketId: string) {
-    return {
-        type: "SOCKETIDS",
-        payload: socketId
-    }
-}
+// export function roomMember(socketId: string) {
+//     return {
+//         type: "SOCKETIDS",
+//         payload: socketId
+//     }
+// }
 
 export function incommingMessage(from: string, message: string) {
     return {

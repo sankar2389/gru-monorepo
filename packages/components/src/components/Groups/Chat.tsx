@@ -24,7 +24,7 @@ interface IProps extends RouteComponentProps {
 interface IMsg {
     from: string,
     message: string,
-    //time: any,
+    time: any,
     groupId: string
 }
 
@@ -43,7 +43,8 @@ interface IState {
     connectionMessage: boolean,
     socketId: string,
     people: string,
-    peopleTabCount: number
+    peopleTabCount: number,
+    messageBackup: any
 
 }
 
@@ -63,7 +64,8 @@ class Chat extends Component<IProps, IState> {
         connectionMessage: false,
         socketId: "",
         people: "",
-        peopleTabCount: 0
+        peopleTabCount: 0,
+        messageBackup: []
 
     }
     constructor(props: IProps) {
@@ -75,7 +77,7 @@ class Chat extends Component<IProps, IState> {
             const { groups } = this.props.group;
             const { messages } = this.state;
             const { socketids, socketid, message, connected } = newProps.webrtc;
-            console.log("messssssssssage", message.message)
+            console.log("messssssssssage", message)
 
             // groups.forEach((gorup: any, i: number) => {
             //     if (gorup.groupName === this.props.location.state.group.groupName) {
@@ -88,12 +90,14 @@ class Chat extends Component<IProps, IState> {
                 groups[i].connected = false;
             });
 
-            if (message.message !== undefined) {
-
-
-                messages.push(message)
-
+            if (this.state.messageBackup.length > 0) {
+                this.setState({ messages: this.state.messageBackup, messageBackup: [] })
+            } else {
+                if (message.message !== undefined) {
+                    messages.push(message)
+                }
             }
+
             // if (Object.entries(message).length > 0 && message.constructor === Object) {
             //     messages.push(message)
             // } else {
@@ -166,7 +170,7 @@ class Chat extends Component<IProps, IState> {
 
     onPressReplyMessage = () => {
         let messages = this.state.messages;
-        messages.push({ from: "self", groupId: this.state.groupId, message: this.state.replyText })
+        messages.push({ from: "self", time: new Date(), groupId: this.state.groupId, message: this.state.replyText })
         this.props.onSendMessage(this.state.groupId, this.state.replyText)
         this.setState({
             messages: messages,
@@ -219,8 +223,10 @@ class Chat extends Component<IProps, IState> {
             members: group.members || 0,
             groups,
             groupConnected: true,
-            groupId: group._id
+            groupId: group._id,
+            messageBackup: this.state.messages
         })
+
         if (this.state.socketids.length > 0) {
             this.props.webSocketConnect(socketId)
         }
@@ -338,9 +344,9 @@ class Chat extends Component<IProps, IState> {
                                                     <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
                                                         {msg.message}
                                                     </Text>
-                                                    {/* <Text style={styles.messageTimeText} >
+                                                    <Text style={styles.messageTimeText} >
                                                         {moment(msg.time).format('LT')}
-                                                    </Text> */}
+                                                    </Text>
                                                 </View>
                                             </View>
                                         )
