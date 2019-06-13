@@ -76,7 +76,7 @@ class Chat extends Component<IProps, IState> {
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
-            const { socketids, socketid, message, connected } = newProps.webrtc;
+            const { socketids, socketid, message } = newProps.webrtc;
             socketids.forEach((sid: any, i: number) => {
                 groups[i].socketid = sid;
                 groups[i].connected = false;
@@ -125,7 +125,6 @@ class Chat extends Component<IProps, IState> {
         }
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
-        //this.props.webSocketMiddlewareConnectOrJoin("CONNECT", "")
         this.joinGroup(this.props.location.state.group);
     }
 
@@ -207,7 +206,6 @@ class Chat extends Component<IProps, IState> {
     onPressConnect = (groupIndex: number, socketId: string) => {
         const { groups } = this.state;
         const group = groups[groupIndex];
-        // groups[groupIndex].connected = true;
         for (let i = 0; i < groups.length; i++) {
             if (i === groupIndex) {
                 groups[i].connected = true;
