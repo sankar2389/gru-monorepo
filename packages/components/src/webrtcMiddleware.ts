@@ -56,6 +56,7 @@ const webrtcMiddleware = (() => {
     }
 
     function exchange(store: any, data: any) {
+        console.log("data", data)
         if (!socketId || socketId === null) {
             socketId = data.from;
         }
@@ -92,6 +93,7 @@ const webrtcMiddleware = (() => {
             console.log("evetnnnnt", event)
             const receiveChannel = event.channel;
             receiveChannel.onmessage = function (event) {
+                console.log("in event", event)
                 store.dispatch(incommingMessage(socketId, event.data));
             };
         }
@@ -104,7 +106,8 @@ const webrtcMiddleware = (() => {
                 exchange(store, action.payload);
                 break;
             case "SEND_MESSAGE":
-                dataChannel.send(action.payload);
+                dataChannel.send(JSON.stringify(action.payload));
+                // dataChannel.send(action.payload);
                 break;
             default:
                 return next(action);

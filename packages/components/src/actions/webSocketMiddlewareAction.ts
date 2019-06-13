@@ -26,10 +26,14 @@ export const webSocketConnect = (socketId: any) => {
 
 export const onSendMessage = (groupId: string, message: string) => {
     return (dispatch: Function) => {
+        let messageData = {
+            groupId: groupId,
+            message: message
+        }
         dispatch({
             type: "SEND_MESSAGE",
-            payload: message,
-            groupId: groupId
+            payload: messageData,
+
         })
     }
 }

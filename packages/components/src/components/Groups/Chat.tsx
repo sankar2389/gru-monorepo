@@ -25,7 +25,7 @@ interface IMsg {
     from: string,
     message: string,
     time: any,
-    groupId: string
+    //groupId: string
 }
 
 interface IState {
@@ -77,14 +77,6 @@ class Chat extends Component<IProps, IState> {
             const { groups } = this.props.group;
             const { messages } = this.state;
             const { socketids, socketid, message, connected } = newProps.webrtc;
-            console.log("messssssssssage", message)
-
-            // groups.forEach((gorup: any, i: number) => {
-            //     if (gorup.groupName === this.props.location.state.group.groupName) {
-            //         groups[i].socketid = socketid;
-            //         groups[i].connected = true;
-            //     }
-            // })
             socketids.forEach((sid: any, i: number) => {
                 groups[i].socketid = sid;
                 groups[i].connected = false;
@@ -103,7 +95,6 @@ class Chat extends Component<IProps, IState> {
             // } else {
             //     messages.push(message)
             // }
-            console.log("messsssagedddddsss", messages)
 
             this.setState({
                 socketids,
@@ -128,7 +119,8 @@ class Chat extends Component<IProps, IState> {
             this.setState({
                 groupName: this.props.location.state.group.groupName,
                 createdAt: this.props.location.state.group.createdAt,
-                members: this.props.location.state.group.members || 0
+                members: this.props.location.state.group.members || 0,
+                groupId: this.props.location.state.group._id
             })
         }
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
@@ -170,7 +162,13 @@ class Chat extends Component<IProps, IState> {
 
     onPressReplyMessage = () => {
         let messages = this.state.messages;
-        messages.push({ from: "self", time: new Date(), groupId: this.state.groupId, message: this.state.replyText })
+        let messageData = {
+            groupId: this.state.groupId,
+            message: this.state.replyText
+        }
+        let message = JSON.stringify(messageData)
+
+        messages.push({ from: "self", time: new Date(), message })
         this.props.onSendMessage(this.state.groupId, this.state.replyText)
         this.setState({
             messages: messages,
@@ -334,22 +332,27 @@ class Chat extends Component<IProps, IState> {
                             {messages.length > 0 ?
                                 <View style={styles.innerMessageView}>
                                     {messages.map((msg, index) => {
-                                        return (
-                                            <View style={msg.from === "self" ? styles.sendMessageView : styles.receiveMessageView} key={index}>
-                                                <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                <View>
-                                                    <Text style={{ marginLeft: 10 }}>
-                                                        {"User Name"}
-                                                    </Text>
-                                                    <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
-                                                        {msg.message}
-                                                    </Text>
-                                                    <Text style={styles.messageTimeText} >
-                                                        {moment(msg.time).format('LT')}
-                                                    </Text>
+
+                                        let parseMessage = JSON.parse(msg.message)
+                                        if (parseMessage.groupId === this.state.groupId) {
+                                            return (
+                                                <View style={msg.from === "self" ? styles.sendMessageView : styles.receiveMessageView} key={index}>
+                                                    <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                    <View>
+                                                        <Text style={{ marginLeft: 10 }}>
+                                                            {"User Name"}
+                                                        </Text>
+                                                        <Text style={msg.from === "self" ? styles.sendMessageText : styles.receiveMessaageText}>
+                                                            {parseMessage.message}
+                                                        </Text>
+                                                        <Text style={styles.messageTimeText} >
+                                                            {moment(msg.time).format('LT')}
+                                                        </Text>
+                                                    </View>
                                                 </View>
-                                            </View>
-                                        )
+                                            )
+                                        }
+
                                     })}
                                 </View> :
                                 <Text />}
