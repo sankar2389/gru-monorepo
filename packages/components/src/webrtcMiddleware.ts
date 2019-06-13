@@ -106,8 +106,15 @@ const webrtcMiddleware = (() => {
                 exchange(store, action.payload);
                 break;
             case "SEND_MESSAGE":
-                dataChannel.send(JSON.stringify(action.payload));
-                // dataChannel.send(action.payload);
+                console.log("dataaaaaaaaaaaaChannel", dataChannel.readyState)
+                if (dataChannel.readyState === "open") {
+                    dataChannel.send(JSON.stringify(action.payload));
+                } else {
+                    alert("Please connect one first")
+                    // dataChannel.send(action.payload);
+                }
+
+
                 break;
             default:
                 return next(action);
