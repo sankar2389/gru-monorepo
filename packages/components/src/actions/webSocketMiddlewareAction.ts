@@ -1,3 +1,8 @@
+import createApolloClient from '../apollo';
+import gql from 'graphql-tag';
+import { AsyncStorage } from 'react-native';
+import axios, { AxiosError } from 'axios';
+const CMS_API = process.env.CMS_API;
 
 export const webSocketMiddlewareConnectOrJoin = (type: string, groupName: string) => {
     return (dispatch: Function) => {
@@ -61,10 +66,11 @@ export const roomJoin = (dispatch: any) => {
         type: "ROOM_JOIN"
     });
 }
-export function roomMembers(socketIds: string) {
+export function roomMembers(socketIds: string, socketId: any) {
     return {
         type: "SOCKETIDS",
         payload: socketIds,
+        socketId: socketId
     }
 }
 
@@ -82,5 +88,41 @@ export function datachannelOpened() {
     return {
         type: "DATACHAN_STAT",
         payload: true
+    }
+}
+export const saveSocketIdInUser = (_id: any, socketId: any) => {
+    return (dispatch: Function) => {
+
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    if (authtoken) {
+                        if (authtoken) {
+                            const client = createApolloClient(authtoken);
+                            client.mutate({
+                                mutation: gql`
+                             mutation ($input: updateUserInput) {
+                                 updateUser(input: $input) {
+                                  user {
+                                    socketId
+                                  }
+                                }
+                              }
+                             `,
+                                variables: {
+                                    "input": {
+                                        "where": {
+                                            "id": "5cca98a5acb5141616ddf182"
+                                        }, "data": {
+                                            "socketId": "12"
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    }
+
+                }
+            })
     }
 }

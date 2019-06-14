@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup } from "../../types";
 import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Image, TextInput } from "react-native";
-import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage } from "../../actions";
+import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage, saveSocketIdInUser } from "../../actions";
 import moment from "moment";
 import PeopleChat from "./peopleChat"
 import GroupChat from "./groupChat"
@@ -15,7 +15,8 @@ interface IProps extends RouteComponentProps {
     webSocketDisconnect: () => void,
     webSocketConnect: (socketId: any) => void,
     onSendMessage: (groupId: string, replayText: string) => void,
-    groups: any
+    groups: any,
+    saveSocketIdInUser: (_id: any, socketId: any) => void
 };
 
 interface IMsg {
@@ -38,7 +39,8 @@ interface IState {
     groupId: string,
     connectionMessage: boolean,
     peopleTabCount: number,
-    messageBackup: any
+    messageBackup: any,
+    socketId: string
 
 }
 
@@ -57,18 +59,23 @@ class Chat extends Component<IProps, IState> {
         groupId: "",
         connectionMessage: false,
         peopleTabCount: 0,
-        messageBackup: []
+        messageBackup: [],
+        socketId: ""
 
     }
     constructor(props: IProps) {
         super(props);
     }
 
-    componentWillReceiveProps(newProps: any) {
+    async componentWillReceiveProps(newProps: any) {
+
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        //console.log("newProps", newProps)
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
-            const { socketids, message } = newProps.webrtc;
+            const { socketids, message, socketId } = newProps.webrtc;
+
             socketids.forEach((sid: any, i: number) => {
                 groups[i].socketid = sid;
                 groups[i].connected = false;
@@ -85,7 +92,12 @@ class Chat extends Component<IProps, IState> {
                 socketids,
                 groups,
                 messages,
+                socketId
             });
+            console.log("outDid socketId", socketId)
+            if (socketId) {
+                this.props.saveSocketIdInUser(user._id, socketId)
+            }
         }
         if (newProps.webrtc.connected) {
             this.setState({
@@ -110,6 +122,7 @@ class Chat extends Component<IProps, IState> {
         let user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getGroupsList(user.email);
         this.joinGroup(this.props.location.state.group);
+
     }
 
     onPressSetChatButton = (buttonType: string) => {
@@ -351,7 +364,7 @@ const mapStateToProps = ({ auth, group, webrtc }: any): IReduxState => {
     return { auth, group, webrtc };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage })(Chat);
+export default connect<IReduxState>(mapStateToProps, { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, webSocketConnect, onSendMessage, saveSocketIdInUser })(Chat);
 
 const styles = StyleSheet.create({
     mainView: {

@@ -30,7 +30,7 @@ const webSocketMiddleware = (function () {
             }
             socketIds.push(socketId);
             AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-            store.dispatch(roomMembers(socketIds));
+            store.dispatch(roomMembers(socketIds, socketId));
         })
     }
     return (store: any) => (next: any) => (action: any) => {

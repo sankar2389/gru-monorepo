@@ -19,6 +19,7 @@ export default (state: IWebrtc = initState, action: AnyAction): IWebrtc => {
             return {
                 ...state,
                 socketids: action.payload,
+                socketId: action.socketId
             };
         case "MESSAGE":
             return { ...state, message: action.payload };
