@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { RouteComponentProps } from "react-router";
 import { IReduxState, } from "../../types";
 import { connect } from "react-redux";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
 
 interface IProps {
     groups: any,
