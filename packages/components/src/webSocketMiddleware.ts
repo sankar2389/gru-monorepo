@@ -1,7 +1,6 @@
 import { AsyncStorage } from 'react-native';
 import io from 'socket.io-client';
 import { connecting, connected, disconnected, roomMembers, roomJoin } from './actions/index';
-import { string } from 'prop-types';
 
 export const MEMBERS_KEY = '@RNAWebRTCApp:room_members';
 export const ROOMS_KEY = '@RNAWebRTCApp:rooms';
