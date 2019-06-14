@@ -68,13 +68,6 @@ export function roomMembers(socketIds: string) {
     }
 }
 
-// export function roomMember(socketId: string) {
-//     return {
-//         type: "SOCKETIDS",
-//         payload: socketId
-//     }
-// }
-
 export function incommingMessage(from: string, message: string) {
     return {
         type: "MESSAGE",

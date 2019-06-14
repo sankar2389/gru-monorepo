@@ -76,7 +76,7 @@ const webSocketMiddleware = (function () {
                     socket.emit('join', action.groupName, (socketIds: any) => {
                         store.dispatch(roomJoin);
                         AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-                        store.dispatch(roomMembers(socketIds));
+                        // store.dispatch(roomMembers(socketIds));
                     });
                 }
                 break;
