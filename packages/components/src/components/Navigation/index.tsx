@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { View, StyleSheet, Text, Easing, Animated, } from "react-native";
 import { Navbar, Sidebar } from "../common";
-import { logoutUser, toggleSideBar } from '../../actions';
+import { logoutUser, toggleSideBar, removeSocketIdInUser } from '../../actions';
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 
 interface IProps extends RouteComponentProps {
     logoutUser: () => void,
-    toggleSideBar: () => void
-
+    toggleSideBar: () => void,
+    removeSocketIdInUser: () => void
 };
 
 interface IState {
@@ -96,7 +96,7 @@ const mapStateToProps = ({ auth }: any): IReduxState => {
     return { auth };
 };
 
-export default connect<IReduxState>(mapStateToProps, { logoutUser, toggleSideBar })(Navigation);
+export default connect<IReduxState>(mapStateToProps, { logoutUser, toggleSideBar, removeSocketIdInUser })(Navigation);
 
 const styles = StyleSheet.create({
     block: {

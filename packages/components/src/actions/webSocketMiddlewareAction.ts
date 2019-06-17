@@ -92,7 +92,6 @@ export function datachannelOpened() {
 }
 export const saveSocketIdInUser = (_id: any, socketId: any) => {
     return (dispatch: Function) => {
-
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {
@@ -112,9 +111,9 @@ export const saveSocketIdInUser = (_id: any, socketId: any) => {
                                 variables: {
                                     "input": {
                                         "where": {
-                                            "id": "5cca98a5acb5141616ddf182"
+                                            "id": _id
                                         }, "data": {
-                                            "socketId": "12"
+                                            "socketId": socketId
                                         }
                                     }
                                 }
@@ -126,3 +125,40 @@ export const saveSocketIdInUser = (_id: any, socketId: any) => {
             })
     }
 }
+
+export const removeSocketIdInUser = (_id: any, ) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    if (authtoken) {
+                        if (authtoken) {
+                            const client = createApolloClient(authtoken);
+                            client.mutate({
+                                mutation: gql`
+                             mutation ($input: updateUserInput) {
+                                 updateUser(input: $input) {
+                                  user {
+                                    socketId
+                                  }
+                                }
+                              }
+                             `,
+                                variables: {
+                                    "input": {
+                                        "where": {
+                                            "id": _id
+                                        }, "data": {
+                                            "socketId": ""
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    }
+
+                }
+            })
+    }
+}
+

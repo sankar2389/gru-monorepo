@@ -68,14 +68,11 @@ class Chat extends Component<IProps, IState> {
     }
 
     async componentWillReceiveProps(newProps: any) {
-
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        //console.log("newProps", newProps)
         if (newProps.webrtc.socketids.length > 0) {
             const { groups } = this.props.group;
             const { messages } = this.state;
             const { socketids, message, socketId } = newProps.webrtc;
-
             socketids.forEach((sid: any, i: number) => {
                 groups[i].socketid = sid;
                 groups[i].connected = false;
@@ -94,7 +91,6 @@ class Chat extends Component<IProps, IState> {
                 messages,
                 socketId
             });
-            console.log("outDid socketId", socketId)
             if (socketId) {
                 this.props.saveSocketIdInUser(user._id, socketId)
             }
