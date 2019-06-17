@@ -1,6 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { ISignup, ISignupError, ILogin, IForgotPass } from '../types';
 import { AsyncStorage } from 'react-native';
+import createApolloClient from '../apollo';
+import gql from 'graphql-tag';
 const CMS_API = process.env.CMS_API;
 
 const regSuccess = (dispatch: Function, message: string) => {
@@ -107,4 +109,39 @@ export const forgotPass = (payload: IForgotPass) => {
                 resetError(dispatch, err);
             })
     }
+}
+
+/** Find All User */
+export const getAllUsers = () => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                        query {
+                            users{
+                                _id,
+                                username,
+                                email,
+                                blocked
+                            }
+                          }
+                        `
+                    }).then(users => {
+                        console.log("users", users.data.users)
+                        dispatch({
+                            type: "FIND_ALL_USER_SUCCESS",
+                            users: users.data.users
+                        })
+                    }).catch(err => {
+                        console.log("errr", err.message)
+                    })
+                }
+            }).catch(e => {
+                throw e;
+            })
+    }
+
 }

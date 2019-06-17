@@ -237,7 +237,7 @@ class GroupView extends Component<IProps, IState> {
     render() {
         const { groups } = this.props.group;
         const { innerContainer } = styles;
-        return !this.state.updateGroup ?
+        return this.state.updateGroup ?
             (
                 /** Update group in component */
                 <View style={innerContainer}>
