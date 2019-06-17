@@ -56,6 +56,7 @@ export const connected = (dispatch: any) => {
 }
 
 export const disconnected = (dispatch: any) => {
+    //To Do . If need then we can call any funtion to remove socketId form user collection.
     dispatch({
         type: "DISCONNECTED"
     });

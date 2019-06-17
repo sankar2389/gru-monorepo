@@ -73,10 +73,10 @@ class Chat extends Component<IProps, IState> {
             const { groups } = this.props.group;
             const { messages } = this.state;
             const { socketids, message, socketId } = newProps.webrtc;
-            socketids.forEach((sid: any, i: number) => {
-                groups[i].socketid = sid;
-                groups[i].connected = false;
-            });
+            // socketids.forEach((sid: any, i: number) => {
+            //     groups[i].socketid = sid;
+            //     groups[i].connected = false;
+            // });
 
             if (this.state.messageBackup.length > 0) {
                 this.setState({ messages: this.state.messageBackup, messageBackup: [] })
