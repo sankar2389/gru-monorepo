@@ -63,7 +63,6 @@ class BuySell extends Component<IProps> {
     }
     async componentDidMount() {
         const socket = io(CMS_API + '');
-        // socket.on('hello', (res: any) => console.log(res));
         socket.on('buy', (res: any) => {
             const { buyData } = this.state;
             buyData.push(JSON.parse(res).message);
@@ -76,7 +75,7 @@ class BuySell extends Component<IProps> {
         });
         this.onPressGetSellDataBYCreator()
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        this.props.getBuyDataByCreator(user.email)
+        await this.props.getBuyDataByCreator(user.email)
         this.setState({
             userName: user.username
         })
@@ -196,7 +195,7 @@ class BuySell extends Component<IProps> {
             selectedPaginatateNumber: 1
         })
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        this.props.getSellDataByCreator(user.email);
+        await this.props.getSellDataByCreator(user.email);
     }
 
     async onPressGetBuyDataBYCreator() {
@@ -452,7 +451,7 @@ class BuySell extends Component<IProps> {
                                     )
                                 }
 
-                            }).reverse()}
+                            })}
                         </View>
                     }
                     {/* DISPLAY SELL */}
@@ -522,7 +521,7 @@ class BuySell extends Component<IProps> {
                                     )
                                 }
 
-                            }).reverse()}
+                            })}
                         </View>
                     }
 
@@ -541,7 +540,6 @@ class BuySell extends Component<IProps> {
                                             paddingBottom: 20, borderRadius: 5, marginRight: 30
                                         }}>
                                             <input type="radio" name="goldOrSilver"
-                                            //onChange={() => this.onClikcSetGoldOrSilver("gold")}
                                             />
                                             Gold
                                      </label>
@@ -551,7 +549,6 @@ class BuySell extends Component<IProps> {
                                             paddingBottom: 20, borderRadius: 5,
                                         }}>
                                             <input type="radio" name="goldOrSilver"
-                                            //onChange={() => this.onClikcSetGoldOrSilver("gold")}
                                             />
                                             Silver
                                      </label>
@@ -563,9 +560,6 @@ class BuySell extends Component<IProps> {
                                             value={this.state.buyOrSellPrice}
                                             placeholder={'Buy or Sell Price'}
                                             style={styles.inputStyle}
-                                            // onChangeText={groupName => {
-                                            //     this.setState({ groupName: groupName });
-                                            // }}
                                             onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
                                             onSubmitEditing={() => {
                                                 this.onPressCreateBuyOrSell()

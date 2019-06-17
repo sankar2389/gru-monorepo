@@ -6,7 +6,7 @@ import { AsyncStorage } from 'react-native';
 
 
 const getBuyOrSellDataByCreatorSuccess = (dispatch: Function, response: any[]) => {
-    dispatch({ type: 'BUY_DATA_LIST_SUCCESS', payload: response })
+   dispatch({ type: 'BUY_DATA_LIST_SUCCESS', payload: response })
 }
 
 
@@ -99,6 +99,7 @@ export const getBuyDataByCreator = (creator: string) => {
                               creator
                               creatorObject
                               createdAt
+                              updatedAt
                             }
                           }
                         `

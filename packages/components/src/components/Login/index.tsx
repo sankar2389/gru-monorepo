@@ -40,14 +40,14 @@ class LoginScreen extends Component<IProps, IState> {
                         Authorization: 'Bearer ' + authtoken
                     }
                 }).then(res => {
-                    if (res.data.role.name === "Authenticated") {
+                    if (res.status === 200) {
                         this.props.history.push({
                             pathname: '/secure/dashboard',
                             state: { authtoken }
                         });
                     }
                 }).catch(e => {
-                    console.log(e, "ERROR");
+                    console.error(e);
                 });
             });
     }
