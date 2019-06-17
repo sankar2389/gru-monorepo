@@ -16,10 +16,12 @@ interface IProps extends RouteComponentProps {
 
 interface IState {
     groupName: any,
+    searchMemberText: string
 }
 
 class UpdateGroup extends Component<IProps, IState> {
     state: IState = {
+        searchMemberText: "",
         groupName: this.props.editedGroup.groupName
 
     }
@@ -31,7 +33,9 @@ class UpdateGroup extends Component<IProps, IState> {
     onHandelChangeInput = (groupName: string) => {
         this.setState({ groupName: groupName });
     }
-
+    onPressSearchUser = () => {
+        alert("search user")
+    }
     render() {
         return (
             <View style={styles.containerView}>
@@ -45,9 +49,6 @@ class UpdateGroup extends Component<IProps, IState> {
                         style={styles.inputStyle}
                         autoFocus={true}
                         value={this.state.groupName}
-                        // onChangeText={groupName => {
-                        //     this.setState({ groupName: groupName });
-                        // }}
                         onChangeText={(groupName) => this.onHandelChangeInput(groupName)}
                     />
                 </View>
@@ -71,6 +72,31 @@ class UpdateGroup extends Component<IProps, IState> {
                     </TouchableOpacity>
 
                 </View>
+                <View>
+                    <Text>ADD MEMBERS</Text>
+                    <Text>Search Members</Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
+                        <TextInput style={{
+                            position: "relative", zIndex: 1, color: "red", left: 5, height: 50, width: "30%", paddingLeft: 10, paddingRight: 10,
+                            backgroundColor: "#ffffff", borderTopLeftRadius: 10, borderBottomLeftRadius: 10,
+                        }}
+                            placeholder="Search Members"
+
+                            value={this.state.searchMemberText}
+                            onChangeText={(searchMemberText) => this.onHandelChangeInput(searchMemberText)}
+                        >
+                        </TextInput>
+                        {/* <TouchableOpacity
+                            style={{ padding: 14.5, backgroundColor: "green", borderTopRightRadius: 10, borderBottomRightRadius: 10 }}
+                            onPress={() => this.onPressSearchUser()}
+                        > */}
+                        <Image
+                            source={require('../../assets/images/searchIcon')}
+                        />
+                        {/* </TouchableOpacity> */}
+                    </View>
+                </View>
+
             </View>
         )
     }
@@ -85,11 +111,11 @@ export default connect<IReduxState>(mapStateToProps, {})(UpdateGroup);
 const styles = StyleSheet.create({
     containerView: { marginLeft: 50 },
     inputStyle: {
-        height: 40,
+        height: 50,
         borderColor: 'gray',
         backgroundColor: "#ffffff",
-        borderRadius: 5, marginTop: 10,
-        paddingLeft: 10
+        borderRadius: 20, marginTop: 10,
+        paddingLeft: 10,
     },
     buttonView: {
         //backgroundColor: "pink",
