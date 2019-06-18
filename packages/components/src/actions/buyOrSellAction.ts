@@ -1,12 +1,12 @@
-//import { ICreateSell } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
+import { Query } from "react-apollo"
 
 
 
 const getBuyOrSellDataByCreatorSuccess = (dispatch: Function, response: any[]) => {
-   dispatch({ type: 'BUY_DATA_LIST_SUCCESS', payload: response })
+    dispatch({ type: 'BUY_DATA_LIST_SUCCESS', payload: response })
 }
 
 
@@ -93,7 +93,7 @@ export const getBuyDataByCreator = (creator: string) => {
                     client.query({
                         query: gql`
                         query {
-                            buys{
+                            buys(limit: 10){
                               _id
                               price
                               creator
@@ -123,7 +123,7 @@ export const getSellDataByCreator = (creator: string) => {
                     client.query({
                         query: gql`
                         query{
-                            sells {
+                            sells(limit: 10) {
                               _id
                               price
                               creator

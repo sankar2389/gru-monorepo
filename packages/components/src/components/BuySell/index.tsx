@@ -5,6 +5,7 @@ import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
 import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice } from '../../actions';
+import axios from "axios";
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
@@ -26,9 +27,8 @@ interface IState {
     buyData: any[],
     sellData: any[],
     dataFromCollection: string,
-    startDataOnPage: number,
-    endDataOnPage: number,
     dataLimitOnPage: number,
+    totalPages: number[],
     buyOrSellPageCount: any[],
     selectedPaginatateNumber: number,
     editPrice: boolean,
@@ -47,10 +47,8 @@ class BuySell extends Component<IProps> {
         buyData: [],
         sellData: [],
         dataFromCollection: "",
-        startDataOnPage: 0,
-        endDataOnPage: 10,
         dataLimitOnPage: 10,
-        buyOrSellPageCount: [],
+        totalPages: [],
         selectedPaginatateNumber: 1,
         editPrice: false,
         editIndex: "",
@@ -79,9 +77,38 @@ class BuySell extends Component<IProps> {
         this.setState({
             userName: user.username
         })
+        this.getTotalPages()
         window.addEventListener("resize", this.updateDimension)
     }
 
+
+    getTotalPages = () => {
+        AsyncStorage.getItem("token").then((authtoken: string | null) => {
+            if (authtoken) {
+                axios.get(process.env.CMS_API + "buys/count", {
+                    headers: {
+                        Authorization: "Bearer " + authtoken
+                    }
+                }).then(res => {
+
+                    const { data } = res;
+                    let totalPages = Math.floor(data / this.state.dataLimitOnPage);
+
+                    if (data % this.state.dataLimitOnPage) {
+                        totalPages += 1
+                    }
+                    const pagesArray: number[] = []
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        pagesArray.push(i)
+                    }
+                    this.setState({
+                        totalPages: pagesArray
+                    })
+                })
+            }
+        })
+    }
 
     onPressVisibleModal = () => {
         this.setState({ modalVisible: true })
@@ -113,7 +140,7 @@ class BuySell extends Component<IProps> {
             alert("Please enter number only")
         }
         else if (this.state.buyOrSellRadioOption.length <= 0) {
-            alert("Please select any one Buy or Sell")
+            alert("Please select either Buy or Sell")
         }
         else {
 
@@ -147,50 +174,22 @@ class BuySell extends Component<IProps> {
                 dataFromCollection: "BUY_DATA"
             });
             let dLength = newProps.buyOrSell.buyOrSellData.buys.length
-            this.onLoadPagePagination(dLength)
+            // this.onLoadPagePagination(dLength)
         }
         if (newProps.buyOrSell.buyOrSellData.sells !== undefined) {
             const { sellData } = this.state;
-            //sellData.push(newProps.buyOrSell.buyOrSellData.sells);
             this.setState({
                 sellData: newProps.buyOrSell.buyOrSellData.sells, ...sellData,
                 dataFromCollection: "SELL_DATA"
             });
             let dLength = newProps.buyOrSell.buyOrSellData.sells.length
-            this.onLoadPagePagination(dLength)
+            // this.onLoadPagePagination(dLength)
         }
     }
 
-    onLoadPagePagination = (dLength: any) => {
-        let buyOrSellPageCount = []
-        let dataLength = dLength
-        let totalpage = dataLength / this.state.dataLimitOnPage
-        let count = dataLength % this.state.dataLimitOnPage
-        if (count !== 0) {
-            totalpage = totalpage + 1
-            if (totalpage > 1) {
-                for (let i = 1; i <= totalpage; i++) {
-                    buyOrSellPageCount.push(i)
-                }
-            }
-        } else {
-            if (totalpage > 1) {
-                for (let i = 1; i <= totalpage; i++) {
-                    buyOrSellPageCount.push(i)
-                }
-            }
-        }
 
+    onPressGetSellDataBYCreator = async () => {
         this.setState({
-            buyOrSellPageCount: buyOrSellPageCount
-        })
-    }
-
-
-    async onPressGetSellDataBYCreator() {
-        this.setState({
-            startDataOnPage: 0,
-            endDataOnPage: 10,
             dataLimitOnPage: 10,
             selectedPaginatateNumber: 1
         })
@@ -198,59 +197,43 @@ class BuySell extends Component<IProps> {
         await this.props.getSellDataByCreator(user.email);
     }
 
-    async onPressGetBuyDataBYCreator() {
+    onPressGetBuyDataBYCreator = async () => {
         this.setState({
-            startDataOnPage: 0,
-            endDataOnPage: 10,
-            dataLimitOnPage: 10,
             selectedPaginatateNumber: 1
         })
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getBuyDataByCreator(user.email);
     }
 
-    //pagination Next
-    onPressPaginateNext() {
+    // pagination Next
+    onPressPaginateNext = () => {
         let buySellpageCount: any
-        if (this.state.dataFromCollection === "BUY_DATA") {
-            buySellpageCount = this.state.buyData.length
-        }
-        if (this.state.dataFromCollection === "SELL_DATA") {
-            buySellpageCount = this.state.sellData.length
-        }
-        if (this.state.endDataOnPage < buySellpageCount) {
+        // if (this.state.dataFromCollection === "BUY_DATA") {
+        //     buySellpageCount = this.state.buyData.length
+        // }
+        // if (this.state.dataFromCollection === "SELL_DATA") {
+        //     buySellpageCount = this.state.sellData.length
+        // }
+        if (this.state.selectedPaginatateNumber !== this.state.totalPages.length) {
             this.setState({
-                startDataOnPage: this.state.startDataOnPage + this.state.dataLimitOnPage,
-                endDataOnPage: this.state.endDataOnPage + this.state.dataLimitOnPage,
                 selectedPaginatateNumber: this.state.selectedPaginatateNumber + 1
             })
-        } else {
-            alert("EOF")
         }
     }
 
-    //pagination Previous
-    onPressPaginatePrevious() {
-        if (this.state.startDataOnPage > 0) {
+    // pagination Previous
+    onPressPaginatePrevious = () => {
+        if (this.state.selectedPaginatateNumber !== 1) {
             this.setState({
-                startDataOnPage: this.state.startDataOnPage - this.state.dataLimitOnPage,
-                endDataOnPage: this.state.endDataOnPage - this.state.dataLimitOnPage,
                 selectedPaginatateNumber: this.state.selectedPaginatateNumber - 1
             })
-        } else {
-            alert("BOF")
         }
     }
 
     onPressPaginate(pageCount: number) {
-        let count = pageCount * this.state.dataLimitOnPage
-        let startDataOnPage = count - this.state.dataLimitOnPage
-        let endDataOnPage = count
-        this.setState({
-            startDataOnPage: startDataOnPage,
-            endDataOnPage: endDataOnPage,
-            selectedPaginatateNumber: pageCount
-        })
+        console.log(pageCount);
+
+        this.setState({ selectedPaginatateNumber: pageCount })
     }
 
     onPressEditBuyPrice = (price: number, index: number) => {
@@ -336,7 +319,6 @@ class BuySell extends Component<IProps> {
 
 
     render() {
-        console.log("sellData", this.state.sellData)
         const { innerContainer } = styles;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
@@ -352,7 +334,7 @@ class BuySell extends Component<IProps> {
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         <View style={this.state.dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
                             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                                <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()} style={this.state.dataFromCollection === "BUY_DATA" ?
+                                <TouchableOpacity onPress={this.onPressGetBuyDataBYCreator} style={this.state.dataFromCollection === "BUY_DATA" ?
                                     styles.buyOrSellButtonTab : styles.blankTextStyle
                                 }>
                                     <Text style={this.state.dataFromCollection === "BUY_DATA" ?
@@ -361,7 +343,7 @@ class BuySell extends Component<IProps> {
                                     </Text>
                                 </TouchableOpacity>
                                 <Text style={styles.buyAndSellPageHeadText}> / </Text>
-                                <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}
+                                <TouchableOpacity onPress={this.onPressGetSellDataBYCreator}
                                     style={this.state.dataFromCollection === "SELL_DATA" ?
                                         styles.buyOrSellButtonTab : styles.blankTextStyle
                                     }
@@ -389,67 +371,67 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "BUY_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.buyData.map((buyOrSell: any, index: number) => {
-                                if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
-                                    return (
-                                        <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
-                                            <View style={styles.imageAndNameView}>
-                                                <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
+                                // if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
+                                return (
+                                    <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
+                                        <View style={styles.imageAndNameView}>
+                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                            <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
+                                        </View>
+                                        <View style={styles.textItemView}>
+                                            <Text style={styles.buyOrSellText}>
+                                                asks
+                                            </Text>
+                                        </View>
+                                        <View style={styles.secontRowView}>
+                                            <View style={styles.textItemView}>
+                                                <Text style={styles.buyOrSellText}>
+                                                    550gm
+                                            </Text>
                                             </View>
                                             <View style={styles.textItemView}>
                                                 <Text style={styles.buyOrSellText}>
-                                                    asks
+                                                    Gold
                                             </Text>
                                             </View>
-                                            <View style={styles.secontRowView}>
-                                                <View style={styles.textItemView}>
-                                                    <Text style={styles.buyOrSellText}>
-                                                        550gm
-                                            </Text>
-                                                </View>
-                                                <View style={styles.textItemView}>
-                                                    <Text style={styles.buyOrSellText}>
-                                                        Gold
-                                            </Text>
-                                                </View>
-                                                <View style={styles.textItemView}>
-                                                    {this.state.editPrice && this.state.editIndex == index ?
-                                                        <TextInput
-                                                            autoFocus={true}
-                                                            value={this.state.buyOrSellPrice}
-                                                            style={styles.editTextInput}
-                                                            onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                                            onSubmitEditing={() => {
-                                                                this.onPressUpdateBuyPrice(buyOrSell._id)
-                                                            }}
-                                                        />
-                                                        :
-                                                        <Text style={styles.buyOrSellText}>
-                                                            &#8377; {buyOrSell.price}
-                                                        </Text>
-                                                    }
-                                                </View>
-                                            </View>
-                                            {/* <Text style={styles.buyOrSellText}>
-                                            {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                        </Text> */}
-                                            <View>
+                                            <View style={styles.textItemView}>
                                                 {this.state.editPrice && this.state.editIndex == index ?
-                                                    <TouchableOpacity style={styles.saveButton}
-                                                        onPress={() => this.onPressUpdateBuyPrice(buyOrSell._id)}
-                                                    >
-                                                        <Text style={styles.saveButtonText}>Save</Text>
-                                                    </TouchableOpacity> :
-                                                    <TouchableOpacity style={styles.setPriceButton}
-                                                        onPress={() => this.onPressEditBuyPrice(buyOrSell.price, index)}
-                                                    >
-                                                        <Text>Set Price</Text>
-                                                    </TouchableOpacity>
+                                                    <TextInput
+                                                        autoFocus={true}
+                                                        value={this.state.buyOrSellPrice}
+                                                        style={styles.editTextInput}
+                                                        onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                                        onSubmitEditing={() => {
+                                                            this.onPressUpdateBuyPrice(buyOrSell._id)
+                                                        }}
+                                                    />
+                                                    :
+                                                    <Text style={styles.buyOrSellText}>
+                                                        &#8377; {buyOrSell.price}
+                                                    </Text>
                                                 }
                                             </View>
                                         </View>
-                                    )
-                                }
+                                        {/* <Text style={styles.buyOrSellText}>
+                                            {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
+                                        </Text> */}
+                                        <View>
+                                            {this.state.editPrice && this.state.editIndex == index ?
+                                                <TouchableOpacity style={styles.saveButton}
+                                                    onPress={() => this.onPressUpdateBuyPrice(buyOrSell._id)}
+                                                >
+                                                    <Text style={styles.saveButtonText}>Save</Text>
+                                                </TouchableOpacity> :
+                                                <TouchableOpacity style={styles.setPriceButton}
+                                                    onPress={() => this.onPressEditBuyPrice(buyOrSell.price, index)}
+                                                >
+                                                    <Text>Set Price</Text>
+                                                </TouchableOpacity>
+                                            }
+                                        </View>
+                                    </View>
+                                )
+                                // }
 
                             })}
                         </View>
@@ -459,67 +441,67 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "SELL_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.sellData.map((buyOrSell: any, index: number) => {
-                                if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
-                                    return (
-                                        <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
-                                            <View style={styles.imageAndNameView}>
-                                                <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                <Text style={styles.userNameText}>{buyOrSell.creatorObject !== undefined ? buyOrSell.creatorObject.username : ""}</Text>
+                                // if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
+                                return (
+                                    <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
+                                        <View style={styles.imageAndNameView}>
+                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                            <Text style={styles.userNameText}>{buyOrSell.creatorObject !== undefined ? buyOrSell.creatorObject.username : ""}</Text>
+                                        </View>
+                                        <View style={styles.textItemView}>
+                                            <Text style={styles.buyOrSellText}>
+                                                asks
+                                            </Text>
+                                        </View>
+                                        <View style={styles.secontRowView}>
+                                            <View style={styles.textItemView}>
+                                                <Text style={styles.buyOrSellText}>
+                                                    550gm
+                                            </Text>
                                             </View>
                                             <View style={styles.textItemView}>
                                                 <Text style={styles.buyOrSellText}>
-                                                    asks
+                                                    Gold
                                             </Text>
                                             </View>
-                                            <View style={styles.secontRowView}>
-                                                <View style={styles.textItemView}>
+                                            <View style={styles.textItemView}>
+                                                {this.state.editPrice && this.state.editIndex == index ?
+                                                    <TextInput
+                                                        autoFocus={true}
+                                                        value={this.state.buyOrSellPrice}
+                                                        style={styles.editTextInput}
+                                                        onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                                        onSubmitEditing={() => {
+                                                            this.onPressUpdateSellPrice(buyOrSell._id)
+                                                        }}
+                                                    />
+                                                    :
                                                     <Text style={styles.buyOrSellText}>
-                                                        550gm
-                                            </Text>
-                                                </View>
-                                                <View style={styles.textItemView}>
-                                                    <Text style={styles.buyOrSellText}>
-                                                        Gold
-                                            </Text>
-                                                </View>
-                                                <View style={styles.textItemView}>
-                                                    {this.state.editPrice && this.state.editIndex == index ?
-                                                        <TextInput
-                                                            autoFocus={true}
-                                                            value={this.state.buyOrSellPrice}
-                                                            style={styles.editTextInput}
-                                                            onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                                            onSubmitEditing={() => {
-                                                                this.onPressUpdateSellPrice(buyOrSell._id)
-                                                            }}
-                                                        />
-                                                        :
-                                                        <Text style={styles.buyOrSellText}>
-                                                            &#8377; {buyOrSell.price}
-                                                        </Text>
-                                                    }
-                                                </View>
+                                                        &#8377; {buyOrSell.price}
+                                                    </Text>
+                                                }
                                             </View>
-                                            {/* <Text style={styles.buyOrSellText}>
+                                        </View>
+                                        {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
                                         </Text> */}
-                                            {this.state.editPrice && this.state.editIndex == index ?
-                                                <TouchableOpacity style={styles.saveButton}
-                                                    onPress={() => this.onPressUpdateSellPrice(buyOrSell._id)}
-                                                >
-                                                    <Text style={styles.saveButtonText}>Save</Text>
-                                                </TouchableOpacity> :
-                                                <TouchableOpacity style={styles.setPriceButton}
-                                                    onPress={() => this.onPressEditSellPrice(buyOrSell.price, index)}
-                                                >
-                                                    <Text>Set Price</Text>
-                                                </TouchableOpacity>
-                                            }
+                                        {this.state.editPrice && this.state.editIndex == index ?
+                                            <TouchableOpacity style={styles.saveButton}
+                                                onPress={() => this.onPressUpdateSellPrice(buyOrSell._id)}
+                                            >
+                                                <Text style={styles.saveButtonText}>Save</Text>
+                                            </TouchableOpacity> :
+                                            <TouchableOpacity style={styles.setPriceButton}
+                                                onPress={() => this.onPressEditSellPrice(buyOrSell.price, index)}
+                                            >
+                                                <Text>Set Price</Text>
+                                            </TouchableOpacity>
+                                        }
 
-                                        </View>
+                                    </View>
 
-                                    )
-                                }
+                                )
+                                // }
 
                             })}
                         </View>
@@ -605,43 +587,31 @@ class BuySell extends Component<IProps> {
                     {/* BUY AND SELL MODAL END */}
                 </ScrollView >
                 {/* PAGINATION VIEW START */}
-                {this.state.buyOrSellPageCount.length > 1 ?
-                    <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
-                        <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
-                            <Text>{"<"}</Text>
-                        </TouchableOpacity>
-                        {this.state.buyOrSellPageCount.map(pageCount => {
-                            if (pageCount > 1) {
-                                if (pageCount >= this.state.selectedPaginatateNumber && pageCount < this.state.selectedPaginatateNumber + 2) {
-                                    return (
-                                        <TouchableOpacity key={pageCount}
-                                            onPress={this.onPressPaginate.bind(this, pageCount)}
-                                            style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
-                                        >
-                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>
-                                                {pageCount}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )
-                                }
-                            } else {
-                                return (
-                                    <TouchableOpacity key={pageCount}
-                                        onPress={this.onPressPaginate.bind(this, pageCount)}
-                                        style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
-                                    >
-                                        <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>{pageCount}</Text>
-                                    </TouchableOpacity>
-                                )
-                            }
-                        })}
+                <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
+                    <TouchableOpacity
+                        onPress={this.onPressPaginatePrevious}
+                        style={styles.paginationButton}>
+                        <Text>{"<"}</Text>
+                    </TouchableOpacity>
 
-                        <TouchableOpacity
-                            onPress={this.onPressPaginateNext.bind(this)}
-                            style={styles.paginationButton}>
-                            <Text>{">"}</Text>
-                        </TouchableOpacity>
-                    </View> : <Text />}
+                    {this.state.totalPages.map((pageCount: number) => {
+                        return (<TouchableOpacity key={pageCount}
+                            onPress={this.onPressPaginate.bind(this, pageCount)}
+                            style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
+                        >
+                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>
+                                {pageCount}
+                            </Text>
+                        </TouchableOpacity>)
+                    })}
+
+
+                    <TouchableOpacity
+                        onPress={this.onPressPaginateNext}
+                        style={styles.paginationButton}>
+                        <Text>{">"}</Text>
+                    </TouchableOpacity>
+                </View>
                 {/* PAGINATION VIEW END */}
             </View>
 
