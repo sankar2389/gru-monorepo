@@ -112,6 +112,9 @@ export const getBuyDataByCreator = (creator: string) => {
                               creator
                               creatorObject
                               createdAt
+                              type
+                              unit
+                              quantity
                             }
                           }
                         `
@@ -141,6 +144,9 @@ export const getSellDataByCreator = (creator: string) => {
                               creator
                               creatorObject
                               createdAt
+                              type
+                              unit
+                              quantity
                             }
                           }
                         `
