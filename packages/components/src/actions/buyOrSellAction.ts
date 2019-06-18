@@ -23,11 +23,11 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                 createBuy(input: $input) {
                                   buy {
                                     price
-                                    creator,
-                                    creatorObject,
-                                    type,
-                                    unit,
-                                    quantity,
+                                    creator
+                                    creatorObject
+                                    type
+                                    unit
+                                    quantity
                                   }
                                 }
                               }                          
@@ -61,8 +61,8 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                     creator
                                     creatorObject
                                     type
-                                    unit,
-                                    quantity,
+                                    unit
+                                    quantity
                                   }
                                 }
                               }                      

@@ -133,7 +133,7 @@ class BuySell extends Component<IProps> {
             let creator = user.email
             let creatorObject = user
             let unit = this.state.unit
-            let quantity = this.state.quantity
+            let quantity = parseInt(this.state.quantity)
             this.props.createBuyOrSell(buyOrsell, this.state.buyOrSellType, unit, quantity, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
         }
@@ -403,7 +403,7 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "BUY_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.buyData.map((buyOrSell: any, index: number) => {
-
+                                console.log("asdfasdfasdfasdf", buyOrSell)
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
                                         <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
@@ -419,8 +419,8 @@ class BuySell extends Component<IProps> {
                                             <View style={styles.secontRowView}>
                                                 <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
-                                                        550gm
-                                            </Text>
+                                                        {buyOrSell.quantity}{buyOrSell.unit}
+                                                    </Text>
                                                 </View>
                                                 <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
@@ -575,9 +575,9 @@ class BuySell extends Component<IProps> {
                                                 Enter quantity
                                             </Text>
                                             <TextInput style={{ width: "50%", backgroundColor: "" }}
-                                                value={this.state.goldOrSilverQuantity}
-                                                onChangeText={goldOrSilverQuantity => {
-                                                    this.setState({ goldOrSilverQuantity: goldOrSilverQuantity });
+                                                value={this.state.quantity}
+                                                onChangeText={quantity => {
+                                                    this.setState({ quantity: quantity });
                                                 }}
                                             />
 
@@ -585,7 +585,7 @@ class BuySell extends Component<IProps> {
                                             }>
                                                 Select unit
                                          </Text>
-                                            <select value={this.state.goldOrSilverUnit} onChange={(evt) => this.setState({ goldOrSilverUnit: evt.target.value })}>
+                                            <select value={this.state.unit} onChange={(evt) => this.setState({ unit: evt.target.value })}>
                                                 <option value="mg">Miligram</option>
                                                 <option value="gm">gram</option>
                                             </select>
