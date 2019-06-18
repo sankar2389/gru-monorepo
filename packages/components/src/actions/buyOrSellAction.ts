@@ -10,7 +10,7 @@ const getBuyOrSellDataByCreatorSuccess = (dispatch: Function, response: any[]) =
 }
 
 
-export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, buyOrSellPrice: number, creator: string, creatorObject: any) => {
+export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -25,7 +25,9 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, buyOrS
                                     price
                                     creator,
                                     creatorObject,
-                                    type
+                                    type,
+                                    unit,
+                                    quantity,
                                   }
                                 }
                               }                          
@@ -36,7 +38,10 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, buyOrS
                                         "price": buyOrSellPrice,
                                         "creator": creator,
                                         "creatorObject": creatorObject,
-                                        "type": buyOrSellType
+                                        "type": buyOrSellType,
+                                        "unit": unit,
+                                        "quantity": quantity,
+
                                     }
                                 }
                             }
@@ -56,6 +61,8 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, buyOrS
                                     creator
                                     creatorObject
                                     type
+                                    unit,
+                                    quantity,
                                   }
                                 }
                               }                      
@@ -66,7 +73,9 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, buyOrS
                                         "price": buyOrSellPrice,
                                         "creator": creator,
                                         "creatorObject": creatorObject,
-                                        "type": buyOrSellType
+                                        "type": buyOrSellType,
+                                        "unit": unit,
+                                        "quantity": quantity,
                                     }
                                 }
                             }

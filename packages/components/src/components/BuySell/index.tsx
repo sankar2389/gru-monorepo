@@ -8,7 +8,7 @@ import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuy
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
-    createBuyOrSell: (buyOrsell: string, buyOrSellType: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
+    createBuyOrSell: (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
@@ -36,6 +36,9 @@ interface IState {
     editIndex: any,
     userName: string,
     dWidth: number,
+    unit: string,
+    quantity: any,
+
 }
 
 class BuySell extends Component<IProps> {
@@ -58,6 +61,9 @@ class BuySell extends Component<IProps> {
         editIndex: "",
         userName: "",
         dWidth: 700,
+        unit: "",
+        quantity: "",
+
     }
     constructor(props: IProps) {
         super(props);
@@ -126,8 +132,9 @@ class BuySell extends Component<IProps> {
             let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
             let creator = user.email
             let creatorObject = user
-
-            this.props.createBuyOrSell(buyOrsell, this.state.buyOrSellType, buyOrSellPrice, creator, creatorObject)
+            let unit = this.state.unit
+            let quantity = this.state.quantity
+            this.props.createBuyOrSell(buyOrsell, this.state.buyOrSellType, unit, quantity, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
         }
     }
@@ -563,6 +570,28 @@ class BuySell extends Component<IProps> {
                                             />
                                             Silver
                                      </label>
+                                        <View style={{ marginLeft: 10, alignItems: "flex-start" }}>
+                                            <Text>
+                                                Enter quantity
+                                            </Text>
+                                            <TextInput style={{ width: "50%", backgroundColor: "" }}
+                                                value={this.state.goldOrSilverQuantity}
+                                                onChangeText={goldOrSilverQuantity => {
+                                                    this.setState({ goldOrSilverQuantity: goldOrSilverQuantity });
+                                                }}
+                                            />
+
+                                            < Text style={{}
+                                            }>
+                                                Select unit
+                                         </Text>
+                                            <select value={this.state.goldOrSilverUnit} onChange={(evt) => this.setState({ goldOrSilverUnit: evt.target.value })}>
+                                                <option value="mg">Miligram</option>
+                                                <option value="gm">gram</option>
+                                            </select>
+
+                                        </View>
+
                                     </View>
 
                                     <View style={styles.textInput}>
@@ -571,9 +600,6 @@ class BuySell extends Component<IProps> {
                                             value={this.state.buyOrSellPrice}
                                             placeholder={'Buy or Sell Price'}
                                             style={styles.inputStyle}
-                                            // onChangeText={groupName => {
-                                            //     this.setState({ groupName: groupName });
-                                            // }}
                                             onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
                                             onSubmitEditing={() => {
                                                 this.onPressCreateBuyOrSell()
@@ -596,7 +622,6 @@ class BuySell extends Component<IProps> {
                                      </label>
 
                                     </View>
-
 
                                     <View style={this.state.dWidth ? styles.smButtonView : styles.buttonView}>
                                         <TouchableOpacity onPress={() => this.onCancelModal()}
@@ -808,7 +833,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "flex-end",
         position: "absolute",
-        top: 300, left: 40,
+        top: 300, left: 100,
     },
     modalCancelButton: {
         backgroundColor: "red",
