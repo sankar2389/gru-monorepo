@@ -8,7 +8,7 @@ import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuy
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
-    createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
+    createBuyOrSell: (buyOrsell: string, buyOrSellType: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
@@ -21,6 +21,7 @@ interface IState {
     modalVisible: boolean,
     buyOrSellPrice: string,
     buyOrSellRadioOption: string,
+    buyOrSellType: string,
     dropDown: number,
     buyOrSellData: any[],
     buyData: any[],
@@ -42,6 +43,7 @@ class BuySell extends Component<IProps> {
         modalVisible: false,
         buyOrSellPrice: "",
         buyOrSellRadioOption: "",
+        buyOrSellType: "",
         dropDown: -1,
         buyOrSellData: [],
         buyData: [],
@@ -96,7 +98,8 @@ class BuySell extends Component<IProps> {
         this.setState({
             modalVisible: false,
             buyOrSellPrice: "",
-            buyOrSellRadioOption: ""
+            buyOrSellRadioOption: "",
+            buyOrSellType: ""
         })
     }
 
@@ -110,20 +113,21 @@ class BuySell extends Component<IProps> {
         const isNum = /^[0-9\b]+$/;
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         let buyOrSellPrice = this.state.buyOrSellPrice
-        if (isNum.test(buyOrSellPrice) !== true) {
+        if (this.state.buyOrSellType.length <= 0) {
+            alert("Please select gold or silver")
+        } else if (isNum.test(buyOrSellPrice) !== true) {
             alert("Please enter number only")
         }
-        else if (this.state.buyOrSellRadioOption.length <= 0) {
+        if (this.state.buyOrSellRadioOption.length <= 0) {
             alert("Please select any one Buy or Sell")
         }
         else {
-
             let buyOrsell = this.state.buyOrSellRadioOption
             let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
             let creator = user.email
             let creatorObject = user
 
-            this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator, creatorObject)
+            this.props.createBuyOrSell(buyOrsell, this.state.buyOrSellType, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
         }
     }
@@ -335,7 +339,7 @@ class BuySell extends Component<IProps> {
     }
 
     onClikcSetGoldOrSilver = (type: string) => {
-
+        this.setState({ buyOrSellType: type })
     }
 
     render() {
@@ -392,6 +396,7 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "BUY_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.buyData.map((buyOrSell: any, index: number) => {
+
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
                                         <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
@@ -412,8 +417,8 @@ class BuySell extends Component<IProps> {
                                                 </View>
                                                 <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
-                                                        Gold
-                                            </Text>
+                                                        {buyOrSell.type}
+                                                    </Text>
                                                 </View>
                                                 <View style={styles.textItemView}>
                                                     {this.state.editPrice && this.state.editIndex == index ?
@@ -462,6 +467,7 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "SELL_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.sellData.map((buyOrSell: any, index: number) => {
+                                console.log(" {buyOrSell.type}", buyOrSell)
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
                                         <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
@@ -482,8 +488,8 @@ class BuySell extends Component<IProps> {
                                                 </View>
                                                 <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
-                                                        Gold
-                                            </Text>
+                                                        {buyOrSell.type}
+                                                    </Text>
                                                 </View>
                                                 <View style={styles.textItemView}>
                                                     {this.state.editPrice && this.state.editIndex == index ?

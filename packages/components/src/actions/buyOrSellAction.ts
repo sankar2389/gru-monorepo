@@ -10,7 +10,7 @@ const getBuyOrSellDataByCreatorSuccess = (dispatch: Function, response: any[]) =
 }
 
 
-export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creator: string, creatorObject: any) => {
+export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, buyOrSellPrice: number, creator: string, creatorObject: any) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -24,7 +24,8 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creat
                                   buy {
                                     price
                                     creator,
-                                    creatorObject
+                                    creatorObject,
+                                    type
                                   }
                                 }
                               }                          
@@ -34,7 +35,8 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creat
                                     "data": {
                                         "price": buyOrSellPrice,
                                         "creator": creator,
-                                        "creatorObject": creatorObject
+                                        "creatorObject": creatorObject,
+                                        "type": buyOrSellType
                                     }
                                 }
                             }
@@ -53,6 +55,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creat
                                     price
                                     creator
                                     creatorObject
+                                    type
                                   }
                                 }
                               }                      
@@ -62,7 +65,8 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creat
                                     "data": {
                                         "price": buyOrSellPrice,
                                         "creator": creator,
-                                        "creatorObject": creatorObject
+                                        "creatorObject": creatorObject,
+                                        "type": buyOrSellType
                                     }
                                 }
                             }

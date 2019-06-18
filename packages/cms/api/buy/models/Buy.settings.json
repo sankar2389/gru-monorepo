@@ -28,6 +28,10 @@
     "creatorObject": {
       "default": "",
       "type": "json"
+    },
+    "type": {
+      "default": "",
+      "type": "string"
     }
   }
 }
