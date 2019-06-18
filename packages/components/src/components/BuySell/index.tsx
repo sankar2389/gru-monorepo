@@ -5,6 +5,7 @@ import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
 import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice } from '../../actions';
+import { type } from "os";
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
@@ -37,7 +38,7 @@ interface IState {
     userName: string,
     dWidth: number,
     unit: string,
-    quantity: any,
+    quantity: number,
 
 }
 
@@ -61,8 +62,8 @@ class BuySell extends Component<IProps> {
         editIndex: "",
         userName: "",
         dWidth: 700,
-        unit: "",
-        quantity: "",
+        unit: "mg",
+        quantity: 0,
 
     }
     constructor(props: IProps) {
@@ -133,7 +134,8 @@ class BuySell extends Component<IProps> {
             let creator = user.email
             let creatorObject = user
             let unit = this.state.unit
-            let quantity = parseInt(this.state.quantity)
+            let quantity = this.state.quantity
+            console.log(typeof (quantity))
             this.props.createBuyOrSell(buyOrsell, this.state.buyOrSellType, unit, quantity, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
         }
@@ -403,7 +405,6 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "BUY_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.buyData.map((buyOrSell: any, index: number) => {
-                                console.log("asdfasdfasdfasdf", buyOrSell)
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
                                         <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
@@ -420,6 +421,7 @@ class BuySell extends Component<IProps> {
                                                 <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
                                                         {buyOrSell.quantity}{buyOrSell.unit}
+
                                                     </Text>
                                                 </View>
                                                 <View style={styles.textItemView}>
@@ -490,8 +492,8 @@ class BuySell extends Component<IProps> {
                                             <View style={styles.secontRowView}>
                                                 <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
-                                                        550gm
-                                            </Text>
+                                                        {buyOrSell.quantity}{buyOrSell.unit}
+                                                    </Text>
                                                 </View>
                                                 <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
@@ -575,9 +577,9 @@ class BuySell extends Component<IProps> {
                                                 Enter quantity
                                             </Text>
                                             <TextInput style={{ width: "50%", backgroundColor: "" }}
-                                                value={this.state.quantity}
+                                                // value={this.state.quantity}
                                                 onChangeText={quantity => {
-                                                    this.setState({ quantity: quantity });
+                                                    this.setState({ quantity: parseInt(quantity) });
                                                 }}
                                             />
 
