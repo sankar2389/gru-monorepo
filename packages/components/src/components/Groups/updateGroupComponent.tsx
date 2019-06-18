@@ -4,15 +4,15 @@ import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { getAllUsers } from '../../actions';
-
+import { getAllUsers, onAddUserToGroup } from '../../actions';
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
     editedGroup: any,
     cancelGroupUpdate: Function,
     updateGroup: Function,
-    getAllUsers(): () => void
+    getAllUsers(): () => void,
+    onAddUserToGroup(groupId: any, user: any): () => void
 
 };
 
@@ -83,11 +83,11 @@ class UpdateGroup extends Component<IProps, IState> {
         }
     }
 
-    onPressAddUserToGroup = (user: any) => {
+    onPressAddUserToGroup = async (user: any) => {
         let groupId = this.state.groupId
-        console.log("groupId", groupId)
-
-        console.log("user", user)
+        if (groupId && user) {
+            this.props.onAddUserToGroup(groupId, user)
+        }
 
     }
 
@@ -192,7 +192,7 @@ const mapStateToProps = ({ auth }: any): IReduxState => {
     return { auth };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getAllUsers })(UpdateGroup);
+export default connect<IReduxState>(mapStateToProps, { getAllUsers, onAddUserToGroup })(UpdateGroup);
 
 const styles = StyleSheet.create({
     containerView: { marginLeft: 50 },

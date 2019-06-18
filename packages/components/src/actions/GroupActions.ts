@@ -266,6 +266,39 @@ export const onUpdateGroup = (groupId: string, groupName: string, creator: strin
 }
 
 
+export const onAddUserToGroup = (groupId: any, user: any) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                     mutation ($input: updateGroupInput) {
+                         updateGroup(input: $input) {
+                          group {
+                            members
+                          }
+                        }
+                      }
+                     `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": groupId
+                                }, "data": {
+                                    "members": user
+                                }
+                            }
+                        }
+                    })
+                }
+            })
+    }
+
+}
+
+
 
 
 
