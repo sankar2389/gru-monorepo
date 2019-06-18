@@ -4,7 +4,7 @@ import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Imag
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
-import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice } from '../../actions';
+import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice, onCreateBids } from '../../actions';
 import { type } from "os";
 const CMS_API = process.env.CMS_API;
 
@@ -15,7 +15,7 @@ interface IProps extends RouteComponentProps {
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     onUpdateSellPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     buyOrSell: any,
-
+    onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string) => void
 };
 
 interface IState {
@@ -39,6 +39,9 @@ interface IState {
     dWidth: number,
     unit: string,
     quantity: number,
+    bidModalVisible: boolean,
+    bidOnBuyOrSell: string,
+    buyOrSellId: string
 
 }
 
@@ -64,6 +67,9 @@ class BuySell extends Component<IProps> {
         dWidth: 700,
         unit: "mg",
         quantity: 0,
+        bidModalVisible: false,
+        bidOnBuyOrSell: "",
+        buyOrSellId: ""
 
     }
     constructor(props: IProps) {
@@ -135,7 +141,6 @@ class BuySell extends Component<IProps> {
             let creatorObject = user
             let unit = this.state.unit
             let quantity = this.state.quantity
-            console.log(typeof (quantity))
             this.props.createBuyOrSell(buyOrsell, this.state.buyOrSellType, unit, quantity, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
         }
@@ -267,21 +272,12 @@ class BuySell extends Component<IProps> {
         })
     }
 
-    onPressEditBuyPrice = (price: number, index: number) => {
-        if (price) {
-            this.setState({
-                buyOrSellPrice: price.toString(),
-                editPrice: true,
-                editIndex: index
-            })
-        } else {
-            this.setState({
-                buyOrSellPrice: "",
-                editPrice: true,
-                editIndex: index
-            })
-        }
-
+    onPressSetPrice = (bidOn: string, buyOrsellId: string) => {
+        this.setState({
+            bidModalVisible: true,
+            bidOnBuyOrSell: bidOn,
+            buyOrSellId: buyOrsellId
+        })
     }
 
     async onPressUpdateBuyPrice(_id: any) {
@@ -351,8 +347,16 @@ class BuySell extends Component<IProps> {
         this.setState({ buyOrSellType: type })
     }
 
+    onPressCreateBids = async () => {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        let bidsPrice = parseInt(this.state.buyOrSellPrice)
+        let buyOrSellId = this.state.buyOrSellId
+        if (bidsPrice && user._id) {
+            this.props.onCreateBids(user._id, bidsPrice, buyOrSellId)
+        }
+    }
+
     render() {
-        console.log("sellData", this.state.sellData)
         const { innerContainer } = styles;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
@@ -458,7 +462,7 @@ class BuySell extends Component<IProps> {
                                                         <Text style={styles.saveButtonText}>Save</Text>
                                                     </TouchableOpacity> :
                                                     <TouchableOpacity style={styles.setPriceButton}
-                                                        onPress={() => this.onPressEditBuyPrice(buyOrSell.price, index)}
+                                                        onPress={() => this.onPressSetPrice("buy", buyOrSell._id)}
                                                     >
                                                         <Text>Set Price</Text>
                                                     </TouchableOpacity>
@@ -476,7 +480,6 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "SELL_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.sellData.map((buyOrSell: any, index: number) => {
-                                console.log(" {buyOrSell.type}", buyOrSell)
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
                                         <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
@@ -576,7 +579,7 @@ class BuySell extends Component<IProps> {
                                             <Text>
                                                 Enter quantity
                                             </Text>
-                                            <TextInput style={{ width: "50%", backgroundColor: "" }}
+                                            <TextInput style={{ width: "50%", borderWidth: 2, padding: 2 }}
                                                 // value={this.state.quantity}
                                                 onChangeText={quantity => {
                                                     this.setState({ quantity: parseInt(quantity) });
@@ -644,6 +647,44 @@ class BuySell extends Component<IProps> {
                             <Text />
                     }
                     {/* BUY AND SELL MODAL END */}
+
+                    {/* BID MODAL START */}
+                    {
+                        this.state.bidModalVisible ?
+                            <View style={styles.modalContainer}>
+                                <View style={this.state.dWidth <= 700 ? styles.smModalView : styles.modalView}>
+                                    <Text style={styles.createBuySellText}>{this.state.bidOnBuyOrSell === "buy" ? "BIDS ON BUY" : "BIDS ON SELL"}</Text>
+
+                                    <TextInput
+                                        autoFocus={true}
+                                        value={this.state.buyOrSellPrice}
+                                        placeholder={'Set bids price'}
+                                        style={styles.inputStyle}
+                                        onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                    // onSubmitEditing={() => {
+                                    //     this.onPressCreateBuyOrSell()
+                                    // }}
+                                    />
+                                    <View style={this.state.dWidth ? styles.setPriceSmButtonView : styles.setPricebuttonView}>
+                                        <TouchableOpacity onPress={() => this.onCancelModal()}
+                                            style={styles.modalCancelButton}>
+                                            <Text style={styles.buttonText}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.submitButton}
+                                            onPress={() => this.onPressCreateBids()}
+                                        >
+                                            <Text style={styles.buttonText}>Set Bids</Text>
+                                        </TouchableOpacity>
+
+                                    </View>
+
+                                </View>
+
+                            </View> :
+                            <Text />
+                    }
+                    {/* BIDS MODAL END */}
+
                 </ScrollView >
                 {/* PAGINATION VIEW START */}
                 {this.state.buyOrSellPageCount.length > 1 ?
@@ -694,7 +735,7 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
     return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice })(BuySell);
+export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice, onCreateBids })(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
@@ -836,6 +877,19 @@ const styles = StyleSheet.create({
         alignItems: "flex-end",
         position: "absolute",
         top: 300, left: 100,
+    },
+
+    setPricebuttonView: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "absolute",
+        top: 50, left: 350,
+    },
+    setPriceSmButtonView: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "absolute",
+        top: 250, left: 200,
     },
     modalCancelButton: {
         backgroundColor: "red",

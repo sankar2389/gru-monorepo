@@ -20,7 +20,6 @@ interface IState {
     groupName: string,
     groupId: string
     searchMemberText: string,
-    data: any,
     users: any,
     searchingUsers: any
 }
@@ -32,21 +31,6 @@ class UpdateGroup extends Component<IProps, IState> {
         groupName: this.props.editedGroup.groupName,
         users: [],
         searchingUsers: [],
-        data: [
-            { 'name': 'Ben', 'id': 1 },
-            { 'name': 'Susan', 'id': 2 },
-            { 'name': 'Robert', 'id': 3 },
-            { 'name': 'Mary', 'id': 4 },
-            { 'name': 'Daniel', 'id': 5 },
-            { 'name': 'Laura', 'id': 6 },
-            { 'name': 'John', 'id': 7 },
-            { 'name': 'Debra', 'id': 8 },
-            { 'name': 'Aron', 'id': 9 },
-            { 'name': 'Ann', 'id': 10 },
-            { 'name': 'Steve', 'id': 11 },
-            { 'name': 'Olivia', 'id': 12 }
-        ]
-
     }
     constructor(props: IProps) {
         super(props);
@@ -54,9 +38,7 @@ class UpdateGroup extends Component<IProps, IState> {
     }
 
     componentWillReceiveProps(newProps: any) {
-
         if (newProps.auth.users.length > 0) {
-            console.log("new", newProps.auth.users)
             this.setState({ users: newProps.auth.users })
         }
     }
@@ -65,9 +47,7 @@ class UpdateGroup extends Component<IProps, IState> {
         this.props.getAllUsers()
     }
 
-
     onPressSearchUserByUserName = (name: string) => {
-
         let users = this.state.users;
         if (users.length > 0) {
             let searchIngUsers = users.filter((user: any, index: number) => {

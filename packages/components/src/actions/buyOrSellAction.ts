@@ -2,6 +2,7 @@
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
+import { now } from 'moment';
 
 
 
@@ -264,6 +265,47 @@ export const onUpdateSellPrice = (_id: any, buyPrice: number, creator: string) =
                         console.log("grapql error", e)
                         throw e;
                     });
+                }
+            })
+    }
+}
+
+export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: string) => {
+    console.log("userId", userId)
+    console.log("bidsPrice", bidsPrice)
+    console.log("buyOrSellId", buyOrSellId)
+
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: createBidsInput) {
+                            createBid(input: $input) {
+                              bid {
+                                userId
+                                bidPrice
+                                createdAt
+                              }
+                            }
+                          }                          
+                        `,
+                        variables: {
+                            "input": {
+                                "data": {
+                                    "userId": userId,
+                                    "bidPrice": bidsPrice,
+                                    "createdAt": new Date()
+
+                                }
+                            }
+                        }
+                    })
+
+
                 }
             })
     }

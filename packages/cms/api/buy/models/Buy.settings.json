@@ -32,6 +32,10 @@
     "type": {
       "default": "",
       "type": "string"
+    },
+    "bids": {
+      "model": "bid",
+      "via": "userId"
     }
   }
 }
