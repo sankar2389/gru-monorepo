@@ -100,7 +100,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
     }
 }
 
-export const getBuyDataByCreator = (creator: string) => {
+export const getBuyDataByCreator = () => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -164,58 +164,9 @@ export const getSellDataByCreator = (creator: string) => {
     }
 }
 
-export const onUpdateBuyPrice = (_id: any, buyPrice: number, creator: string) => {
-    return (dispatch: Function) => {
-        AsyncStorage.getItem('token')
-            .then((authtoken: string | null) => {
-                if (authtoken) {
-                    const client = createApolloClient(authtoken);
-                    client.mutate({
-                        mutation: gql`
-                        mutation ($input: updateBuyInput) {
-                            updateBuy(input: $input) {
-                              buy {
-                                price
-                              }
-                            }
-                          }
-                        `,
-                        variables: {
-                            "input": {
-                                "where": {
-                                    "id": _id
-                                },
-                                "data": {
-                                    "price": buyPrice
-                                }
-                            }
-                        }
-                    }).then((res: any) => {
-                        client.query({
-                            query: gql`
-                            query {
-                                buys{
-                                  _id
-                                  price
-                                  creator
-                                  creatorObject
-                                  createdAt
-                                }
-                              }`
-                        }).then((res: any) => {
-                            getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
-                        }).catch(e => {
-                            console.log("grapql error", e)
-                            throw e;
-                        });
-                    }).catch(e => {
-                        console.log("grapql error", e)
-                        throw e;
-                    });
-                }
-            })
-    }
-}
+
+
+export const onUpdateBuyPrice = (_id: any, buyPrice: number, creator: string) => { }
 
 export const onUpdateSellPrice = (_id: any, buyPrice: number, creator: string) => {
     console.log("emsil", creator)

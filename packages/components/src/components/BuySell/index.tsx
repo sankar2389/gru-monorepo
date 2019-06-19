@@ -316,7 +316,6 @@ class BuySell extends Component<IProps> {
                         <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Bullion user gold rates</Text>
                     </View>
 
-
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         <View style={this.state.dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
                             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
@@ -447,12 +446,9 @@ class BuySell extends Component<IProps> {
                                             >
                                                 <Text>Set Price</Text>
                                             </TouchableOpacity>
-
                                         </View>
-
                                     )
                                 }
-
                             }).reverse()}
                         </View>
                     }
@@ -497,8 +493,7 @@ class BuySell extends Component<IProps> {
                                                 }}
                                             />
 
-                                            < Text style={{}
-                                            }>
+                                            <Text>
                                                 Select unit
                                          </Text>
                                             <select value={this.state.unit} onChange={(evt) => this.setState({ unit: evt.target.value })}>
