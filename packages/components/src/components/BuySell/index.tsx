@@ -5,7 +5,6 @@ import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
 import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onCreateBids } from '../../actions';
-import { type } from "os";
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
@@ -38,7 +37,8 @@ interface IState {
     bidModalVisible: boolean,
     bidOnBuyOrSell: string,
     buyOrSellId: string,
-    expandBidView: boolean
+    expandBidView: boolean,
+    BuyOrSellIndex: number
 
 }
 
@@ -65,7 +65,8 @@ class BuySell extends Component<IProps> {
         bidModalVisible: false,
         bidOnBuyOrSell: "",
         buyOrSellId: "",
-        expandBidView: false
+        expandBidView: false,
+        BuyOrSellIndex: 0
 
     }
     constructor(props: IProps) {
@@ -303,10 +304,11 @@ class BuySell extends Component<IProps> {
         }
     }
 
-    onPressExpandedBid = () => {
+    onPressExpandedBid = (index: number) => {
         const { expandBidView } = this.state;
         this.setState({
-            expandBidView: !expandBidView
+            expandBidView: !expandBidView,
+            BuyOrSellIndex: index
         })
     }
 
@@ -365,7 +367,7 @@ class BuySell extends Component<IProps> {
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
                                         <View key={index}>
-                                            <TouchableOpacity onPress={() => this.onPressExpandedBid()}>
+                                            <TouchableOpacity onPress={() => this.onPressExpandedBid(index)}>
                                                 <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView}>
                                                     <View style={styles.imageAndNameView}>
                                                         <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
@@ -407,7 +409,7 @@ class BuySell extends Component<IProps> {
 
                                             </TouchableOpacity>
                                             {
-                                                this.state.expandBidView ?
+                                                this.state.expandBidView && this.state.BuyOrSellIndex === index ?
                                                     <View><Text>expand</Text></View> : <Text />
                                             }
                                         </View>

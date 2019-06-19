@@ -68,7 +68,6 @@ class UpdateGroup extends Component<IProps, IState> {
         if (groupId && user) {
             this.props.onAddUserToGroup(groupId, user)
         }
-
     }
 
     render() {
