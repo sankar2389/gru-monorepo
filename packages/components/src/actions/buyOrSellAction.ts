@@ -65,6 +65,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                     type
                                     unit
                                     quantity
+                                    bids
                                   }
                                 }
                               }                      
@@ -78,6 +79,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                         "type": buyOrSellType,
                                         "unit": unit,
                                         "quantity": quantity,
+                                        "bids": []
                                     }
                                 }
                             }
@@ -350,11 +352,55 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
 
                             }
 
+                            //update Bid on sell
+                            if (bidOnBuyOrSell === "sell") {
+                                //Get sell data by sell Id
+                                client.query({
+                                    query: gql`
+                                    query($_id:String!) {
+                                        sells(where:{_id:$_id}) {
+                                            _id
+                                           bids
+                                         }
+                                      }
+                                    `, variables: {
+                                        "_id": buyOrSellId
+                                    }
+                                }).then(sell => {
+                                    let bids = sell.data.sells[0].bids
+                                    bids.push(bid.data.createBid.bid._id)
+                                    //Update sell bids field by BidId 
+                                    client.mutate({
+                                        mutation: gql`
+                                        mutation ($input: updateSellInput) {
+                                            updateSell(input: $input) {
+                                              sell {
+                                                bids
+                                              }
+                                            }
+                                          }
+                                        `,
+                                        variables: {
+                                            "input": {
+                                                "where": {
+                                                    "id": buyOrSellId
+                                                },
+                                                "data": {
+                                                    "bids": bids
+                                                }
+                                            }
+                                        }
+                                    }).then(res => {
+                                        alert("One bid is created on Sesll")
 
+                                    }).catch(err => {
+                                        console.log(err.message)
+                                    })
+                                }).catch(err => {
+                                    console.log(err.message)
+                                })
+                            }
                         }
-
-
-
                     }).catch(err => {
                         console.log(err.message)
                     })
