@@ -37,7 +37,8 @@ interface IState {
     quantity: number,
     bidModalVisible: boolean,
     bidOnBuyOrSell: string,
-    buyOrSellId: string
+    buyOrSellId: string,
+    expandBidView: boolean
 
 }
 
@@ -63,7 +64,8 @@ class BuySell extends Component<IProps> {
         quantity: 0,
         bidModalVisible: false,
         bidOnBuyOrSell: "",
-        buyOrSellId: ""
+        buyOrSellId: "",
+        expandBidView: false
 
     }
     constructor(props: IProps) {
@@ -301,6 +303,13 @@ class BuySell extends Component<IProps> {
         }
     }
 
+    onPressExpandedBid = () => {
+        const { expandBidView } = this.state;
+        this.setState({
+            expandBidView: !expandBidView
+        })
+    }
+
     render() {
         const { innerContainer } = styles;
         return (
@@ -351,56 +360,62 @@ class BuySell extends Component<IProps> {
                     {/* DISPLAY BUY */}
                     {
                         this.state.dataFromCollection === "BUY_DATA" &&
-                        <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
+                        <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone} >
                             {this.state.buyData.map((buyOrSell: any, index: number) => {
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
-                                        <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
-                                            <View style={styles.imageAndNameView}>
-                                                <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
-                                            </View>
-                                            <View style={styles.textItemView}>
-                                                <Text style={styles.buyOrSellText}>
-                                                    asks
-                                            </Text>
-                                            </View>
-                                            <View style={styles.secontRowView}>
-                                                <View style={styles.textItemView}>
-                                                    <Text style={styles.buyOrSellText}>
-                                                        {buyOrSell.quantity}{buyOrSell.unit}
-
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.textItemView}>
-                                                    <Text style={styles.buyOrSellText}>
-                                                        {buyOrSell.type}
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.textItemView}>
-                                                    <Text style={styles.buyOrSellText}>
-                                                        &#8377; {buyOrSell.price}
-                                                    </Text>
-
-                                                </View>
-                                            </View>
-                                            {/* <Text style={styles.buyOrSellText}>
+                                        <View key={index}>
+                                            <TouchableOpacity onPress={() => this.onPressExpandedBid()}>
+                                                <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView}>
+                                                    <View style={styles.imageAndNameView}>
+                                                        <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                        <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
+                                                    </View>
+                                                    <View style={styles.textItemView}>
+                                                        <Text style={styles.buyOrSellText}>
+                                                            asks
+                                                     </Text>
+                                                    </View>
+                                                    <View style={styles.secontRowView}>
+                                                        <View style={styles.textItemView}>
+                                                            <Text style={styles.buyOrSellText}>
+                                                                {buyOrSell.quantity}{buyOrSell.unit}
+                                                            </Text>
+                                                        </View>
+                                                        <View style={styles.textItemView}>
+                                                            <Text style={styles.buyOrSellText}>
+                                                                {buyOrSell.type}
+                                                            </Text>
+                                                        </View>
+                                                        <View style={styles.textItemView}>
+                                                            <Text style={styles.buyOrSellText}>
+                                                                &#8377; {buyOrSell.price}
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                    {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
                                         </Text> */}
-                                            <View>
+                                                    <View>
+                                                        <TouchableOpacity style={styles.setPriceButton}
+                                                            onPress={() => this.onPressSetBidPrice("buy", buyOrSell._id)}
+                                                        >
+                                                            <Text>Set Price</Text>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                </View>
 
-                                                <TouchableOpacity style={styles.setPriceButton}
-                                                    onPress={() => this.onPressSetBidPrice("buy", buyOrSell._id)}
-                                                >
-                                                    <Text>Set Price</Text>
-                                                </TouchableOpacity>
-
-                                            </View>
+                                            </TouchableOpacity>
+                                            {
+                                                this.state.expandBidView ?
+                                                    <View><Text>expand</Text></View> : <Text />
+                                            }
                                         </View>
                                     )
                                 }
 
                             }).reverse()}
+
                         </View>
                     }
                     {/* DISPLAY SELL */}
@@ -829,7 +844,7 @@ const styles = StyleSheet.create({
     nestedGroupListView: {
         padding: 8,
         backgroundColor: '#ffffff',
-        marginBottom: 10,
+        marginTop: 10,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -838,7 +853,7 @@ const styles = StyleSheet.create({
     smNestedGroupListView: {
         padding: 8,
         backgroundColor: '#ffffff',
-        marginBottom: 10,
+        marginTop: 10,
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "space-between",
