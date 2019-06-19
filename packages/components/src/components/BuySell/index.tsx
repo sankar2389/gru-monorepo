@@ -11,7 +11,7 @@ const CMS_API = process.env.CMS_API;
 interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
     getBuyDataByCreator: (start?: number) => void,
-    getSellDataByCreator: (creator: string, start?: number) => void,
+    getSellDataByCreator: (start?: number) => void,
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     onUpdateSellPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     buyOrSell: any,
@@ -84,34 +84,59 @@ class BuySell extends Component<IProps> {
         window.addEventListener("resize", this.updateDimension)
     }
 
+    // Function to get Total pages
 
     getTotalPages = () => {
-        AsyncStorage.getItem("token").then((authtoken: string | null) => {
+        AsyncStorage.getItem("token").then(async (authtoken: string | null) => {
             if (authtoken) {
-                axios.get(process.env.CMS_API + "buys/count", {
-                    headers: {
-                        Authorization: "Bearer " + authtoken
-                    }
-                }).then(res => {
+                const { dataFromCollection } = this.state;
+                if (dataFromCollection === "BUY_DATA") {
 
-                    const { data } = res;
-                    let totalPages = Math.floor(data / this.state.dataLimitOnPage);
+                    const res = await this.getCount("buys", authtoken)
 
-                    if (data % this.state.dataLimitOnPage) {
-                        totalPages += 1
-                    }
-                    const pagesArray: number[] = []
-
-                    for (let i = 1; i <= totalPages; i++) {
-                        pagesArray.push(i)
-                    }
                     this.setState({
-                        totalPages: pagesArray,
-                        buysCount: data
+                        totalPages: res.pagesArray,
+                        buysCount: res.data
                     })
-                })
+                }
+                if (dataFromCollection === "SELL_DATA") {
+                    const res = await this.getCount("sells", authtoken)
+
+                    this.setState({
+                        totalPages: res.pagesArray,
+                        sellsCount: res.data
+                    })
+                }
             }
         })
+    }
+
+    // Function to get all records in the DB by datatype as BUY/SELL
+
+    getCount = async (dataType: string, authtoken: string) => {
+        const res = await axios.get(process.env.CMS_API + `${dataType}/count`, {
+            headers: {
+                Authorization: "Bearer " + authtoken
+            }
+        })
+        const { dataLimitOnPage } = this.state;
+
+        const { data } = res;
+        let totalPages = Math.floor(data / dataLimitOnPage);
+
+        if (data % dataLimitOnPage) {
+            totalPages += 1
+        }
+        const pagesArray: number[] = []
+
+        for (let i = 1; i <= totalPages; i++) {
+            pagesArray.push(i)
+        }
+
+        return {
+            pagesArray,
+            data
+        }
     }
 
     onPressVisibleModal = () => {
@@ -155,6 +180,7 @@ class BuySell extends Component<IProps> {
 
             this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
+            this.getTotalPages()
         }
     }
 
@@ -173,32 +199,28 @@ class BuySell extends Component<IProps> {
     componentWillReceiveProps(newProps: any) {
         if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
             const { buyData } = this.state;
+            this.getTotalPages()
             this.setState({
                 buyData: newProps.buyOrSell.buyOrSellData.buys, ...buyData,
                 dataFromCollection: "BUY_DATA"
             });
-            let dLength = newProps.buyOrSell.buyOrSellData.buys.length
-            // this.onLoadPagePagination(dLength)
         }
         if (newProps.buyOrSell.buyOrSellData.sells !== undefined) {
             const { sellData } = this.state;
+            this.getTotalPages()
             this.setState({
                 sellData: newProps.buyOrSell.buyOrSellData.sells, ...sellData,
                 dataFromCollection: "SELL_DATA"
             });
-            let dLength = newProps.buyOrSell.buyOrSellData.sells.length
-            // this.onLoadPagePagination(dLength)
         }
     }
 
 
     onPressGetSellDataBYCreator = async () => {
         this.setState({
-            dataLimitOnPage: 10,
             selectedPaginatateNumber: 1
         })
-        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        await this.props.getSellDataByCreator(user.email);
+        this.props.getSellDataByCreator();
     }
 
     onPressGetBuyDataBYCreator = async () => {
@@ -210,33 +232,71 @@ class BuySell extends Component<IProps> {
 
     // pagination Next
     onPressPaginateNext = () => {
-        if (this.state.selectedPaginatateNumber !== this.state.totalPages.length) {
-            this.setState((prevState: any) => {
-                return { selectedPaginatateNumber: prevState.selectedPaginatateNumber + 1 }
-            }, () => {
-                const start = (this.state.selectedPaginatateNumber - 1) * 10;
-                this.props.getBuyDataByCreator(start)
-            })
+        const { selectedPaginatateNumber, totalPages, dataFromCollection } = this.state;
+        if (dataFromCollection === "BUY_DATA") {
+            if (selectedPaginatateNumber !== totalPages.length) {
+                this.setState((prevState: any) => {
+                    return { selectedPaginatateNumber: prevState.selectedPaginatateNumber + 1 }
+                }, () => {
+                    const { selectedPaginatateNumber } = this.state
+                    const start = (selectedPaginatateNumber - 1) * 10;
+                    this.props.getBuyDataByCreator(start)
+                })
+            }
+        }
+        if (dataFromCollection === "SELL_DATA") {
+            if (selectedPaginatateNumber !== totalPages.length) {
+                this.setState((prevState: any) => {
+                    return { selectedPaginatateNumber: prevState.selectedPaginatateNumber + 1 }
+                }, () => {
+                    const { selectedPaginatateNumber } = this.state
+                    const start = (selectedPaginatateNumber - 1) * 10;
+                    this.props.getSellDataByCreator(start)
+                })
+            }
         }
     }
 
     // pagination Previous
     onPressPaginatePrevious = () => {
-        if (this.state.selectedPaginatateNumber !== 1) {
-            this.setState((prevState: any) => {
-                return { selectedPaginatateNumber: prevState.selectedPaginatateNumber - 1 }
-            }, () => {
-                const start = (this.state.selectedPaginatateNumber - 1) * 10;
-                this.props.getBuyDataByCreator(start)
-            })
+        const { selectedPaginatateNumber, dataFromCollection } = this.state
+        if (dataFromCollection === "BUY_DATA") {
+            if (selectedPaginatateNumber !== 1) {
+                this.setState((prevState: any) => {
+                    return { selectedPaginatateNumber: prevState.selectedPaginatateNumber - 1 }
+                }, () => {
+                    const { selectedPaginatateNumber } = this.state
+                    const start = (selectedPaginatateNumber - 1) * 10;
+                    this.props.getBuyDataByCreator(start)
+                })
+            }
+        }
+        if (dataFromCollection === "SELL_DATA") {
+            if (selectedPaginatateNumber !== 1) {
+                this.setState((prevState: any) => {
+                    return { selectedPaginatateNumber: prevState.selectedPaginatateNumber - 1 }
+                }, () => {
+                    const { selectedPaginatateNumber } = this.state
+                    const start = (selectedPaginatateNumber - 1) * 10;
+                    this.props.getSellDataByCreator(start)
+                })
+            }
         }
     }
 
     async onPressPaginate(pageCount: number) {
+        const { dataFromCollection } = this.state
         const start = (pageCount - 1) * 10;
-        this.setState({ selectedPaginatateNumber: pageCount }, () => {
-            this.props.getBuyDataByCreator(start)
-        })
+        if (dataFromCollection === "BUY_DATA") {
+            this.setState({ selectedPaginatateNumber: pageCount }, () => {
+                this.props.getBuyDataByCreator(start)
+            })
+        }
+        if (dataFromCollection === "SELL_DATA") {
+            this.setState({ selectedPaginatateNumber: pageCount }, () => {
+                this.props.getSellDataByCreator(start)
+            })
+        }
     }
 
     onPressEditBuyPrice = (price: number, index: number) => {
@@ -330,7 +390,7 @@ class BuySell extends Component<IProps> {
                         <Text style={styles.headerBuyAndSell}>
                             Buy / Sell
                     </Text>
-                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Bullion user gold rates</Text>
+                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Billion user gold rates</Text>
                     </View>
 
 
@@ -353,7 +413,7 @@ class BuySell extends Component<IProps> {
                                 >
                                     <Text style={this.state.dataFromCollection === "SELL_DATA" ?
                                         [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>
-                                        SELL({this.state.sellData.length})
+                                        SELL({this.state.sellsCount})
                                     </Text>
                                 </TouchableOpacity>
 
