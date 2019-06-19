@@ -4,7 +4,7 @@ import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Imag
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
-import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onCreateBids } from '../../actions';
+import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onCreateBids, getBidsByBidId } from '../../actions';
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
@@ -12,7 +12,8 @@ interface IProps extends RouteComponentProps {
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
     buyOrSell: any,
-    onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string) => void
+    onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string) => void,
+    getBidsByBidId: (bids: any) => void
 };
 
 interface IState {
@@ -38,7 +39,8 @@ interface IState {
     bidOnBuyOrSell: string,
     buyOrSellId: string,
     expandBidView: boolean,
-    BuyOrSellIndex: number
+    buyOrSellIndex: number,
+    bids: any
 
 }
 
@@ -66,7 +68,8 @@ class BuySell extends Component<IProps> {
         bidOnBuyOrSell: "",
         buyOrSellId: "",
         expandBidView: false,
-        BuyOrSellIndex: 0
+        buyOrSellIndex: 0,
+        bids: []
 
     }
     constructor(props: IProps) {
@@ -157,6 +160,7 @@ class BuySell extends Component<IProps> {
     }
 
     componentWillReceiveProps(newProps: any) {
+        console.log("nmew", newProps.buyOrSell.bids)
         if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
             const { buyData } = this.state;
             this.setState({
@@ -175,6 +179,11 @@ class BuySell extends Component<IProps> {
             });
             let dLength = newProps.buyOrSell.buyOrSellData.sells.length
             this.onLoadPagePagination(dLength)
+        }
+        if (newProps.buyOrSell.bids.length > 0) {
+            this.setState({
+                bids: newProps.buyOrSell.bids
+            })
         }
     }
 
@@ -304,52 +313,58 @@ class BuySell extends Component<IProps> {
         }
     }
 
-    onPressExpandedBid = (index: number) => {
-        const { expandBidView } = this.state;
+    onPressExpandedBid = (buyOrSell: any, index: number) => {
+        console.log("Id", buyOrSell.bids)
+        if (buyOrSell.bids.length > 0) {
+            this.props.getBidsByBidId(buyOrSell.bids)
+
+        }
         this.setState({
-            expandBidView: !expandBidView,
-            BuyOrSellIndex: index
+            expandBidView: true,
+            buyOrSellIndex: index,
+            bids: []
         })
     }
 
     render() {
         const { innerContainer } = styles;
+        const { dWidth, modalVisible, dataFromCollection, buyData, sellData, buyOrSellIndex, bids } = this.state;
         return (
-            <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
-                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
+            <View style={dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
+                <ScrollView style={dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     <View style={{ alignItems: "flex-start" }}>
                         <Text style={styles.headerBuyAndSell}>
                             Buy / Sell
                     </Text>
-                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Bullion user gold rates</Text>
+                        <Text style={dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Bullion user gold rates</Text>
                     </View>
 
-                    <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
-                        <View style={this.state.dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
+                    <View style={modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
+                        <View style={dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
                             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                                <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()} style={this.state.dataFromCollection === "BUY_DATA" ?
+                                <TouchableOpacity onPress={() => this.onPressGetBuyDataBYCreator()} style={dataFromCollection === "BUY_DATA" ?
                                     styles.buyOrSellButtonTab : styles.blankTextStyle
                                 }>
-                                    <Text style={this.state.dataFromCollection === "BUY_DATA" ?
+                                    <Text style={dataFromCollection === "BUY_DATA" ?
                                         [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>
-                                        BUY({this.state.buyData.length})
+                                        BUY({buyData.length})
                                     </Text>
                                 </TouchableOpacity>
                                 <Text style={styles.buyAndSellPageHeadText}> / </Text>
                                 <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}
-                                    style={this.state.dataFromCollection === "SELL_DATA" ?
+                                    style={dataFromCollection === "SELL_DATA" ?
                                         styles.buyOrSellButtonTab : styles.blankTextStyle
                                     }
                                 >
                                     <Text style={this.state.dataFromCollection === "SELL_DATA" ?
                                         [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>
-                                        SELL({this.state.sellData.length})
+                                        SELL({sellData.length})
                                     </Text>
                                 </TouchableOpacity>
 
                             </View>
-                            <View style={this.state.dWidth <= 700 ? styles.addButtonOutterView : styles.blankTextStyle}>
-                                <TouchableOpacity disabled={this.state.modalVisible ? true : false}
+                            <View style={dWidth <= 700 ? styles.addButtonOutterView : styles.blankTextStyle}>
+                                <TouchableOpacity disabled={modalVisible ? true : false}
                                     style={styles.addButtom} onPress={() => this.onPressVisibleModal()}>
                                     <Text style={styles.addGroupText}>+ Create Buy Or Sell</Text>
                                 </TouchableOpacity>
@@ -367,7 +382,7 @@ class BuySell extends Component<IProps> {
                                 if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                     return (
                                         <View key={index}>
-                                            <TouchableOpacity onPress={() => this.onPressExpandedBid(index)}>
+                                            <TouchableOpacity onPress={() => this.onPressExpandedBid(buyOrSell, index)}>
                                                 <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView}>
                                                     <View style={styles.imageAndNameView}>
                                                         <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
@@ -409,13 +424,23 @@ class BuySell extends Component<IProps> {
 
                                             </TouchableOpacity>
                                             {
-                                                this.state.expandBidView && this.state.BuyOrSellIndex === index ?
-                                                    <View><Text>expand</Text></View> : <Text />
-                                            }
+                                                this.state.expandBidView && buyOrSellIndex === index ?
+                                                    <View>
+                                                        {
+                                                            bids.length > 0 ?
+                                                                bids.map((bid: any, index: number) => {
+                                                                    return (
+                                                                        <View key={index}>
+                                                                            <Text>{bid.userId}</Text>
+                                                                        </View>
+                                                                    )
+                                                                }) : <Text />
+                                                        }
+                                                    </View> :
+                                                    <Text />}
                                         </View>
                                     )
                                 }
-
                             }).reverse()}
 
                         </View>
@@ -655,7 +680,7 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
     return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onCreateBids })(BuySell);
+export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onCreateBids, getBidsByBidId })(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />

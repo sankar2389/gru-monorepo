@@ -117,7 +117,8 @@ export const getBuyDataByCreator = () => {
                               createdAt
                               type
                               unit
-                              quantity
+                              quantity,
+                              bids
                             }
                           }
                         `
@@ -149,7 +150,8 @@ export const getSellDataByCreator = (creator: string) => {
                               createdAt
                               type
                               unit
-                              quantity
+                              quantity,
+                              bids
                             }
                           }
                         `
@@ -299,6 +301,40 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                 }
             }).catch(err => {
                 alert(err.message)
+            })
+    }
+}
+
+export const getBidsByBidId = (bids: any) => {
+    console.log("id", bids)
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+
+                    client.query({
+                        query: gql`
+                        query($id:JSON){
+                            bids(where:{_id_in:$id}){
+                                _id
+                                userId
+                              bidPrice
+                              createdAt
+                            }
+                          }
+                        `, variables: {
+                            "id": bids
+                        }
+                    }).then(bid => {
+                        console.log("bbbbbb", bid.data.bids)
+                        dispatch({
+                            type: "GET_BID_BY_ID_SUCCESS",
+                            payload: bid.data.bids
+                        })
+                    })
+
+                }
             })
     }
 }
