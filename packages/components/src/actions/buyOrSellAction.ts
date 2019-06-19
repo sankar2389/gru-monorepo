@@ -299,8 +299,8 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                             }
                         }
                     }).then(bid => {
-                        console.log("bid", bid.data.createBid.bid._id)
                         if (bid.data.createBid.bid._id) {
+                            //update buy
                             if (bidOnBuyOrSell === "buy") {
                                 //Get buy data
                                 client.query({
@@ -316,7 +316,6 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                     }
                                 }).then(buy => {
                                     let bids = buy.data.buys[0].bids
-                                    console.log("bids before", bids)
                                     bids.push(bid.data.createBid.bid._id)
                                     console.log("buuuuy   bidssssssss", bids)
                                     //Update buy bids data by BidId 
@@ -340,7 +339,14 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                                 }
                                             }
                                         }
+                                    }).then(res => {
+                                        alert("One bid is created")
+
+                                    }).catch(err => {
+                                        console.log(err.message)
                                     })
+                                }).catch(err => {
+                                    console.log(err.message)
                                 })
 
                             }
@@ -350,6 +356,8 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
 
 
 
+                    }).catch(err => {
+                        console.log(err.message)
                     })
                 }
             }).catch(err => {

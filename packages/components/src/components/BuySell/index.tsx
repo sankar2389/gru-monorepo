@@ -15,7 +15,7 @@ interface IProps extends RouteComponentProps {
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     onUpdateSellPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     buyOrSell: any,
-    onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string) => void
+    onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string) => void
 };
 
 interface IState {
@@ -347,13 +347,12 @@ class BuySell extends Component<IProps> {
         this.setState({ buyOrSellType: type })
     }
 
-    //Create bids
     onPressCreateBids = async () => {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         let bidsPrice = parseInt(this.state.buyOrSellPrice)
         let buyOrSellId = this.state.buyOrSellId
         if (bidsPrice && user._id) {
-            this.props.onCreateBids(user._id, bidsPrice, buyOrSellId, this.state.bidOnBuyOrSell)
+            this.props.onCreateBids(user._id, bidsPrice, buyOrSellId)
         }
     }
 
@@ -667,7 +666,7 @@ class BuySell extends Component<IProps> {
                                     // }}
                                     />
                                     <View style={this.state.dWidth ? styles.setPriceSmButtonView : styles.setPricebuttonView}>
-                                        <TouchableOpacity onPress={() => this.setState({ bidModalVisible: false })}
+                                        <TouchableOpacity onPress={() => this.onCancelModal()}
                                             style={styles.modalCancelButton}>
                                             <Text style={styles.buttonText}>Cancel</Text>
                                         </TouchableOpacity>
