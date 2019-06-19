@@ -4,7 +4,7 @@ import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Imag
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
-import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice, onCreateBids } from '../../actions';
+import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onCreateBids } from '../../actions';
 import { type } from "os";
 const CMS_API = process.env.CMS_API;
 
@@ -12,8 +12,6 @@ interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
-    onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
-    onUpdateSellPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     buyOrSell: any,
     onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string) => void
 };
@@ -196,7 +194,6 @@ class BuySell extends Component<IProps> {
                 }
             }
         }
-
         this.setState({
             buyOrSellPageCount: buyOrSellPageCount
         })
@@ -641,7 +638,7 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
     return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice, onCreateBids })(BuySell);
+export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onCreateBids })(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />

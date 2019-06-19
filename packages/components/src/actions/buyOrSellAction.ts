@@ -164,65 +164,6 @@ export const getSellDataByCreator = (creator: string) => {
     }
 }
 
-
-
-export const onUpdateBuyPrice = (_id: any, buyPrice: number, creator: string) => { }
-
-export const onUpdateSellPrice = (_id: any, buyPrice: number, creator: string) => {
-    console.log("emsil", creator)
-    return (dispatch: Function) => {
-        AsyncStorage.getItem('token')
-            .then((authtoken: string | null) => {
-                if (authtoken) {
-                    const client = createApolloClient(authtoken);
-                    client.mutate({
-                        mutation: gql`
-                        mutation ($input: updateSellInput) {
-                            updateSell(input: $input) {
-                              sell {
-                                price
-                              }
-                            }
-                          }
-                        `,
-                        variables: {
-                            "input": {
-                                "where": {
-                                    "id": _id
-                                },
-                                "data": {
-                                    "price": buyPrice
-                                }
-                            }
-                        }
-                    }).then((res: any) => {
-                        client.query({
-                            query: gql`
-                            query {
-                                sells{
-                                  _id
-                                  price
-                                  creator
-                                  creatorObject
-                                  createdAt
-                                }
-                              }
-                            `
-                        }).then((res: any) => {
-                            getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
-                        }).catch(e => {
-                            console.log("grapql error", e)
-                            throw e;
-                        });
-                    }).catch(e => {
-                        console.log("grapql error", e)
-                        throw e;
-                    });
-                }
-            })
-    }
-}
-
 export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
