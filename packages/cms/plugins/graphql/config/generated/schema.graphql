@@ -3,8 +3,8 @@ type Bid {
   _id: ID!
   createdAt: DateTime
   updatedAt: DateTime
-  userId: Sell
-  bidPrice: Int!
+  bidPrice: Float!
+  userId: String
 }
 
 type BidAggregator {
@@ -23,7 +23,7 @@ type BidConnection_id {
 }
 
 type BidConnectionBidPrice {
-  key: Int
+  key: Float
   connection: BidConnection
 }
 
@@ -38,7 +38,7 @@ type BidConnectionUpdatedAt {
 }
 
 type BidConnectionUserId {
-  key: ID
+  key: String
   connection: BidConnection
 }
 
@@ -46,15 +46,15 @@ type BidGroupBy {
   _id: [BidConnection_id]
   createdAt: [BidConnectionCreatedAt]
   updatedAt: [BidConnectionUpdatedAt]
-  userId: [BidConnectionUserId]
   bidPrice: [BidConnectionBidPrice]
+  userId: [BidConnectionUserId]
 }
 
 input BidInput {
-  userId: ID
-  bidPrice: Int!
+  bidPrice: Float!
   createdAt: DateTime
   updatedAt: DateTime
+  userId: String
 }
 
 """Buy requests"""
@@ -68,7 +68,6 @@ type Buy {
   price: Float
   creatorObject: JSON
   type: String
-  bids: Bid
 }
 
 type BuyAggregator {
@@ -106,11 +105,6 @@ type BuyConnection {
 }
 
 type BuyConnection_id {
-  key: ID
-  connection: BuyConnection
-}
-
-type BuyConnectionBids {
   key: ID
   connection: BuyConnection
 }
@@ -165,7 +159,6 @@ type BuyGroupBy {
   price: [BuyConnectionPrice]
   creatorObject: [BuyConnectionCreatorObject]
   type: [BuyConnectionType]
-  bids: [BuyConnectionBids]
 }
 
 input BuyInput {
@@ -175,7 +168,6 @@ input BuyInput {
   price: Float
   creatorObject: JSON
   type: String
-  bids: ID
 }
 
 input createBidInput {
@@ -280,10 +272,10 @@ type deleteUserPayload {
 }
 
 input editBidInput {
-  userId: ID
-  bidPrice: Int
+  bidPrice: Float
   createdAt: DateTime
   updatedAt: DateTime
+  userId: String
 }
 
 input editBuyInput {
@@ -293,7 +285,6 @@ input editBuyInput {
   price: Float
   creatorObject: JSON
   type: String
-  bids: ID
 }
 
 input editFileInput {
@@ -330,7 +321,6 @@ input editSellInput {
   price: Float
   creatorObject: JSON
   type: String
-  bid: ID
 }
 
 input editUserInput {
@@ -431,7 +421,7 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
-union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Bid | createBidPayload | updateBidPayload | deleteBidPayload | BidConnection | BidAggregator | BidGroupBy | BidConnection_id | BidConnectionCreatedAt | BidConnectionUpdatedAt | BidConnectionUserId | BidConnectionBidPrice | Buy | createBuyPayload | updateBuyPayload | deleteBuyPayload | BuyConnection | BuyAggregator | BuyAggregatorSum | BuyAggregatorAvg | BuyAggregatorMin | BuyAggregatorMax | BuyGroupBy | BuyConnection_id | BuyConnectionCreatedAt | BuyConnectionUpdatedAt | BuyConnectionCreator | BuyConnectionUnit | BuyConnectionQuantity | BuyConnectionPrice | BuyConnectionCreatorObject | BuyConnectionType | BuyConnectionBids | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | Sell | createSellPayload | updateSellPayload | deleteSellPayload | SellConnection | SellAggregator | SellAggregatorSum | SellAggregatorAvg | SellAggregatorMin | SellAggregatorMax | SellGroupBy | SellConnection_id | SellConnectionCreatedAt | SellConnectionUpdatedAt | SellConnectionCreator | SellConnectionUnit | SellConnectionQuantity | SellConnectionPrice | SellConnectionCreatorObject | SellConnectionType | SellConnectionBid | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole | UsersPermissionsUserConnectionSocketId
+union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Bid | createBidPayload | updateBidPayload | deleteBidPayload | BidConnection | BidAggregator | BidGroupBy | BidConnection_id | BidConnectionCreatedAt | BidConnectionUpdatedAt | BidConnectionBidPrice | BidConnectionUserId | Buy | createBuyPayload | updateBuyPayload | deleteBuyPayload | BuyConnection | BuyAggregator | BuyAggregatorSum | BuyAggregatorAvg | BuyAggregatorMin | BuyAggregatorMax | BuyGroupBy | BuyConnection_id | BuyConnectionCreatedAt | BuyConnectionUpdatedAt | BuyConnectionCreator | BuyConnectionUnit | BuyConnectionQuantity | BuyConnectionPrice | BuyConnectionCreatorObject | BuyConnectionType | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | Sell | createSellPayload | updateSellPayload | deleteSellPayload | SellConnection | SellAggregator | SellAggregatorSum | SellAggregatorAvg | SellAggregatorMin | SellAggregatorMax | SellGroupBy | SellConnection_id | SellConnectionCreatedAt | SellConnectionUpdatedAt | SellConnectionCreator | SellConnectionUnit | SellConnectionQuantity | SellConnectionPrice | SellConnectionCreatorObject | SellConnectionType | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole | UsersPermissionsUserConnectionSocketId
 
 type Mutation {
   createBid(input: createBidInput): createBidPayload
@@ -514,7 +504,6 @@ type Sell {
   price: Float
   creatorObject: JSON
   type: String
-  bid: Bid
 }
 
 type SellAggregator {
@@ -552,11 +541,6 @@ type SellConnection {
 }
 
 type SellConnection_id {
-  key: ID
-  connection: SellConnection
-}
-
-type SellConnectionBid {
   key: ID
   connection: SellConnection
 }
@@ -611,7 +595,6 @@ type SellGroupBy {
   price: [SellConnectionPrice]
   creatorObject: [SellConnectionCreatorObject]
   type: [SellConnectionType]
-  bid: [SellConnectionBid]
 }
 
 input SellInput {
@@ -621,7 +604,6 @@ input SellInput {
   price: Float
   creatorObject: JSON
   type: String
-  bid: ID
 }
 
 input updateBidInput {

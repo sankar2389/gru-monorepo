@@ -347,6 +347,7 @@ class BuySell extends Component<IProps> {
         this.setState({ buyOrSellType: type })
     }
 
+    //Create bids
     onPressCreateBids = async () => {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         let bidsPrice = parseInt(this.state.buyOrSellPrice)

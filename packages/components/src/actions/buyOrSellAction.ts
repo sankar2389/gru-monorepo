@@ -271,9 +271,9 @@ export const onUpdateSellPrice = (_id: any, buyPrice: number, creator: string) =
 }
 
 export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: string) => {
-    console.log("userId", userId)
-    console.log("bidsPrice", bidsPrice)
-    console.log("buyOrSellId", buyOrSellId)
+    console.log("userId", typeof (userId))
+    console.log("bidsPrice", typeof (bidsPrice))
+    console.log("buyOrSellId", typeof (buyOrSellId))
 
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
@@ -283,12 +283,12 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
 
                     client.mutate({
                         mutation: gql`
-                        mutation ($input: createBidsInput) {
+                        mutation ($input: createBidInput) {
                             createBid(input: $input) {
                               bid {
-                                userId
-                                bidPrice
-                                createdAt
+                                  userId
+                                  bidPrice
+                                  createdAt                   
                               }
                             }
                           }                          
@@ -299,7 +299,6 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                     "userId": userId,
                                     "bidPrice": bidsPrice,
                                     "createdAt": new Date()
-
                                 }
                             }
                         }

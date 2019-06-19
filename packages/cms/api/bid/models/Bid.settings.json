@@ -9,13 +9,9 @@
     "timestamps": true
   },
   "attributes": {
-    "userId": {
-      "model": "sell",
-      "via": "bid"
-    },
     "bidPrice": {
       "default": "",
-      "type": "integer",
+      "type": "float",
       "required": true
     },
     "createdAt": {
@@ -25,6 +21,10 @@
     "updatedAt": {
       "default": "",
       "type": "date"
+    },
+    "userId": {
+      "default": "",
+      "type": "string"
     }
   }
 }
