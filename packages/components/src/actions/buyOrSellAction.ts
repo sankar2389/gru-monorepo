@@ -83,7 +83,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creat
     }
 }
 
-export const getBuyDataByCreator = (creator: string) => {
+export const getBuyDataByCreator = (creator: string, start: number = 0) => {
     console.log("creator", creator)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
@@ -92,8 +92,8 @@ export const getBuyDataByCreator = (creator: string) => {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
-                        query {
-                            buys(limit: 10){
+                        query($start: Int) {
+                            buys(start: $start, limit: 10){
                               _id
                               price
                               creator
@@ -102,7 +102,10 @@ export const getBuyDataByCreator = (creator: string) => {
                               updatedAt
                             }
                           }
-                        `
+                        `,
+                        variables: {
+                            "start": start
+                        }
                     }).then((res: any) => {
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
                     }).catch(e => {
