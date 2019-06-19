@@ -10,7 +10,7 @@ const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
-    getBuyDataByCreator: (creator: string, start?: number) => void,
+    getBuyDataByCreator: (start?: number) => void,
     getSellDataByCreator: (creator: string, start?: number) => void,
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     onUpdateSellPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
@@ -29,7 +29,8 @@ interface IState {
     dataFromCollection: string,
     dataLimitOnPage: number,
     totalPages: number[],
-    // buyOrSellPageCount: any[],
+    buysCount: number,
+    sellsCount: number,
     selectedPaginatateNumber: number,
     editPrice: boolean,
     editIndex: any,
@@ -49,6 +50,8 @@ class BuySell extends Component<IProps> {
         dataFromCollection: "",
         dataLimitOnPage: 10,
         totalPages: [],
+        buysCount: 0,
+        sellsCount: 0,
         selectedPaginatateNumber: 1,
         editPrice: false,
         editIndex: "",
@@ -73,7 +76,7 @@ class BuySell extends Component<IProps> {
         });
         this.onPressGetSellDataBYCreator()
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        await this.props.getBuyDataByCreator(user.email)
+        await this.props.getBuyDataByCreator()
         this.setState({
             userName: user.username
         })
@@ -103,7 +106,8 @@ class BuySell extends Component<IProps> {
                         pagesArray.push(i)
                     }
                     this.setState({
-                        totalPages: pagesArray
+                        totalPages: pagesArray,
+                        buysCount: data
                     })
                 })
             }
@@ -197,21 +201,21 @@ class BuySell extends Component<IProps> {
         await this.props.getSellDataByCreator(user.email);
     }
 
-    onPressGetBuyDataBYCreator = async (start: number = 0) => {
+    onPressGetBuyDataBYCreator = async () => {
         this.setState({
             selectedPaginatateNumber: 1
         })
-        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        this.props.getBuyDataByCreator(user.email, start);
+        this.props.getBuyDataByCreator()
     }
 
     // pagination Next
     onPressPaginateNext = () => {
         if (this.state.selectedPaginatateNumber !== this.state.totalPages.length) {
-            const start = (this.state.selectedPaginatateNumber - 1) * 10;            
-            this.onPressGetBuyDataBYCreator(start)
             this.setState((prevState: any) => {
                 return { selectedPaginatateNumber: prevState.selectedPaginatateNumber + 1 }
+            }, () => {
+                const start = (this.state.selectedPaginatateNumber - 1) * 10;
+                this.props.getBuyDataByCreator(start)
             })
         }
     }
@@ -219,18 +223,20 @@ class BuySell extends Component<IProps> {
     // pagination Previous
     onPressPaginatePrevious = () => {
         if (this.state.selectedPaginatateNumber !== 1) {
-            const start = (this.state.selectedPaginatateNumber - 1) * 10;
-            this.onPressGetBuyDataBYCreator(start)
             this.setState((prevState: any) => {
                 return { selectedPaginatateNumber: prevState.selectedPaginatateNumber - 1 }
+            }, () => {
+                const start = (this.state.selectedPaginatateNumber - 1) * 10;
+                this.props.getBuyDataByCreator(start)
             })
         }
     }
 
     async onPressPaginate(pageCount: number) {
         const start = (pageCount - 1) * 10;
-        this.onPressGetBuyDataBYCreator(start)
-        this.setState({ selectedPaginatateNumber: pageCount })
+        this.setState({ selectedPaginatateNumber: pageCount }, () => {
+            this.props.getBuyDataByCreator(start)
+        })
     }
 
     onPressEditBuyPrice = (price: number, index: number) => {
@@ -336,7 +342,7 @@ class BuySell extends Component<IProps> {
                                 }>
                                     <Text style={this.state.dataFromCollection === "BUY_DATA" ?
                                         [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>
-                                        BUY({this.state.buyData.length})
+                                        BUY({this.state.buysCount})
                                     </Text>
                                 </TouchableOpacity>
                                 <Text style={styles.buyAndSellPageHeadText}> / </Text>
