@@ -83,7 +83,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creat
     }
 }
 
-export const getBuyDataByCreator = (start: number = 0) => {
+export const getAllBuyData = (start: number = 0) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -116,7 +116,7 @@ export const getBuyDataByCreator = (start: number = 0) => {
     }
 }
 
-export const getSellDataByCreator = (start: number = 0) => {
+export const getAllSellData = (start: number = 0) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {

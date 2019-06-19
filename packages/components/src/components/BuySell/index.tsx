@@ -4,14 +4,14 @@ import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Imag
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
-import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice } from '../../actions';
+import { createBuyOrSell, getAllBuyData, getAllSellData, onUpdateBuyPrice, onUpdateSellPrice } from '../../actions';
 import axios from "axios";
 const CMS_API = process.env.CMS_API;
 
 interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
-    getBuyDataByCreator: (start?: number) => void,
-    getSellDataByCreator: (start?: number) => void,
+    getAllBuyData: (start?: number) => void,
+    getAllSellData: (start?: number) => void,
     onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     onUpdateSellPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     buyOrSell: any,
@@ -29,6 +29,7 @@ interface IState {
     dataFromCollection: string,
     dataLimitOnPage: number,
     totalPages: number[],
+    visiblePages: number[],
     buysCount: number,
     sellsCount: number,
     selectedPaginatateNumber: number,
@@ -50,6 +51,7 @@ class BuySell extends Component<IProps> {
         dataFromCollection: "",
         dataLimitOnPage: 10,
         totalPages: [],
+        visiblePages: [],
         buysCount: 0,
         sellsCount: 0,
         selectedPaginatateNumber: 1,
@@ -76,7 +78,7 @@ class BuySell extends Component<IProps> {
         });
         this.onPressGetSellDataBYCreator()
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        await this.props.getBuyDataByCreator()
+        await this.props.getAllBuyData()
         this.setState({
             userName: user.username
         })
@@ -97,6 +99,8 @@ class BuySell extends Component<IProps> {
                     this.setState({
                         totalPages: res.pagesArray,
                         buysCount: res.data
+                    }, () => {
+                        this.updateVisiblePages()
                     })
                 }
                 if (dataFromCollection === "SELL_DATA") {
@@ -105,6 +109,8 @@ class BuySell extends Component<IProps> {
                     this.setState({
                         totalPages: res.pagesArray,
                         sellsCount: res.data
+                    }, () => {
+                        this.updateVisiblePages()
                     })
                 }
             }
@@ -139,6 +145,24 @@ class BuySell extends Component<IProps> {
         }
     }
 
+    // function to update visible pages to show 3 pages only
+    updateVisiblePages = () => {
+        const { totalPages, selectedPaginatateNumber } = this.state
+        if (selectedPaginatateNumber !== 1 && selectedPaginatateNumber !== totalPages.length) {
+            const visiblePages = totalPages.slice(selectedPaginatateNumber - 2, selectedPaginatateNumber + 1)
+            this.setState({ visiblePages })
+        }
+        else if (selectedPaginatateNumber === 1) {
+            const visiblePages = totalPages.slice(0, 3)
+            this.setState({ visiblePages })
+        }
+        else {
+            const visiblePages = totalPages.slice(-3)
+            this.setState({ visiblePages })
+
+        }
+    }
+
     onPressVisibleModal = () => {
         this.setState({ modalVisible: true })
     }
@@ -160,7 +184,7 @@ class BuySell extends Component<IProps> {
             buyOrSellRadioOption: evt
         })
     }
-
+    // On press submit modal
     async onPressCreateBuyOrSell() {
         const isNum = /^[0-9\b]+$/;
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
@@ -199,35 +223,37 @@ class BuySell extends Component<IProps> {
     componentWillReceiveProps(newProps: any) {
         if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
             const { buyData } = this.state;
-            this.getTotalPages()
             this.setState({
                 buyData: newProps.buyOrSell.buyOrSellData.buys, ...buyData,
                 dataFromCollection: "BUY_DATA"
+            }, () => {
+                this.getTotalPages()
             });
         }
         if (newProps.buyOrSell.buyOrSellData.sells !== undefined) {
             const { sellData } = this.state;
-            this.getTotalPages()
             this.setState({
                 sellData: newProps.buyOrSell.buyOrSellData.sells, ...sellData,
                 dataFromCollection: "SELL_DATA"
+            }, () => {
+                this.getTotalPages()
             });
         }
     }
 
-
+    // Get all sell  data on press
     onPressGetSellDataBYCreator = async () => {
         this.setState({
             selectedPaginatateNumber: 1
         })
-        this.props.getSellDataByCreator();
+        this.props.getAllSellData();
     }
-
+    // get all buy data on press
     onPressGetBuyDataBYCreator = async () => {
         this.setState({
             selectedPaginatateNumber: 1
         })
-        this.props.getBuyDataByCreator()
+        this.props.getAllBuyData()
     }
 
     // pagination Next
@@ -238,9 +264,9 @@ class BuySell extends Component<IProps> {
                 this.setState((prevState: any) => {
                     return { selectedPaginatateNumber: prevState.selectedPaginatateNumber + 1 }
                 }, () => {
-                    const { selectedPaginatateNumber } = this.state
-                    const start = (selectedPaginatateNumber - 1) * 10;
-                    this.props.getBuyDataByCreator(start)
+                    const { selectedPaginatateNumber, dataLimitOnPage } = this.state
+                    const start = (selectedPaginatateNumber - 1) * dataLimitOnPage;
+                    this.props.getAllBuyData(start)
                 })
             }
         }
@@ -249,9 +275,9 @@ class BuySell extends Component<IProps> {
                 this.setState((prevState: any) => {
                     return { selectedPaginatateNumber: prevState.selectedPaginatateNumber + 1 }
                 }, () => {
-                    const { selectedPaginatateNumber } = this.state
-                    const start = (selectedPaginatateNumber - 1) * 10;
-                    this.props.getSellDataByCreator(start)
+                    const { selectedPaginatateNumber, dataLimitOnPage } = this.state
+                    const start = (selectedPaginatateNumber - 1) * dataLimitOnPage;
+                    this.props.getAllSellData(start)
                 })
             }
         }
@@ -265,9 +291,9 @@ class BuySell extends Component<IProps> {
                 this.setState((prevState: any) => {
                     return { selectedPaginatateNumber: prevState.selectedPaginatateNumber - 1 }
                 }, () => {
-                    const { selectedPaginatateNumber } = this.state
-                    const start = (selectedPaginatateNumber - 1) * 10;
-                    this.props.getBuyDataByCreator(start)
+                    const { selectedPaginatateNumber, dataLimitOnPage } = this.state
+                    const start = (selectedPaginatateNumber - 1) * dataLimitOnPage;
+                    this.props.getAllBuyData(start)
                 })
             }
         }
@@ -276,25 +302,25 @@ class BuySell extends Component<IProps> {
                 this.setState((prevState: any) => {
                     return { selectedPaginatateNumber: prevState.selectedPaginatateNumber - 1 }
                 }, () => {
-                    const { selectedPaginatateNumber } = this.state
-                    const start = (selectedPaginatateNumber - 1) * 10;
-                    this.props.getSellDataByCreator(start)
+                    const { selectedPaginatateNumber, dataLimitOnPage } = this.state
+                    const start = (selectedPaginatateNumber - 1) * dataLimitOnPage;
+                    this.props.getAllSellData(start)
                 })
             }
         }
     }
 
     async onPressPaginate(pageCount: number) {
-        const { dataFromCollection } = this.state
-        const start = (pageCount - 1) * 10;
+        const { dataFromCollection, dataLimitOnPage } = this.state
+        const start = (pageCount - 1) * dataLimitOnPage;
         if (dataFromCollection === "BUY_DATA") {
             this.setState({ selectedPaginatateNumber: pageCount }, () => {
-                this.props.getBuyDataByCreator(start)
+                this.props.getAllBuyData(start)
             })
         }
         if (dataFromCollection === "SELL_DATA") {
             this.setState({ selectedPaginatateNumber: pageCount }, () => {
-                this.props.getSellDataByCreator(start)
+                this.props.getAllSellData(start)
             })
         }
     }
@@ -657,7 +683,7 @@ class BuySell extends Component<IProps> {
                         <Text>{"<"}</Text>
                     </TouchableOpacity>
 
-                    {this.state.totalPages.map((pageCount: number) => {
+                    {this.state.visiblePages.map((pageCount: number) => {
                         return (<TouchableOpacity key={pageCount}
                             onPress={this.onPressPaginate.bind(this, pageCount)}
                             style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
@@ -686,7 +712,7 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
     return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onUpdateBuyPrice, onUpdateSellPrice })(BuySell);
+export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getAllBuyData, getAllSellData, onUpdateBuyPrice, onUpdateSellPrice })(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
