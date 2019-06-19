@@ -42,6 +42,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                         "type": buyOrSellType,
                                         "unit": unit,
                                         "quantity": quantity,
+                                        "bids": []
 
                                     }
                                 }
@@ -98,7 +99,6 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
 }
 
 export const getBuyDataByCreator = (creator: string) => {
-    console.log("creator", creator)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -270,22 +270,18 @@ export const onUpdateSellPrice = (_id: any, buyPrice: number, creator: string) =
     }
 }
 
-export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: string) => {
-    console.log("userId", typeof (userId))
-    console.log("bidsPrice", typeof (bidsPrice))
-    console.log("buyOrSellId", typeof (buyOrSellId))
-
+export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {
                     const client = createApolloClient(authtoken);
-
                     client.mutate({
                         mutation: gql`
                         mutation ($input: createBidInput) {
                             createBid(input: $input) {
                               bid {
+                                  _id
                                   userId
                                   bidPrice
                                   createdAt                   
@@ -302,10 +298,62 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                 }
                             }
                         }
+                    }).then(bid => {
+                        console.log("bid", bid.data.createBid.bid._id)
+                        if (bid.data.createBid.bid._id) {
+                            if (bidOnBuyOrSell === "buy") {
+                                //Get buy data
+                                client.query({
+                                    query: gql`
+                                    query($_id:String!) {
+                                        buys(where:{_id:$_id}) {
+                                            _id
+                                           bids
+                                         }
+                                      }
+                                    `, variables: {
+                                        "_id": buyOrSellId
+                                    }
+                                }).then(buy => {
+                                    let bids = buy.data.buys[0].bids
+                                    console.log("bids before", bids)
+                                    bids.push(bid.data.createBid.bid._id)
+                                    console.log("buuuuy   bidssssssss", bids)
+                                    //Update buy bids data by BidId 
+                                    client.mutate({
+                                        mutation: gql`
+                                        mutation ($input: updateBuyInput) {
+                                            updateBuy(input: $input) {
+                                              buy {
+                                                bids
+                                              }
+                                            }
+                                          }
+                                        `,
+                                        variables: {
+                                            "input": {
+                                                "where": {
+                                                    "id": buyOrSellId
+                                                },
+                                                "data": {
+                                                    "bids": bids
+                                                }
+                                            }
+                                        }
+                                    })
+                                })
+
+                            }
+
+
+                        }
+
+
+
                     })
-
-
                 }
+            }).catch(err => {
+                alert(err.message)
             })
     }
 }
