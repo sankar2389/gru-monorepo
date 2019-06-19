@@ -3,7 +3,7 @@ export interface IAuth {
     error: ISignupError | null,
     onToggleSideBar: boolean | null,
     range1: number | null, range2: number | null,
-    users: any
+    users: any[]
 }
 
 export interface IReduxState {

@@ -32,10 +32,10 @@ export default (state: IAuth = initState, action: AnyAction): IAuth => {
                 range1: action.range1,
                 range2: action.range2
             };
-        case "FIND_ALL_USER_SUCCESS":
+        case "FIND_USER":
             return {
                 ...state,
-                users: action.users
+                users: action.payload
             };
         default:
             return state;

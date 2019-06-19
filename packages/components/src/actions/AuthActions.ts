@@ -111,8 +111,9 @@ export const forgotPass = (payload: IForgotPass) => {
     }
 }
 
-/** Find All User */
-export const getAllUsers = () => {
+
+// To search users 
+export const searchUser = (searchString: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -120,28 +121,29 @@ export const getAllUsers = () => {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
-                        query {
-                            users{
-                                _id,
-                                username,
-                                email,
-                                blocked
+                            query($searchQuery: String) {
+                                users(where: {
+                                    username_contains: $searchQuery
+                                }){
+                                    _id,
+                                    username,
+                                    email,
+                                    blocked
+                                }
                             }
-                          }
-                        `
-                    }).then(users => {
-                        console.log("users", users.data.users)
-                        dispatch({
-                            type: "FIND_ALL_USER_SUCCESS",
-                            users: users.data.users
-                        })
-                    }).catch(err => {
-                        console.log("errr", err.message)
-                    })
+                        `,
+                        variables: {
+                            "searchQuery": searchString
+                        }
+                    }).then((res: any) => {
+                        dispatch({ type: 'FIND_USER', payload: res.data.users });
+                    }).catch(e => {
+                        throw e;
+                    });
                 }
-            }).catch(e => {
+            })
+            .catch(e => {
                 throw e;
             })
     }
-
 }

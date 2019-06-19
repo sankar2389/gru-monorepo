@@ -4,15 +4,16 @@ import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
 import { connect } from "react-redux";
 import { UserRatesCard } from "../common";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { getAllUsers, onAddUserToGroup } from '../../actions';
+import { onAddUserToGroup, searchUser } from '../../actions';
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
     editedGroup: any,
     cancelGroupUpdate: Function,
     updateGroup: Function,
-    getAllUsers(): () => void,
     onAddUserToGroup(groupId: any, user: any): () => void
+    searchUser(searchString: string): () => void
+    auth: any
 
 };
 
@@ -22,7 +23,6 @@ interface IState {
     searchMemberText: string,
     data: any,
     users: any,
-    searchingUsers: any
 }
 
 class UpdateGroup extends Component<IProps, IState> {
@@ -31,7 +31,6 @@ class UpdateGroup extends Component<IProps, IState> {
         groupId: this.props.editedGroup._id,
         groupName: this.props.editedGroup.groupName,
         users: [],
-        searchingUsers: [],
         data: [
             { 'name': 'Ben', 'id': 1 },
             { 'name': 'Susan', 'id': 2 },
@@ -50,7 +49,6 @@ class UpdateGroup extends Component<IProps, IState> {
     }
     constructor(props: IProps) {
         super(props);
-        //this.onPressPaginate = this.onPressPaginate.bind(this);
     }
 
     componentWillReceiveProps(newProps: any) {
@@ -61,26 +59,11 @@ class UpdateGroup extends Component<IProps, IState> {
         }
     }
 
-    componentDidMount() {
-        this.props.getAllUsers()
-    }
 
 
-    onPressSearchUserByUserName = (name: string) => {
-
-        let users = this.state.users;
-        if (users.length > 0) {
-            let searchIngUsers = users.filter((user: any, index: number) => {
-                return user.username.indexOf(name) > -1;
-            });
-            if (name) {
-                if (searchIngUsers.length > 0) {
-                    this.setState({ searchingUsers: searchIngUsers })
-                } else {
-                    this.setState({ searchingUsers: "" })
-                }
-            }
-        }
+    onPressSearchUserByUserName = (searchString: string) => {
+        this.setState({searchMemberText: searchString})
+        this.props.searchUser(searchString)
     }
 
     onPressAddUserToGroup = async (user: any) => {
@@ -135,7 +118,7 @@ class UpdateGroup extends Component<IProps, IState> {
                             backgroundColor: "#ffffff", borderTopLeftRadius: 10, borderBottomLeftRadius: 10,
                         }}
                             placeholder="Search Members"
-                            //value={this.state.searchMemberText}
+                            value={this.state.searchMemberText}
                             onChangeText={(name) => this.onPressSearchUserByUserName(name)}
                         >
                         </TextInput>
@@ -150,9 +133,9 @@ class UpdateGroup extends Component<IProps, IState> {
                         </TouchableOpacity>
                     </View>
                     <View>
-                        {this.state.searchingUsers.length > 0 ?
+                        {this.props.auth.users.length > 0 && this.state.searchMemberText ?
                             <ScrollView style={{ height: 600, marginTop: 10 }}>
-                                {this.state.searchingUsers.map((user: any, index: number) => {
+                                {this.props.auth.users.map((user: any, index: number) => {
 
                                     return (
                                         <View key={user._id} style={styles.item}>
@@ -192,7 +175,7 @@ const mapStateToProps = ({ auth }: any): IReduxState => {
     return { auth };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { getAllUsers, onAddUserToGroup })(UpdateGroup);
+export default connect<IReduxState>(mapStateToProps, { onAddUserToGroup, searchUser })(UpdateGroup);
 
 const styles = StyleSheet.create({
     containerView: { marginLeft: 50 },

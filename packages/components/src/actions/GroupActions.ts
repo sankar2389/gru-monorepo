@@ -298,7 +298,3 @@ export const onAddUserToGroup = (groupId: any, user: any) => {
 
 }
 
-
-
-
-
