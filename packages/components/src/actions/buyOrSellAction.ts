@@ -317,7 +317,6 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                 }).then(buy => {
                                     let bids = buy.data.buys[0].bids
                                     bids.push(bid.data.createBid.bid._id)
-                                    console.log("buuuuy   bidssssssss", bids)
                                     //Update buy bids data by BidId 
                                     client.mutate({
                                         mutation: gql`
@@ -340,7 +339,7 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                             }
                                         }
                                     }).then(res => {
-                                        alert("One bid is created")
+                                        alert("One bid is created on Buy")
 
                                     }).catch(err => {
                                         console.log(err.message)
