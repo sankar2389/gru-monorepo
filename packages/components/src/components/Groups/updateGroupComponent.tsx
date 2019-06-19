@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
-import { IReduxState, IGroup, IAuth, IStrapiUser } from "../../types";
+import { IReduxState, IGroup } from "../../types";
 import { connect } from "react-redux";
-import { UserRatesCard } from "../common";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { onAddUserToGroup, searchUser } from '../../actions';
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
+
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
@@ -62,8 +63,7 @@ class UpdateGroup extends Component<IProps, IState> {
 
 
     onPressSearchUserByUserName = (searchString: string) => {
-        this.setState({searchMemberText: searchString})
-        this.props.searchUser(searchString)
+        this.setState({ searchMemberText: searchString })
     }
 
     onPressAddUserToGroup = async (user: any) => {
