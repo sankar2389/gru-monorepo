@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import io from 'socket.io-client';
 import { createBuyOrSell, getBuyDataByCreator, getSellDataByCreator, onCreateBids, getBidsByBidId } from '../../actions';
 const CMS_API = process.env.CMS_API;
+import moment from "moment";
 
 interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
@@ -40,7 +41,9 @@ interface IState {
     buyOrSellId: string,
     expandBidView: boolean,
     buyOrSellIndex: number,
-    bids: any
+    bids: any,
+    bidStartNumber: number,
+    bidEndNumber: number
 
 }
 
@@ -69,7 +72,9 @@ class BuySell extends Component<IProps> {
         buyOrSellId: "",
         expandBidView: false,
         buyOrSellIndex: 0,
-        bids: []
+        bids: [],
+        bidStartNumber: 0,
+        bidEndNumber: 5
 
     }
     constructor(props: IProps) {
@@ -326,9 +331,25 @@ class BuySell extends Component<IProps> {
         })
     }
 
+    bidsNextOrPrevious = (mode: string) => {
+        if (mode === "next") {
+            this.setState({
+                bidStartNumber: this.state.bidStartNumber + 5,
+                bidEndNumber: this.state.bidEndNumber + 5,
+            })
+        }
+        if (mode === "previous") {
+            this.setState({
+                bidStartNumber: this.state.bidStartNumber - 5,
+                bidEndNumber: this.state.bidEndNumber - 5,
+            })
+        }
+    }
+
     render() {
         const { innerContainer } = styles;
-        const { dWidth, modalVisible, dataFromCollection, buyData, sellData, buyOrSellIndex, bids } = this.state;
+        const { dWidth, modalVisible, dataFromCollection, buyData, sellData, buyOrSellIndex, bids, bidStartNumber, bidEndNumber } = this.state;
+
         return (
             <View style={dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
                 <ScrollView style={dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
@@ -429,15 +450,43 @@ class BuySell extends Component<IProps> {
                                                         {
                                                             bids.length > 0 ?
                                                                 bids.map((bid: any, index: number) => {
-                                                                    return (
-                                                                        <View key={index}>
-                                                                            <Text>{bid.userId}</Text>
-                                                                        </View>
-                                                                    )
+                                                                    if (index >= bidStartNumber && index < bidEndNumber)
+                                                                        return (
+                                                                            <TouchableOpacity key={index} style={styles.bidStyle}>
+                                                                                <Text>{bid.userId}</Text>
+                                                                                <Text>{bid.bidPrice}</Text>
+                                                                                <Text>{moment(bid.createdAt).format('LL')}</Text>
+                                                                            </TouchableOpacity>
+                                                                        )
                                                                 }) : <Text />
                                                         }
-                                                    </View> :
-                                                    <Text />}
+                                                        {
+                                                            bids.length > 5 ?
+                                                                <View style={styles.bidPaginationView}>
+                                                                    <TouchableOpacity style={styles.bidPreviousButton}
+                                                                        disabled={bidStartNumber === 0 ? true : false}
+                                                                        onPress={() => this.bidsNextOrPrevious("previous")}
+                                                                    >
+                                                                        <Text style={styles.bidButtonText}>
+                                                                            {"<"}
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                    <TouchableOpacity style={styles.bidNextButton}
+                                                                        disabled={bidEndNumber >= bids.length ? true : false}
+                                                                        onPress={() => this.bidsNextOrPrevious("next")}
+                                                                    >
+                                                                        <Text style={styles.bidButtonText}>
+                                                                            {">"}
+                                                                        </Text>
+                                                                    </TouchableOpacity>
+                                                                </View>
+                                                                :
+                                                                <Text />
+                                                        }
+                                                    </View>
+                                                    :
+                                                    <Text />
+                                            }
                                         </View>
                                     )
                                 }
@@ -711,6 +760,16 @@ const styles = StyleSheet.create({
         display: "flex",
         height: 490,
     },
+    bidStyle: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        padding: 15,
+        margin: 2,
+        borderColor: '#2a4944',
+        borderWidth: 1,
+        backgroundColor: '#d2f7f1'
+    },
     scene: {
         flex: 1,
     },
@@ -746,8 +805,11 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: "100vh"
-
     },
+    bidPaginationView: { flexDirection: "row", justifyContent: "flex-end", padding: 5, marginRight: 10 },
+    bidPreviousButton: { marginRight: 20, paddingLeft: 5, paddingRight: 5 },
+    bidNextButton: { paddingLeft: 5, paddingRight: 5 },
+    bidButtonText: { fontSize: 18 },
     secontRowView: {
         flexDirection: "row", flex: 1,
         justifyContent: "space-around", alignItems: "flex-start", width: "95%", padding: 10
