@@ -25,6 +25,8 @@ interface IState {
     searchMemberText: string,
     users: any,
     group: any
+    startUserOnPage: number,
+    endUserOnPage: number
 }
 
 class UpdateGroup extends Component<IProps, IState> {
@@ -34,6 +36,8 @@ class UpdateGroup extends Component<IProps, IState> {
         groupName: this.props.editedGroup.groupName,
         group: this.props.editedGroup,
         users: [],
+        startUserOnPage: 0,
+        endUserOnPage: 2
 
     }
     constructor(props: IProps) {
@@ -76,7 +80,7 @@ class UpdateGroup extends Component<IProps, IState> {
     }
 
     render() {
-        console.log("staet", this.state.group)
+        const { group, startUserOnPage, endUserOnPage } = this.state
         return (
             <View style={styles.containerView}>
                 <Text>
@@ -138,48 +142,45 @@ class UpdateGroup extends Component<IProps, IState> {
                         {this.props.auth.users.length > 0 && this.state.searchMemberText ?
                             <ScrollView style={{ height: 600, marginTop: 10 }}>
                                 {this.props.auth.users.map((user: any, index: number) => {
+                                    let data = group.members.filter((a: string) => a === user._id)
+                                    if (index >= startUserOnPage && index < endUserOnPage) {
+                                        return (
 
-
-                                    let data = this.state.group.members.filter((a: string) => a === user._id)
-
-                                    console.log("dasttt", data)
-                                    return (
-
-                                        <View key={user._id} style={styles.item}>
-                                            <Text>{user.username}</Text>
-                                            {data ?
+                                            <View key={user._id} style={styles.item}>
+                                                <Text>{user.username}</Text>
                                                 <View>
                                                     {user._id === data[0] ?
                                                         <TouchableOpacity onPress={() => this.onPressRemoveUserFromGroup(user)}>
                                                             <Text>
                                                                 Remove
-                                                </Text>
+                                                             </Text>
                                                         </TouchableOpacity> :
                                                         <TouchableOpacity onPress={() => this.onPressAddUserToGroup(user)}>
                                                             <Text>
                                                                 Add
-                                                </Text>
+                                                             </Text>
                                                         </TouchableOpacity>
                                                     }
                                                 </View>
-                                                :
-                                                <View>
+                                            </View>
+                                        )
+                                    }
 
-                                                    <TouchableOpacity onPress={() => this.onPressAddUserToGroup(user)}>
-                                                        <Text>
-                                                            Add
-                                                </Text>
-                                                    </TouchableOpacity>
-
-                                                </View>
-                                            }
-
-                                        </View>
-                                    )
                                 })}
+                                <View style={{ backgroundColor: "gray", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
+                                    <TouchableOpacity>
+                                        <Text>{"<"}</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity>
+                                        <Text>{">"}</Text>
+                                    </TouchableOpacity>
+
+                                </View>
                             </ScrollView> :
                             <Text />
                         }
+
                     </View>
                 </View>
 
