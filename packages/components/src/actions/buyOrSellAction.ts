@@ -43,7 +43,6 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                         "unit": unit,
                                         "quantity": quantity,
                                         "bids": []
-
                                     }
                                 }
                             }
@@ -321,10 +320,10 @@ export const getBidsByBidId = (bids: any) => {
                             bids(where:{_id_in:$id}){
                                 _id
                                 userId
-                              bidPrice,
-                              bidQuantity
-                              totalPrice
-                              createdAt
+                                bidPrice,
+                                bidQuantity
+                                totalPrice
+                                createdAt
                             }
                           }
                         `, variables: {

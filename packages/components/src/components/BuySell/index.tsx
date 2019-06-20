@@ -72,7 +72,7 @@ class BuySell extends Component<IProps> {
         bidOnBuyOrSell: "",
         buyOrSellId: "",
         expandBidView: false,
-        buyOrSellIndex: 0,
+        buyOrSellIndex: -1,
         bids: [],
         bidQuantity: "",
         bidStartNumber: 0,
@@ -234,7 +234,10 @@ class BuySell extends Component<IProps> {
             startDataOnPage: 0,
             endDataOnPage: 10,
             dataLimitOnPage: 10,
-            selectedPaginatateNumber: 1
+            selectedPaginatateNumber: 1,
+            expandBidView: false,
+            buyOrSellIndex: -1,
+            bids: []
         })
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getBuyDataByCreator(user.email);
@@ -325,14 +328,15 @@ class BuySell extends Component<IProps> {
     onPressExpandedBid = (buyOrSell: any, index: number) => {
         if (buyOrSell.bids.length > 0) {
             this.props.getBidsByBidId(buyOrSell.bids)
+            this.setState({
+                expandBidView: true,
+                buyOrSellIndex: index,
+                bids: []
+            })
         } else {
             alert("Bids not found")
         }
-        this.setState({
-            expandBidView: true,
-            buyOrSellIndex: index,
-            bids: []
-        })
+
     }
 
     bidsNextOrPrevious = (mode: string) => {
