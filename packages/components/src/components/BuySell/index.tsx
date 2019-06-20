@@ -150,7 +150,7 @@ class BuySell extends Component<IProps> {
         else {
             let buyOrsell = this.state.buyOrSellRadioOption
             let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
-            let creator = user.email
+            let creator = user._id
             let creatorObject = user
             let unit = this.state.unit
             let quantity = this.state.quantity
@@ -228,7 +228,10 @@ class BuySell extends Component<IProps> {
             startDataOnPage: 0,
             endDataOnPage: 10,
             dataLimitOnPage: 10,
-            selectedPaginatateNumber: 1
+            selectedPaginatateNumber: 1,
+            expandBidView: false,
+            buyOrSellIndex: -1,
+            bids: []
         })
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getSellDataByCreator(user.email);
@@ -476,7 +479,7 @@ class BuySell extends Component<IProps> {
                                                                                 <Text>{bid.totalPrice}</Text>
                                                                                 <Text>{moment(bid.createdAt).format('LL')}</Text>
                                                                                 {
-                                                                                    this.state.userId === bid.userId ?
+                                                                                    this.state.userId === buyOrSell.creator ?
                                                                                         <View style={{ flexDirection: "row" }}>
                                                                                             <TouchableOpacity
                                                                                                 style={[styles.bidActionButton, styles.bidAcceptButton]}
@@ -597,7 +600,7 @@ class BuySell extends Component<IProps> {
                                                                                 <Text>{bid.totalPrice}</Text>
                                                                                 <Text>{moment(bid.createdAt).format('LL')}</Text>
                                                                                 {
-                                                                                    this.state.userId === bid.userId ?
+                                                                                    this.state.userId === buyOrSell.creator ?
                                                                                         <View style={{ flexDirection: "row" }}>
                                                                                             <TouchableOpacity style={[styles.bidActionButton, styles.bidAcceptButton]}
                                                                                                 onPress={() => this.bidActionButtonFunc("sell", bid._id, buyOrSell._id)}
