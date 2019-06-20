@@ -23,7 +23,14 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
             return { ...state, ...initState, error: action.payload };
         case 'GRPS_LST':
             return { ...state, ...initState, ...action.payload };
-
+        case 'GROUP_MEMBER_ADDED_SUCCESS':
+            const updateGroup = action.payload
+            return {
+                ...state,
+                groups: state.groups.map(
+                    group => (group._id === updateGroup._id ? updateGroup : group)
+                ),
+            };
         default:
             return state;
     }

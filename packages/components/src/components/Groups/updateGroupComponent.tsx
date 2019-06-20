@@ -22,8 +22,8 @@ interface IState {
     groupName: string,
     groupId: string
     searchMemberText: string,
-    data: any,
     users: any,
+    group: any
 }
 
 class UpdateGroup extends Component<IProps, IState> {
@@ -31,21 +31,8 @@ class UpdateGroup extends Component<IProps, IState> {
         searchMemberText: "",
         groupId: this.props.editedGroup._id,
         groupName: this.props.editedGroup.groupName,
+        group: this.props.editedGroup,
         users: [],
-        data: [
-            { 'name': 'Ben', 'id': 1 },
-            { 'name': 'Susan', 'id': 2 },
-            { 'name': 'Robert', 'id': 3 },
-            { 'name': 'Mary', 'id': 4 },
-            { 'name': 'Daniel', 'id': 5 },
-            { 'name': 'Laura', 'id': 6 },
-            { 'name': 'John', 'id': 7 },
-            { 'name': 'Debra', 'id': 8 },
-            { 'name': 'Aron', 'id': 9 },
-            { 'name': 'Ann', 'id': 10 },
-            { 'name': 'Steve', 'id': 11 },
-            { 'name': 'Olivia', 'id': 12 }
-        ]
 
     }
     constructor(props: IProps) {
@@ -73,6 +60,8 @@ class UpdateGroup extends Component<IProps, IState> {
     }
 
     render() {
+
+
         return (
             <View style={styles.containerView}>
                 <Text>
@@ -134,11 +123,13 @@ class UpdateGroup extends Component<IProps, IState> {
                         {this.props.auth.users.length > 0 && this.state.searchMemberText ?
                             <ScrollView style={{ height: 600, marginTop: 10 }}>
                                 {this.props.auth.users.map((user: any, index: number) => {
+                                    let data = this.state.group.members.filter((a: string) => a === user._id)
                                     return (
+
                                         <View key={user._id} style={styles.item}>
                                             <Text>{user.username}</Text>
                                             <View>
-                                                {user._id === 1 || user._id == 5 ? //this is demo
+                                                {user._id === data[0] ?
                                                     <TouchableOpacity>
                                                         <Text>
                                                             Remove

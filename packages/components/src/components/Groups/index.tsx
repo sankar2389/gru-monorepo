@@ -75,6 +75,7 @@ class GroupView extends Component<IProps, IState> {
     }
 
     componentWillReceiveProps(newProps: any) {
+        console.log("newprops", newProps.group.groups)
         let groupPageCount = []
         let groupLength = newProps.group.groups.length
         let totalpage = groupLength / this.state.limitDataOnPage
