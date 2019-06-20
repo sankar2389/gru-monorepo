@@ -29,6 +29,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                     type
                                     unit
                                     quantity
+                                    acceptedBids
                                   }
                                 }
                               }                          
@@ -42,7 +43,8 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                         "type": buyOrSellType,
                                         "unit": unit,
                                         "quantity": quantity,
-                                        "bids": []
+                                        "bids": [],
+                                        "acceptedBids": []
                                     }
                                 }
                             }
@@ -78,7 +80,8 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                         "type": buyOrSellType,
                                         "unit": unit,
                                         "quantity": quantity,
-                                        "bids": []
+                                        "bids": [],
+                                        "acceptedBids": []
                                     }
                                 }
                             }
@@ -181,6 +184,7 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                   bidPrice
                                   bidQuantity
                                   totalPrice
+                                  status
                                   createdAt                   
                               }
                             }
@@ -193,6 +197,7 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                     "bidPrice": bidsPrice,
                                     "bidQuantity": bidQuantity,
                                     "totalPrice": totalPrice,
+                                    "status": "open",
                                     "createdAt": new Date()
                                 }
                             }
@@ -222,6 +227,14 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                         mutation ($input: updateBuyInput) {
                                             updateBuy(input: $input) {
                                               buy {
+                                                _id
+                                                price
+                                                creator
+                                                creatorObject
+                                                createdAt
+                                                type
+                                                unit
+                                                quantity,
                                                 bids
                                               }
                                             }
@@ -237,8 +250,12 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                                 }
                                             }
                                         }
-                                    }).then(res => {
+                                    }).then(buy => {
                                         alert("One bid is created on Buy")
+                                        // dispatch({
+                                        //     type: "BID_ON_BUY_CREATED_SUCCESS",
+                                        //     payload:buy.data.updateBuy.buy
+                                        // })
 
                                     }).catch(err => {
                                         console.log(err.message)
@@ -316,8 +333,8 @@ export const getBidsByBidId = (bids: any) => {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
-                        query($id:JSON){
-                            bids(where:{_id_in:$id}){
+                        query($id:JSON,){
+                            bids(where:{_id_in:$id, status:"open"}){
                                 _id
                                 userId
                                 bidPrice,
@@ -374,6 +391,164 @@ export const getBidsByBidId = (bids: any) => {
                         console.log(err.message)
                     })
 
+                }
+            }).catch(err => {
+                console.log(err.message)
+            })
+    }
+}
+
+export const bidAcceptOrReject = (type: string, status: string, _id: string, buyOrSellId: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    //GET BUY BY ID
+                    if (type === "buy") {
+                        client.query({
+                            query: gql`
+                            query($id:JSON){
+                                buys(where:{_id_in:$id}){
+                                    _id
+                                    acceptedBids
+                                }
+                              }
+                            `, variables: {
+                                "id": buyOrSellId
+                            }
+                        }).then(buy => {
+                            let acceptedBids = buy.data.buys[0].acceptedBids
+                            acceptedBids.push(_id)
+                            client.mutate({
+                                mutation: gql`
+                                mutation ($input: updateBuyInput) {
+                                    updateBuy(input: $input) {
+                                      buy {
+                                        acceptedBids
+                                      }
+                                    }
+                                  }
+                                `,
+                                variables: {
+                                    "input": {
+                                        "where": {
+                                            "id": buyOrSellId
+                                        },
+                                        "data": {
+                                            "acceptedBids": acceptedBids
+                                        }
+                                    }
+                                }
+                            }).then(buy => {
+                                //UPDATE BIDS STATUS
+                                client.mutate({
+                                    mutation: gql`
+                                    mutation ($input: updateBidInput) {
+                                        updateBid(input: $input) {
+                                        bid {
+                                            _id
+                                            status
+                                        }
+                                        }
+                                    }
+                                    `,
+                                    variables: {
+                                        "input": {
+                                            "where": {
+                                                "id": _id
+                                            },
+                                            "data": {
+                                                "status": status
+                                            }
+                                        }
+                                    }
+                                }).then(bid => {
+                                    dispatch({
+                                        type: "BID_ACCEPTED_OR_REJECTED_SUCCESS",
+                                        payload: bid.data.updateBid.bid,
+                                    })
+                                })
+                            }).catch(err => {
+                                console.log(err.message)
+                            })
+
+                        }).catch(err => {
+                            console.log(err.message)
+                        })
+                    }
+                    if (type === "sell") {
+                        client.query({
+                            query: gql`
+                            query($id:JSON){
+                                sells(where:{_id_in:$id}){
+                                    _id
+                                    acceptedBids
+                                }
+                              }
+                            `, variables: {
+                                "id": buyOrSellId
+                            }
+                        }).then(sell => {
+                            let acceptedBids = sell.data.sells[0].acceptedBids
+                            acceptedBids.push(_id)
+                            client.mutate({
+                                mutation: gql`
+                                mutation ($input: updateSellInput) {
+                                    updateSell(input: $input) {
+                                      sell {
+                                        acceptedBids
+                                      }
+                                    }
+                                  }
+                                `,
+                                variables: {
+                                    "input": {
+                                        "where": {
+                                            "id": buyOrSellId
+                                        },
+                                        "data": {
+                                            "acceptedBids": acceptedBids
+                                        }
+                                    }
+                                }
+                            }).then(buy => {
+                                //UPDATE BIDS STATUS
+                                client.mutate({
+                                    mutation: gql`
+                                    mutation ($input: updateBidInput) {
+                                        updateBid(input: $input) {
+                                        bid {
+                                            _id
+                                            status
+                                        }
+                                        }
+                                    }
+                                    `,
+                                    variables: {
+                                        "input": {
+                                            "where": {
+                                                "id": _id
+                                            },
+                                            "data": {
+                                                "status": status
+                                            }
+                                        }
+                                    }
+                                }).then(bid => {
+                                    dispatch({
+                                        type: "BID_ACCEPTED_OR_REJECTED_SUCCESS",
+                                        payload: bid.data.updateBid.bid,
+                                    })
+                                })
+                            }).catch(err => {
+                                console.log(err.message)
+                            })
+
+                        }).catch(err => {
+                            console.log(err.message)
+                        })
+                    }
                 }
             }).catch(err => {
                 console.log(err.message)

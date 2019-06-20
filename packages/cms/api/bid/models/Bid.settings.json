@@ -33,6 +33,10 @@
     "totalPrice": {
       "default": "",
       "type": "float"
+    },
+    "status": {
+      "default": "",
+      "type": "string"
     }
   }
 }
