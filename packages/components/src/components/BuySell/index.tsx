@@ -928,7 +928,7 @@ const styles = StyleSheet.create({
     bidActionButton: { padding: 4, marginRight: 5, borderRadius: 5, alignItems: "center", justifyContent: "center" },
     bidAcceptButton: { backgroundColor: "#1D96A8", },
     bidRejectButton: { backgroundColor: "#FF1C14" },
-    bidActionButtonText: { color: "#ffffff", fontSize: 16 },
+    bidActionButtonText: { color: "#ffffff", fontSize: 14 },
     scene: {
         flex: 1,
     },
