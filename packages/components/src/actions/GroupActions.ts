@@ -272,26 +272,27 @@ export const onAddUserToGroup = (groupId: any, user: any) => {
             .then((authtoken: string | null) => {
                 if (authtoken) {
                     const client = createApolloClient(authtoken);
-                    client.mutate({
-                        mutation: gql`
-                     mutation ($input: updateGroupInput) {
-                         updateGroup(input: $input) {
-                          group {
-                            members
-                          }
-                        }
-                      }
-                     `,
-                        variables: {
-                            "input": {
-                                "where": {
-                                    "id": groupId
-                                }, "data": {
-                                    "members": user
-                                }
-                            }
-                        }
-                    })
+
+                    // client.mutate({
+                    //     mutation: gql`
+                    //  mutation ($input: updateGroupInput) {
+                    //      updateGroup(input: $input) {
+                    //       group {
+                    //         members
+                    //       }
+                    //     }
+                    //   }
+                    //  `,
+                    //     variables: {
+                    //         "input": {
+                    //             "where": {
+                    //                 "id": groupId
+                    //             }, "data": {
+                    //                 "members": user
+                    //             }
+                    //         }
+                    //     }
+                    // })
                 }
             })
     }

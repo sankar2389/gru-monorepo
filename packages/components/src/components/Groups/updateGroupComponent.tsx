@@ -4,7 +4,7 @@ import { IReduxState, IGroup } from "../../types";
 import { connect } from "react-redux";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { onAddUserToGroup, searchUser } from '../../actions';
-import AwesomeDebouncePromise from 'awesome-debounce-promise';
+//import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 
 interface IProps extends RouteComponentProps {
@@ -53,17 +53,16 @@ class UpdateGroup extends Component<IProps, IState> {
     }
 
     componentWillReceiveProps(newProps: any) {
-
         if (newProps.auth.users.length > 0) {
             console.log("new", newProps.auth.users)
             this.setState({ users: newProps.auth.users })
         }
     }
 
-
-
     onPressSearchUserByUserName = (searchString: string) => {
         this.setState({ searchMemberText: searchString })
+        this.props.searchUser(searchString)
+
     }
 
     onPressAddUserToGroup = async (user: any) => {
@@ -71,7 +70,6 @@ class UpdateGroup extends Component<IProps, IState> {
         if (groupId && user) {
             this.props.onAddUserToGroup(groupId, user)
         }
-
     }
 
     render() {
@@ -136,12 +134,11 @@ class UpdateGroup extends Component<IProps, IState> {
                         {this.props.auth.users.length > 0 && this.state.searchMemberText ?
                             <ScrollView style={{ height: 600, marginTop: 10 }}>
                                 {this.props.auth.users.map((user: any, index: number) => {
-
                                     return (
                                         <View key={user._id} style={styles.item}>
                                             <Text>{user.username}</Text>
                                             <View>
-                                                {user._id === 1 || user._id == 5 ?
+                                                {user._id === 1 || user._id == 5 ? //this is demo
                                                     <TouchableOpacity>
                                                         <Text>
                                                             Remove
@@ -153,14 +150,12 @@ class UpdateGroup extends Component<IProps, IState> {
                                                     </Text>
                                                     </TouchableOpacity>
                                                 }
-
-
                                             </View>
                                         </View>
                                     )
                                 })}
                             </ScrollView> :
-                            <Text>User not found</Text>
+                            <Text />
                         }
                     </View>
                 </View>
