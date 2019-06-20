@@ -13,7 +13,7 @@ interface IProps extends RouteComponentProps {
     getBuyDataByCreator: (creator: string) => void,
     getSellDataByCreator: (creator: string) => void,
     buyOrSell: any,
-    onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string) => void,
+    onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string, bidQuantity: number, totalPrice: number) => void,
     getBidsByBidId: (bids: any) => void
 };
 
@@ -42,6 +42,7 @@ interface IState {
     expandBidView: boolean,
     buyOrSellIndex: number,
     bids: any,
+    bidQuantity: string,
     bidStartNumber: number,
     bidEndNumber: number
 
@@ -73,6 +74,7 @@ class BuySell extends Component<IProps> {
         expandBidView: false,
         buyOrSellIndex: 0,
         bids: [],
+        bidQuantity: "",
         bidStartNumber: 0,
         bidEndNumber: 5
 
@@ -311,8 +313,11 @@ class BuySell extends Component<IProps> {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         let bidsPrice = parseInt(this.state.buyOrSellPrice)
         let buyOrSellId = this.state.buyOrSellId
-        if (bidsPrice && user._id) {
-            this.props.onCreateBids(user._id, bidsPrice, buyOrSellId, this.state.bidOnBuyOrSell)
+        let bidQuantity = parseInt(this.state.bidQuantity)
+        if ((bidsPrice && user._id) && bidQuantity) {
+            let totalPrice = bidsPrice * bidQuantity
+            console.log("totalPrice", totalPrice)
+            this.props.onCreateBids(user._id, bidsPrice, buyOrSellId, this.state.bidOnBuyOrSell, bidQuantity, totalPrice)
             this.onCancelModal()
         }
     }
@@ -346,7 +351,6 @@ class BuySell extends Component<IProps> {
     render() {
         const { innerContainer } = styles;
         const { dWidth, modalVisible, dataFromCollection, buyData, sellData, buyOrSellIndex, bids, bidStartNumber, bidEndNumber } = this.state;
-
         return (
             <View style={dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
                 <ScrollView style={dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
@@ -446,12 +450,14 @@ class BuySell extends Component<IProps> {
                                                         {
                                                             bids.length > 0 ?
                                                                 bids.map((bid: any, index: number) => {
-                                                                    console.log("biddddddddddddd", bid)
+                                                                    console.log("bidddd", bid)
                                                                     if (index >= bidStartNumber && index < bidEndNumber)
                                                                         return (
                                                                             <TouchableOpacity key={index} style={styles.bidStyle}>
                                                                                 <Text>{bid.user[0].username}</Text>
                                                                                 <Text>{bid.bidPrice}</Text>
+                                                                                <Text>{bid.bidQuantity}</Text>
+                                                                                <Text>{bid.totalPrice}</Text>
                                                                                 <Text>{moment(bid.createdAt).format('LL')}</Text>
                                                                             </TouchableOpacity>
                                                                         )
@@ -523,7 +529,6 @@ class BuySell extends Component<IProps> {
                                                     <Text style={styles.buyOrSellText}>
                                                         &#8377; {buyOrSell.price}
                                                     </Text>
-
                                                 </View>
                                             </View>
                                             <TouchableOpacity style={styles.setPriceButton}
@@ -655,6 +660,13 @@ class BuySell extends Component<IProps> {
                                     // onSubmitEditing={() => {
                                     //     this.onPressCreateBuyOrSell()
                                     // }}
+                                    />
+                                    <TextInput
+                                        value={this.state.bidQuantity}
+                                        placeholder={'Quantity'}
+                                        style={styles.bidQuantityInputStyle}
+                                        onChangeText={(bidQuantity) => this.setState({ bidQuantity: bidQuantity })}
+
                                     />
                                     <View style={this.state.dWidth ? styles.setPriceSmButtonView : styles.setPricebuttonView}>
                                         <TouchableOpacity onPress={() => this.onCancelModal()}
@@ -867,7 +879,18 @@ const styles = StyleSheet.create({
         padding: 20,
         width: "60%",
         position: "absolute",
-        top: 120,
+        top: 100,
+        left: "15%"
+    },
+    bidQuantityInputStyle: {
+        height: 30,
+        margin: 15,
+        backgroundColor: "rgba(106,106,106,0.41)",
+        borderRadius: 20,
+        padding: 20,
+        width: "60%",
+        position: "absolute",
+        top: 150,
         left: "15%"
     },
     buttonView: {

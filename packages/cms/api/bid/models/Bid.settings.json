@@ -25,6 +25,14 @@
     "userId": {
       "default": "",
       "type": "string"
+    },
+    "bidQuantity": {
+      "default": "",
+      "type": "float"
+    },
+    "totalPrice": {
+      "default": "",
+      "type": "float"
     }
   }
 }

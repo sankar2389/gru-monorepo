@@ -166,7 +166,7 @@ export const getSellDataByCreator = (creator: string) => {
     }
 }
 
-export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string) => {
+export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string, bidQuantity: number, totalPrice: number) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -180,6 +180,8 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                   _id
                                   userId
                                   bidPrice
+                                  bidQuantity
+                                  totalPrice
                                   createdAt                   
                               }
                             }
@@ -190,6 +192,8 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                 "data": {
                                     "userId": userId,
                                     "bidPrice": bidsPrice,
+                                    "bidQuantity": bidQuantity,
+                                    "totalPrice": totalPrice,
                                     "createdAt": new Date()
                                 }
                             }
@@ -317,7 +321,9 @@ export const getBidsByBidId = (bids: any) => {
                             bids(where:{_id_in:$id}){
                                 _id
                                 userId
-                              bidPrice
+                              bidPrice,
+                              bidQuantity
+                              totalPrice
                               createdAt
                             }
                           }
