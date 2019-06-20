@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { RouteComponentProps } from "react-router";
 import { IReduxState, IGroup } from "../../types";
 import { connect } from "react-redux";
-import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
-import { onAddUserToGroup, searchUser } from '../../actions';
+import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView, TouchableWithoutFeedbackBase } from "react-native";
+import { onAddUserToGroup, onRemoveUserFromGroup, searchUser } from '../../actions';
 //import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 
@@ -12,7 +12,8 @@ interface IProps extends RouteComponentProps {
     editedGroup: any,
     cancelGroupUpdate: Function,
     updateGroup: Function,
-    onAddUserToGroup(groupId: any, user: any): () => void
+    onAddUserToGroup(groupId: any, user: any): () => void,
+    onRemoveUserFromGroup(groupId: any, user: any): () => void,
     searchUser(searchString: string): () => void
     auth: any
 
@@ -40,9 +41,14 @@ class UpdateGroup extends Component<IProps, IState> {
     }
 
     componentWillReceiveProps(newProps: any) {
+        console.log("newsssssssss", newProps.group.groups)
         if (newProps.auth.users.length > 0) {
             console.log("new", newProps.auth.users)
             this.setState({ users: newProps.auth.users })
+        }
+        if (newProps.group.groups.length > 0) {
+            let group = newProps.group.groups.filter((g: any) => g._id === this.state.groupId)
+            this.setState({ group: group[0] })
         }
     }
 
@@ -59,9 +65,18 @@ class UpdateGroup extends Component<IProps, IState> {
         }
     }
 
+    onPressRemoveUserFromGroup = (user: any) => {
+        let groupId = this.state.groupId
+        if (groupId && user) {
+            this.props.onRemoveUserFromGroup(groupId, user)
+        }
+    }
+    componentDidMount() {
+
+    }
+
     render() {
-
-
+        console.log("staet", this.state.group)
         return (
             <View style={styles.containerView}>
                 <Text>
@@ -123,25 +138,42 @@ class UpdateGroup extends Component<IProps, IState> {
                         {this.props.auth.users.length > 0 && this.state.searchMemberText ?
                             <ScrollView style={{ height: 600, marginTop: 10 }}>
                                 {this.props.auth.users.map((user: any, index: number) => {
+
+
                                     let data = this.state.group.members.filter((a: string) => a === user._id)
+
+                                    console.log("dasttt", data)
                                     return (
 
                                         <View key={user._id} style={styles.item}>
                                             <Text>{user.username}</Text>
-                                            <View>
-                                                {user._id === data[0] ?
-                                                    <TouchableOpacity>
-                                                        <Text>
-                                                            Remove
-                                                    </Text>
-                                                    </TouchableOpacity> :
+                                            {data ?
+                                                <View>
+                                                    {user._id === data[0] ?
+                                                        <TouchableOpacity onPress={() => this.onPressRemoveUserFromGroup(user)}>
+                                                            <Text>
+                                                                Remove
+                                                </Text>
+                                                        </TouchableOpacity> :
+                                                        <TouchableOpacity onPress={() => this.onPressAddUserToGroup(user)}>
+                                                            <Text>
+                                                                Add
+                                                </Text>
+                                                        </TouchableOpacity>
+                                                    }
+                                                </View>
+                                                :
+                                                <View>
+
                                                     <TouchableOpacity onPress={() => this.onPressAddUserToGroup(user)}>
                                                         <Text>
                                                             Add
-                                                    </Text>
+                                                </Text>
                                                     </TouchableOpacity>
-                                                }
-                                            </View>
+
+                                                </View>
+                                            }
+
                                         </View>
                                     )
                                 })}
@@ -157,11 +189,11 @@ class UpdateGroup extends Component<IProps, IState> {
     }
 }
 
-const mapStateToProps = ({ auth }: any): IReduxState => {
-    return { auth };
+const mapStateToProps = ({ auth, group }: any): IReduxState => {
+    return { auth, group };
 };
 // @ts-ignore
-export default connect<IReduxState>(mapStateToProps, { onAddUserToGroup, searchUser })(UpdateGroup);
+export default connect<IReduxState>(mapStateToProps, { onAddUserToGroup, onRemoveUserFromGroup, searchUser })(UpdateGroup);
 
 const styles = StyleSheet.create({
     containerView: { marginLeft: 50 },
