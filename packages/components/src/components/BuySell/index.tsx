@@ -450,16 +450,27 @@ class BuySell extends Component<IProps> {
                                                         {
                                                             bids.length > 0 ?
                                                                 bids.map((bid: any, index: number) => {
-                                                                    console.log("bidddd", bid)
                                                                     if (index >= bidStartNumber && index < bidEndNumber)
                                                                         return (
-                                                                            <TouchableOpacity key={index} style={styles.bidStyle}>
+                                                                            <View key={index} style={styles.bidStyle}>
                                                                                 <Text>{bid.user[0].username}</Text>
                                                                                 <Text>{bid.bidPrice}</Text>
                                                                                 <Text>{bid.bidQuantity}</Text>
                                                                                 <Text>{bid.totalPrice}</Text>
                                                                                 <Text>{moment(bid.createdAt).format('LL')}</Text>
-                                                                            </TouchableOpacity>
+                                                                                <View style={{ flexDirection: "row" }}>
+                                                                                    <TouchableOpacity style={[styles.bidActionButton, styles.bidAcceptButton]}>
+                                                                                        <Text style={{ color: "#ffffff", fontSize: 16 }}>
+                                                                                            Accept
+                                                                                    </Text>
+                                                                                    </TouchableOpacity>
+                                                                                    <TouchableOpacity style={[styles.bidActionButton, styles.bidRejectButton]}>
+                                                                                        <Text style={{ color: "#ffffff", fontSize: 16 }}>
+                                                                                            Reject
+                                                                                    </Text>
+                                                                                    </TouchableOpacity>
+                                                                                </View>
+                                                                            </View>
                                                                         )
                                                                 }) : <Text />
                                                         }
@@ -771,14 +782,17 @@ const styles = StyleSheet.create({
     },
     bidStyle: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 15,
+        padding: 10,
         margin: 2,
         borderColor: '#2a4944',
         borderWidth: 1,
         backgroundColor: '#d2f7f1'
     },
+    bidActionButton: { padding: 4, marginRight: 5, borderRadius: 5, alignItems: "center", justifyContent: "center" },
+    bidAcceptButton: { backgroundColor: "#1D96A8", },
+    bidRejectButton: { backgroundColor: "#FF1C14" },
     scene: {
         flex: 1,
     },
