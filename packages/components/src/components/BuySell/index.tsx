@@ -466,6 +466,15 @@ class BuySell extends Component<IProps> {
                                             {
                                                 this.state.expandBidView && buyOrSellIndex === index ?
                                                     <View>
+                                                        <View style={styles.firstBidViewStyle}>
+                                                            <Text style={styles.bidHeaderText}>User name</Text>
+                                                            <Text style={styles.bidHeaderText}>Bid Price</Text>
+                                                            <Text style={styles.bidHeaderText}>Bid Quantity</Text>
+                                                            <Text style={styles.bidHeaderText}>Total Price</Text>
+                                                            <Text style={styles.bidHeaderText}>Date</Text>
+                                                            <Text style={styles.bidHeaderText}>Action</Text>
+                                                        </View>
+
                                                         {
                                                             bids.length > 0 ?
                                                                 bids.map((bid: any, index: number) => {
@@ -473,14 +482,14 @@ class BuySell extends Component<IProps> {
                                                                     if (index >= bidStartNumber && index < bidEndNumber)
                                                                         return (
                                                                             <View key={index} style={styles.bidStyle}>
-                                                                                <Text>{bid.user[0].username}</Text>
-                                                                                <Text>{bid.bidPrice}</Text>
-                                                                                <Text>{bid.bidQuantity}</Text>
-                                                                                <Text>{bid.totalPrice}</Text>
-                                                                                <Text>{moment(bid.createdAt).format('LL')}</Text>
+                                                                                <Text style={{ flex: 1 }}>{bid.user[0].username}</Text>
+                                                                                <Text style={{ flex: 1 }}>{bid.bidPrice}</Text>
+                                                                                <Text style={{ flex: 1 }}>{bid.bidQuantity}</Text>
+                                                                                <Text style={{ flex: 1 }}>{bid.totalPrice}</Text>
+                                                                                <Text style={{ flex: 1 }}>{moment(bid.createdAt).format('LL')}</Text>
                                                                                 {
                                                                                     this.state.userId === buyOrSell.creator ?
-                                                                                        <View style={{ flexDirection: "row" }}>
+                                                                                        <View style={styles.actionButtonView}>
                                                                                             <TouchableOpacity
                                                                                                 style={[styles.bidActionButton, styles.bidAcceptButton]}
                                                                                                 onPress={() => this.bidActionButtonFunc("buy", bid._id, buyOrSell._id)}
@@ -498,7 +507,7 @@ class BuySell extends Component<IProps> {
                                                                                     </Text>
                                                                                             </TouchableOpacity>
                                                                                         </View> :
-                                                                                        <Text />
+                                                                                        <View style={styles.actionButtonView} />
                                                                                 }
 
                                                                             </View>
@@ -587,21 +596,29 @@ class BuySell extends Component<IProps> {
                                             {/* EXPANDABLE BID START */}
                                             {
                                                 this.state.expandBidView && buyOrSellIndex === index ?
-                                                    <View>
+                                                    <View >
+                                                        <View style={styles.firstBidViewStyle}>
+                                                            <Text style={styles.bidHeaderText}>User name</Text>
+                                                            <Text style={styles.bidHeaderText}>Bid Price</Text>
+                                                            <Text style={styles.bidHeaderText}>Bid Quantity</Text>
+                                                            <Text style={styles.bidHeaderText}>Total Price</Text>
+                                                            <Text style={styles.bidHeaderText}>Date</Text>
+                                                            <Text style={styles.bidHeaderText}>Action</Text>
+                                                        </View>
                                                         {
                                                             bids.length > 0 ?
                                                                 bids.map((bid: any, index: number) => {
                                                                     if (index >= bidStartNumber && index < bidEndNumber)
                                                                         return (
                                                                             <View key={index} style={styles.bidStyle}>
-                                                                                <Text>{bid.user[0].username}</Text>
-                                                                                <Text>{bid.bidPrice}</Text>
-                                                                                <Text>{bid.bidQuantity}</Text>
-                                                                                <Text>{bid.totalPrice}</Text>
-                                                                                <Text>{moment(bid.createdAt).format('LL')}</Text>
+                                                                                <Text style={styles.bidHeaderText}>{bid.user[0].username}</Text>
+                                                                                <Text style={styles.bidHeaderText}>{bid.bidPrice}</Text>
+                                                                                <Text style={styles.bidHeaderText}>{bid.bidQuantity}</Text>
+                                                                                <Text style={styles.bidHeaderText}>{bid.totalPrice}</Text>
+                                                                                <Text style={styles.bidHeaderText}>{moment(bid.createdAt).format('LL')}</Text>
                                                                                 {
                                                                                     this.state.userId === buyOrSell.creator ?
-                                                                                        <View style={{ flexDirection: "row" }}>
+                                                                                        <View style={styles.actionButtonView}>
                                                                                             <TouchableOpacity style={[styles.bidActionButton, styles.bidAcceptButton]}
                                                                                                 onPress={() => this.bidActionButtonFunc("sell", bid._id, buyOrSell._id)}
                                                                                             >
@@ -616,7 +633,8 @@ class BuySell extends Component<IProps> {
                                                                                                     Reject
                                                                                     </Text>
                                                                                             </TouchableOpacity>
-                                                                                        </View> : <Text />
+                                                                                        </View> :
+                                                                                        <View style={styles.actionButtonView} />
                                                                                 }
                                                                             </View>
                                                                         )
@@ -804,45 +822,47 @@ class BuySell extends Component<IProps> {
 
                 </ScrollView >
                 {/* PAGINATION VIEW START */}
-                {this.state.buyOrSellPageCount.length > 1 ?
-                    <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
-                        <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
-                            <Text>{"<"}</Text>
-                        </TouchableOpacity>
-                        {this.state.buyOrSellPageCount.map(pageCount => {
-                            if (pageCount > 1) {
-                                if (pageCount >= this.state.selectedPaginatateNumber && pageCount < this.state.selectedPaginatateNumber + 2) {
+                {
+                    this.state.buyOrSellPageCount.length > 1 ?
+                        <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
+                            <TouchableOpacity style={styles.paginationButton} onPress={this.onPressPaginatePrevious.bind(this)}>
+                                <Text>{"<"}</Text>
+                            </TouchableOpacity>
+                            {this.state.buyOrSellPageCount.map(pageCount => {
+                                if (pageCount > 1) {
+                                    if (pageCount >= this.state.selectedPaginatateNumber && pageCount < this.state.selectedPaginatateNumber + 2) {
+                                        return (
+                                            <TouchableOpacity key={pageCount}
+                                                onPress={this.onPressPaginate.bind(this, pageCount)}
+                                                style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
+                                            >
+                                                <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>
+                                                    {pageCount}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        )
+                                    }
+                                } else {
                                     return (
                                         <TouchableOpacity key={pageCount}
                                             onPress={this.onPressPaginate.bind(this, pageCount)}
                                             style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
                                         >
-                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>
-                                                {pageCount}
-                                            </Text>
+                                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>{pageCount}</Text>
                                         </TouchableOpacity>
                                     )
                                 }
-                            } else {
-                                return (
-                                    <TouchableOpacity key={pageCount}
-                                        onPress={this.onPressPaginate.bind(this, pageCount)}
-                                        style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
-                                    >
-                                        <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : styles.blankTextStyle}>{pageCount}</Text>
-                                    </TouchableOpacity>
-                                )
-                            }
-                        })}
+                            })}
 
-                        <TouchableOpacity
-                            onPress={this.onPressPaginateNext.bind(this)}
-                            style={styles.paginationButton}>
-                            <Text>{">"}</Text>
-                        </TouchableOpacity>
-                    </View> : <Text />}
+                            <TouchableOpacity
+                                onPress={this.onPressPaginateNext.bind(this)}
+                                style={styles.paginationButton}>
+                                <Text>{">"}</Text>
+                            </TouchableOpacity>
+                        </View> : <Text />
+                }
                 {/* PAGINATION VIEW END */}
-            </View>
+            </View >
 
 
         );
@@ -883,6 +903,18 @@ const styles = StyleSheet.create({
         display: "flex",
         height: 490,
     },
+    firstBidViewStyle: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderColor: '#2a4944',
+        borderTopWidth: 1,
+        backgroundColor: '#hg65796',
+        marginLeft: 15,
+        marginRight: 15
+    },
+    bidHeaderText: { flex: 1 },
+    actionButtonView: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center" },
     bidStyle: {
         flexDirection: 'row',
         justifyContent: 'space-between',
