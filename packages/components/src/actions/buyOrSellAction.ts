@@ -306,13 +306,11 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
 }
 
 export const getBidsByBidId = (bids: any) => {
-    console.log("id", bids)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {
                     const client = createApolloClient(authtoken);
-
                     client.query({
                         query: gql`
                         query($id:JSON){
@@ -327,14 +325,53 @@ export const getBidsByBidId = (bids: any) => {
                             "id": bids
                         }
                     }).then(bid => {
-                        console.log("bbbbbb", bid.data.bids)
-                        dispatch({
-                            type: "GET_BID_BY_ID_SUCCESS",
-                            payload: bid.data.bids
+                        let userIds: any = []
+                        if (bid.data.bids.length > 0) {
+                            bid.data.bids.map((bid: any) => {
+                                userIds.push(bid.userId)
+                            })
+                        }
+                        client.query({
+                            query: gql`
+                            query($id:JSON){
+                                users(where:{_id_in:$id}){
+                                    _id
+                                    username
+                                    email
+                                }
+                              }
+                            `, variables: {
+                                "id": userIds
+                            }
+                        }).then(users => {
+                            let bids = bid.data.bids;
+                            let allUsers = users.data.users;
+                            if (bids) {
+                                bids.forEach((bid: any) => {
+                                    if (allUsers) {
+                                        let user = allUsers.filter((u: any) => {
+                                            return u._id === bid.userId;
+                                        });
+                                        bid["user"] = user;
+                                    }
+                                });
+                                //console.log("bidddddd", bids)
+                            }
+                            dispatch({
+                                type: "GET_BID_BY_ID_SUCCESS",
+                                payload: bids
+                            })
+                        }).catch(err => {
+                            console.log(err.message)
                         })
+
+                    }).catch(err => {
+                        console.log(err.message)
                     })
 
                 }
+            }).catch(err => {
+                console.log(err.message)
             })
     }
 }

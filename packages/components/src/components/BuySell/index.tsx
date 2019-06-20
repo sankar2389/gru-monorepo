@@ -165,7 +165,6 @@ class BuySell extends Component<IProps> {
     }
 
     componentWillReceiveProps(newProps: any) {
-        console.log("nmew", newProps.buyOrSell.bids)
         if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
             const { buyData } = this.state;
             this.setState({
@@ -319,10 +318,8 @@ class BuySell extends Component<IProps> {
     }
 
     onPressExpandedBid = (buyOrSell: any, index: number) => {
-        console.log("Id", buyOrSell.bids)
         if (buyOrSell.bids.length > 0) {
             this.props.getBidsByBidId(buyOrSell.bids)
-
         }
         this.setState({
             expandBidView: true,
@@ -442,7 +439,6 @@ class BuySell extends Component<IProps> {
                                                         </TouchableOpacity>
                                                     </View>
                                                 </View>
-
                                             </TouchableOpacity>
                                             {
                                                 this.state.expandBidView && buyOrSellIndex === index ?
@@ -450,10 +446,11 @@ class BuySell extends Component<IProps> {
                                                         {
                                                             bids.length > 0 ?
                                                                 bids.map((bid: any, index: number) => {
+                                                                    console.log("biddddddddddddd", bid)
                                                                     if (index >= bidStartNumber && index < bidEndNumber)
                                                                         return (
                                                                             <TouchableOpacity key={index} style={styles.bidStyle}>
-                                                                                <Text>{bid.userId}</Text>
+                                                                                <Text>{bid.user[0].username}</Text>
                                                                                 <Text>{bid.bidPrice}</Text>
                                                                                 <Text>{moment(bid.createdAt).format('LL')}</Text>
                                                                             </TouchableOpacity>
