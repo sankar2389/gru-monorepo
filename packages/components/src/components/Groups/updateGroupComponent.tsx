@@ -75,8 +75,20 @@ class UpdateGroup extends Component<IProps, IState> {
             this.props.onRemoveUserFromGroup(groupId, user)
         }
     }
-    componentDidMount() {
 
+    userNextOrPrevious = (type: string) => {
+        if (type === "previous") {
+            this.setState({
+                startUserOnPage: this.state.startUserOnPage - 2,
+                endUserOnPage: this.state.endUserOnPage - 2
+            })
+        }
+        if (type === "next") {
+            this.setState({
+                startUserOnPage: this.state.startUserOnPage + 2,
+                endUserOnPage: this.state.endUserOnPage + 2
+            })
+        }
     }
 
     render() {
@@ -167,16 +179,31 @@ class UpdateGroup extends Component<IProps, IState> {
                                     }
 
                                 })}
-                                <View style={{ backgroundColor: "gray", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
-                                    <TouchableOpacity>
-                                        <Text>{"<"}</Text>
-                                    </TouchableOpacity>
 
-                                    <TouchableOpacity>
-                                        <Text>{">"}</Text>
-                                    </TouchableOpacity>
+                                {
+                                    this.props.auth.users.length > 2 ?
+                                        <View style={styles.userPaginationView}>
+                                            <TouchableOpacity style={{ marginRight: 10 }}
+                                                disabled={startUserOnPage === 0 ? true : false}
+                                                onPress={() => this.userNextOrPrevious("previous")}
+                                            >
+                                                <Text style={styles.paginationButtonText}>
+                                                    {"<"}
+                                                </Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                disabled={endUserOnPage >= this.props.auth.users.length ? true : false}
+                                                onPress={() => this.userNextOrPrevious("next")}
+                                            >
+                                                <Text style={styles.paginationButtonText}>
+                                                    {">"}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        :
+                                        <Text />
+                                }
 
-                                </View>
                             </ScrollView> :
                             <Text />
                         }
@@ -205,6 +232,8 @@ const styles = StyleSheet.create({
         borderRadius: 20, marginTop: 10,
         paddingLeft: 10,
     },
+    userPaginationView: { flexDirection: "row", justifyContent: "flex-end", marginRight: 15 },
+    paginationButtonText: { fontSize: 18 },
     item: {
         flexDirection: 'row',
         justifyContent: 'space-between',
