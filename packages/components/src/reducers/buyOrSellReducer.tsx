@@ -33,6 +33,12 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 messageType: action.messageType,
                 message: action.message,
             };
+        case 'BUY_OR_SELL_BID_CREATED_SUCCESS':
+            return {
+                ...state,
+                messageType: action.messageType,
+                message: action.message,
+            };
         case "GET_BID_BY_ID_SUCCESS":
             return {
                 ...state,

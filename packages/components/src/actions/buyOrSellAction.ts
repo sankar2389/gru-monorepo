@@ -287,7 +287,6 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                             }
                                         }
                                     }).then(buy => {
-                                        console.log("buy", buy)
                                         dispatch({
                                             type: "BUY_OR_SELL_BID_CREATED_SUCCESS",
                                             messageType: "success",
@@ -295,10 +294,18 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                             payload: buy
                                         })
                                     }).catch(err => {
-                                        console.log(err.message)
+                                        dispatch({
+                                            type: "BUY_OR_SELL_ERROR",
+                                            messageType: "error",
+                                            message: err.message
+                                        })
                                     })
                                 }).catch(err => {
-                                    console.log(err.message)
+                                    dispatch({
+                                        type: "BUY_OR_SELL_ERROR",
+                                        messageType: "error",
+                                        message: err.message
+                                    })
                                 })
 
                             }
@@ -341,23 +348,43 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                                 }
                                             }
                                         }
-                                    }).then(res => {
-                                        alert("One bid is created on Sesll")
-
+                                    }).then(sell => {
+                                        dispatch({
+                                            type: "BUY_OR_SELL_BID_CREATED_SUCCESS",
+                                            messageType: "success",
+                                            message: "Bid is created successfully on sell",
+                                            payload: sell
+                                        })
                                     }).catch(err => {
-                                        console.log(err.message)
+                                        dispatch({
+                                            type: "BUY_OR_SELL_ERROR",
+                                            messageType: "error",
+                                            message: err.message
+                                        })
                                     })
                                 }).catch(err => {
-                                    console.log(err.message)
+                                    dispatch({
+                                        type: "BUY_OR_SELL_ERROR",
+                                        messageType: "error",
+                                        message: err.message
+                                    })
                                 })
                             }
                         }
                     }).catch(err => {
-                        console.log(err.message)
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
                     })
                 }
             }).catch(err => {
-                alert(err.message)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
             })
     }
 }
@@ -421,16 +448,28 @@ export const getBidsByBidId = (bids: any) => {
                                 payload: bids
                             })
                         }).catch(err => {
-                            console.log(err.message)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
 
                     }).catch(err => {
-                        console.log(err.message)
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
                     })
 
                 }
             }).catch(err => {
-                console.log(err.message)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
             })
     }
 }
@@ -507,11 +546,19 @@ export const bidAcceptOrReject = (type: string, status: string, _id: string, buy
                                     })
                                 })
                             }).catch(err => {
-                                console.log(err.message)
+                                dispatch({
+                                    type: "BUY_OR_SELL_ERROR",
+                                    messageType: "error",
+                                    message: err.message
+                                })
                             })
 
                         }).catch(err => {
-                            console.log(err.message)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
                     }
                     if (type === "sell") {
@@ -579,16 +626,28 @@ export const bidAcceptOrReject = (type: string, status: string, _id: string, buy
                                     })
                                 })
                             }).catch(err => {
-                                console.log(err.message)
+                                dispatch({
+                                    type: "BUY_OR_SELL_ERROR",
+                                    messageType: "error",
+                                    message: err.message
+                                })
                             })
 
                         }).catch(err => {
-                            console.log(err.message)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
                     }
                 }
             }).catch(err => {
-                console.log(err.message)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
             })
     }
 }
