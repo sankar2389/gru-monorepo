@@ -5,9 +5,9 @@ import { StyleSheet, View, Text, Easing, Animated, Image, TouchableOpacity } fro
 interface IProps {
     message: string,
     openMessage: boolean,
+    clearMessageState: () => void
     //type: string
 }
-
 
 interface IState {
     connectionMessage: boolean,
@@ -26,17 +26,17 @@ class CustomMessage extends React.Component<IProps, IState> {
         range1: 100,
         range2: 0,
     }
-
-
-
     componentDidMount() {
         if (this.props.openMessage) {
             this.setState({ connectionMessage: true })
             this.animate(Easing.out(Easing.quad))
         }
-        setTimeout(() => this.setState({
-            connectionMessage: false
-        }), 4000);
+        setTimeout(() => {
+            this.props.clearMessageState()
+            this.setState({
+                connectionMessage: false,
+            })
+        }, 4000);
 
 
     }
@@ -54,12 +54,9 @@ class CustomMessage extends React.Component<IProps, IState> {
         ).start()
     }
 
-
-
     onPressCloseCustomMessage = () => {
         this.setState({ connectionMessage: false })
     }
-
 
     render() {
         return this.state.connectionMessage ? <Animated.View style={{

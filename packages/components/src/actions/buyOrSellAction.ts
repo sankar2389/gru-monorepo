@@ -7,6 +7,14 @@ const getBuyOrSellDataByCreatorSuccess = (dispatch: Function, response: any[]) =
 }
 
 
+export const clearBuyOrSellReducer = () => {
+    return (dispatch: Function) => {
+        dispatch({
+            type: "CLEAR_BUY_OR_SELL_MESSAGE"
+        })
+    }
+}
+
 export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
@@ -46,6 +54,11 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                             }
                         }).then(res => {
                             console.log("res buy", res)
+                            dispatch({
+                                type: "BUY_DATA_CREATED_SUCCESS",
+                                messageType: "success",
+                                message: "Buy is created successfully"
+                            })
                         }).catch(err => {
                             console.log("err buy", err)
                         })

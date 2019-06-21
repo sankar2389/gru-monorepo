@@ -74,10 +74,10 @@ class Chat extends Component<IProps, IState> {
             const { groups } = this.props.group;
             const { messages } = this.state;
             const { socketids, message, socketId } = newProps.webrtc;
-            socketids.forEach((sid: any, i: number) => {
-                groups[i].socketid = sid;
-                groups[i].connected = false;
-            });
+            // socketids.forEach((sid: any, i: number) => {
+            //     groups[i].socketid = sid;
+            //     groups[i].connected = false;
+            // });
 
             if (this.state.messageBackup.length > 0) {
                 this.setState({ messages: this.state.messageBackup, messageBackup: [] })
@@ -101,6 +101,10 @@ class Chat extends Component<IProps, IState> {
                 connectionMessage: true
             })
         }
+    }
+
+    clearMessageState = () => {
+        this.setState({ connectionMessage: false, })
     }
 
     async componentWillMount() {
@@ -353,7 +357,11 @@ class Chat extends Component<IProps, IState> {
                     {/* RIGHT SIDE MESSAGE PART END */}
                 </View>
                 {this.state.connectionMessage ?
-                    <CustomeMessage message={"You are connected to socket"} openMessage={this.state.connectionMessage} />
+                    <CustomeMessage
+                        message={"You are connected to socket"}
+                        openMessage={this.state.connectionMessage}
+                        clearMessageState={this.clearMessageState}
+                    />
                     :
                     <Text />
                 }

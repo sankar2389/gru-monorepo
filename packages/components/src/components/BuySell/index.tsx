@@ -4,10 +4,11 @@ import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Imag
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
-import { createBuyOrSell, getAllBuyData, getAllSellData, onCreateBids, getBidsByBidId, bidAcceptOrReject } from '../../actions';
+import { createBuyOrSell, getAllBuyData, getAllSellData, onCreateBids, getBidsByBidId, bidAcceptOrReject, clearBuyOrSellReducer } from '../../actions';
 const CMS_API = process.env.CMS_API;
 import moment from "moment";
 import axios from "axios";
+import CustomeMessage from "../common/customMessage";
 
 interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
@@ -16,7 +17,8 @@ interface IProps extends RouteComponentProps {
     buyOrSell: any,
     onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string, bidQuantity: number, totalPrice: number) => void,
     getBidsByBidId: (bids: any) => void,
-    bidAcceptOrReject: (type: string, status: string, _id: string, buyOrSellId: string) => void
+    bidAcceptOrReject: (type: string, status: string, _id: string, buyOrSellId: string) => void,
+    clearBuyOrSellReducer: () => void
 };
 
 interface IState {
@@ -48,7 +50,9 @@ interface IState {
     bidQuantity: string,
     bidStartNumber: number,
     bidEndNumber: number,
-    userId: string
+    userId: string,
+    message: string,
+    openCustomMessage: boolean
 
 }
 
@@ -82,7 +86,9 @@ class BuySell extends Component<IProps> {
         bids: [],
         bidQuantity: "",
         bidStartNumber: 0,
-        bidEndNumber: 5
+        bidEndNumber: 5,
+        message: "",
+        openCustomMessage: false
 
     }
     constructor(props: IProps) {
@@ -252,6 +258,7 @@ class BuySell extends Component<IProps> {
     }
 
     componentWillReceiveProps(newProps: any) {
+        console.log("props", newProps.buyOrSell)
         if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
             const { buyData } = this.state;
             this.setState({
@@ -275,10 +282,18 @@ class BuySell extends Component<IProps> {
                 bids: newProps.buyOrSell.bids
             })
         }
-
+        if (newProps.buyOrSell.messageType === "success") {
+            this.setState({
+                message: newProps.buyOrSell.message,
+                openCustomMessage: true
+            })
+            this.props.clearBuyOrSellReducer()
+        }
     }
 
-
+    clearMessageState = () => {
+        this.setState({ message: "", openCustomMessage: false })
+    }
     onLoadPagePagination = (dLength: any) => {
         let buyOrSellPageCount = []
         let dataLength = dLength
@@ -951,6 +966,17 @@ class BuySell extends Component<IProps> {
                     </TouchableOpacity>
                 </View>
                 {/* PAGINATION VIEW END */}
+
+                {this.state.message ?
+                    <CustomeMessage
+                        message={this.state.message}
+                        openMessage={this.state.openCustomMessage}
+                        clearMessageState={this.clearMessageState}
+                    />
+
+                    :
+                    <Text />
+                }
             </View >
 
 
@@ -961,7 +987,13 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
     return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getAllBuyData, getAllSellData, onCreateBids, getBidsByBidId, bidAcceptOrReject })(BuySell);
+export default connect<IReduxState>(mapStateToProps, {
+    createBuyOrSell, getAllBuyData,
+    getAllSellData, onCreateBids,
+    getBidsByBidId, bidAcceptOrReject,
+    clearBuyOrSellReducer
+
+})(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />

@@ -3,14 +3,28 @@ import { IBuyOrSell } from '../types'
 
 const initState: IBuyOrSell = {
     buyOrSellData: [],
+    messageType: "",
+    message: "",
     bids: []
 }
 export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell => {
     switch (action.type) {
+        case 'CLEAR_BUY_OR_SELL_MESSAGE':
+            return {
+                ...state,
+                messageType: "",
+                message: "",
+            };
         case 'BUY_DATA_LIST_SUCCESS':
             return {
                 ...state,
                 buyOrSellData: action.payload
+            };
+        case 'BUY_DATA_CREATED_SUCCESS':
+            return {
+                ...state,
+                messageType: action.messageType,
+                message: action.message,
             };
         case "GET_BID_BY_ID_SUCCESS":
             return {

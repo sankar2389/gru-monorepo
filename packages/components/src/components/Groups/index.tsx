@@ -105,6 +105,10 @@ class GroupView extends Component<IProps, IState> {
         }
     }
 
+    clearMessageState = () => {
+        this.setState({ socketConnection: false, })
+    }
+
     onPressPaginate(pageCount: number) {
         let count = pageCount * this.state.limitDataOnPage
         let startDataOnPage = count - this.state.limitDataOnPage
@@ -403,7 +407,11 @@ class GroupView extends Component<IProps, IState> {
                     {/* PAGINATION VIEW END */}
 
                     {this.state.socketConnection ?
-                        <CustomeMessage message={"You are connected to socket"} openMessage={this.state.socketConnection} />
+                        <CustomeMessage
+                            message={"You are connected to socket"}
+                            openMessage={this.state.socketConnection}
+                            clearMessageState={this.clearMessageState}
+                        />
                         :
                         <Text />
                     }
