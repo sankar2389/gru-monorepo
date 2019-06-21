@@ -1,4 +1,4 @@
-# GRU cms
+# GRU cms [minimum required version node v10]
 
 #### Create docker
 ```
