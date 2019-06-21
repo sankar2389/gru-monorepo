@@ -27,6 +27,14 @@ class CustomMessage extends React.Component<IProps, IState> {
         range2: 0,
     }
     componentDidMount() {
+        this.openAndCloseCustomMessage()
+    }
+
+    componentWillUnmount() {
+        this.openAndCloseCustomMessage()
+    }
+
+    openAndCloseCustomMessage = () => {
         if (this.props.openMessage) {
             this.setState({ connectionMessage: true })
             this.animate(Easing.out(Easing.quad))
@@ -37,8 +45,6 @@ class CustomMessage extends React.Component<IProps, IState> {
                 connectionMessage: false,
             })
         }, 4000);
-
-
     }
 
     animate(easing: any) {

@@ -53,14 +53,17 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                 }
                             }
                         }).then(res => {
-                            console.log("res buy", res)
                             dispatch({
-                                type: "BUY_DATA_CREATED_SUCCESS",
+                                type: "BUY_OR_SELL_DATA_CREATED_SUCCESS",
                                 messageType: "success",
                                 message: "Buy is created successfully"
                             })
                         }).catch(err => {
-                            console.log("err buy", err)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
 
                     } else if (buyOrsell === "sell") {
@@ -95,9 +98,17 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                 }
                             }
                         }).then(res => {
-                            console.log("res sell", res)
+                            dispatch({
+                                type: "BUY_OR_SELL_DATA_CREATED_SUCCESS",
+                                messageType: "success",
+                                message: "Sell is created successfully"
+                            })
                         }).catch(err => {
-                            console.log("err sell", err)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
 
                     } else {
@@ -106,7 +117,11 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
 
                 }
             }).catch(err => {
-                console.log("err all", err)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
             })
     }
 }

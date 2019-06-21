@@ -20,7 +20,14 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 ...state,
                 buyOrSellData: action.payload
             };
-        case 'BUY_DATA_CREATED_SUCCESS':
+
+        case 'BUY_OR_SELL_DATA_CREATED_SUCCESS':
+            return {
+                ...state,
+                messageType: action.messageType,
+                message: action.message,
+            };
+        case 'BUY_OR_SELL_ERROR':
             return {
                 ...state,
                 messageType: action.messageType,
