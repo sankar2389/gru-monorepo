@@ -45,9 +45,7 @@ class UpdateGroup extends Component<IProps, IState> {
     }
 
     componentWillReceiveProps(newProps: any) {
-        console.log("newsssssssss", newProps.group.groups)
         if (newProps.auth.users.length > 0) {
-            console.log("new", newProps.auth.users)
             this.setState({ users: newProps.auth.users })
         }
         if (newProps.group.groups.length > 0) {

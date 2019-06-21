@@ -27,7 +27,6 @@ const emitGroupsList = (dispatch: Function, response: any) => {
 
 /** Create Group */
 export const createGroup = (payload: IGroupsInfo) => {
-    //console.log("payload", payload)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -310,7 +309,6 @@ export const onAddUserToGroup = (groupId: any, user: any) => {
                                 }
                             }
                         }).then(group => {
-                            console.log("group", group.data.updateGroup.group)
                             dispatch({
                                 type: "GROUP_MEMBER_UPDATE_SUCCESS",
                                 payload: group.data.updateGroup.group
@@ -375,7 +373,6 @@ export const onRemoveUserFromGroup = (groupId: any, user: any) => {
                                 }
                             }
                         }).then(group => {
-                            console.log("group", group.data.updateGroup.group)
                             dispatch({
                                 type: "GROUP_MEMBER_UPDATE_SUCCESS",
                                 payload: group.data.updateGroup.group
