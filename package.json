@@ -17,7 +17,8 @@
   "scripts": {
     "clean": "yarn workspaces run clean",
     "dev:web": "yarn workspace @gru/web compile && concurrently --kill-others \"yarn workspace @gru/web compile -w\" \"yarn workspace @gru/web start\"",
-    "dev:cms": "cd packages/cms && npm start"
+    "dev:cms": "cd packages/cms && npm start",
+    "dummy": "node dummyData.js"
   },
   "dependencies": {
     "moment": "^2.24.0",
