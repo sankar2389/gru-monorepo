@@ -31,6 +31,12 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
                     group => (group._id === updateGroup._id ? updateGroup : group)
                 ),
             };
+        case 'GET_GRP_QA':
+            return {
+                ...state,
+                groups: [...state.groups, ...action.payload]
+            };
+
         default:
             return state;
     }

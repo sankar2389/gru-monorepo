@@ -32,7 +32,7 @@
     },
     "groupID": {
       "default": "",
-      "type": "json",
+      "type": "string",
       "required": true
     }
   }

@@ -414,7 +414,7 @@ input editQuestionsInput {
   description: String
   creator: JSON
   comments: JSON
-  groupID: JSON
+  groupID: String
 }
 
 input editRoleInput {
@@ -613,7 +613,7 @@ type Questions {
   description: String!
   creator: JSON!
   comments: JSON
-  groupID: JSON!
+  groupID: String!
 }
 
 type QuestionsAggregator {
@@ -652,7 +652,7 @@ type QuestionsConnectionDescription {
 }
 
 type QuestionsConnectionGroupID {
-  key: JSON
+  key: String
   connection: QuestionsConnection
 }
 
@@ -682,7 +682,7 @@ input QuestionsInput {
   description: String!
   creator: JSON!
   comments: JSON
-  groupID: JSON!
+  groupID: String!
 }
 
 input RoleInput {

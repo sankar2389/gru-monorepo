@@ -3,7 +3,6 @@ import { ICreateGrpError, IGroupsInfo } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
-import { string } from 'prop-types';
 
 const createGrpScss = (dispatch: Function, response: any) => {
     dispatch({ type: 'GRP_CREATE_SUCCESS', payload: response });
@@ -15,6 +14,11 @@ const createGrpFail = (dispatch: Function, error: any) => {
 
 const getGrpScss = (dispatch: Function, response: any) => {
     dispatch({ type: 'GRP_INFO', payload: response });
+}
+
+
+const getGrpQA = (dispatch: Function, response: any) => {
+    dispatch({ type: 'GET_GRP_QA', payload: response });
 }
 
 const getGrpFail = (dispatch: Function, error: AxiosError) => {
@@ -389,3 +393,37 @@ export const onRemoveUserFromGroup = (groupId: any, user: any) => {
 
 }
 
+
+
+// To fetch all group QA
+export const fetchGroupQA = (groupID: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                            query(groupID: String) {
+                                questions(where: {
+                                    groupID: $groupID
+                                }) {
+                                    groupID
+                                }
+                            }
+                        `,
+                        variables: {
+                            "groupID": groupID
+                        }
+                    }).then((res: any) => {
+                        getGrpQA(dispatch, res.data);
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+}
