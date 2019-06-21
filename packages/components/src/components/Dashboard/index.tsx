@@ -18,17 +18,6 @@ class Dashboard extends Component<IProps> {
         super(props);
     }
     async componentDidMount() {
-        /*const client = createApolloClient('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTU1NTg5MTkzLCJleHAiOjE1NTgxODExOTN9.DkdcPF0yek5FaHiDNrZOAqJhUMnZpLu_hi1Sg-83yho');
-        await client.query({
-          query: gql`
-          query {
-            groups {
-                groupName
-              }
-          }`        
-        }).then((res: any) => {
-            console.log('res :',res.data);
-        });*/
     }
 
     handleClicked() {

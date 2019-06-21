@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 // @ts-ignore
 import { Router, RouteComponentProps } from 'react-router';
 import { loginUser } from '../../actions';
+import axios from "axios";
 
 interface IProps extends RouteComponentProps {
     loginUser: Function,
@@ -28,18 +29,40 @@ class LoginScreen extends Component<IProps, IState> {
     login() {
         const { email, password } = this.state;
         this.props.loginUser({ email, password });
+
     }
-    componentDidUpdate() {
+    componentDidMount() {
+        // AsyncStorage.clear()
         AsyncStorage.getItem('token')
             .then(authtoken => {
-                if (authtoken) {
-                    this.props.history.push({
-                        pathname: '/secure/dashboard',
-                        state: { authtoken }
-                    });
-                }
-            })
+                axios.get(process.env.CMS_API + "users/me", {
+                    headers: {
+                        Authorization: 'Bearer ' + authtoken
+                    }
+                }).then(res => {
+                    if (res.status === 200) {
+                        this.props.history.push({
+                            pathname: '/secure/dashboard',
+                            state: { authtoken }
+                        });
+                    }
+                }).catch(e => {
+                    console.error(e);
+                });
+            });
     }
+
+    componentDidUpdate() {
+        const { auth } = this.props;
+
+        if (auth.authtoken) {
+            this.props.history.push({
+                pathname: '/secure/dashboard',
+            });
+            return;
+        }
+    }
+
     render() {
         const { email, password } = this.state;
         const { inputStyle, loginViewStyleFtr, h3, a, or } = styles;

@@ -1,7 +1,7 @@
-//import { ICreateSell } from '../types';
 import createApolloClient from '../apollo';
 import gql from 'graphql-tag';
 import { AsyncStorage } from 'react-native';
+import { Query } from "react-apollo"
 
 
 
@@ -83,8 +83,7 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellPrice: number, creat
     }
 }
 
-export const getBuyDataByCreator = (creator: string) => {
-    console.log("creator", creator)
+export const getAllBuyData = (start: number = 0) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -92,16 +91,20 @@ export const getBuyDataByCreator = (creator: string) => {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
-                        query {
-                            buys{
+                        query($start: Int) {
+                            buys(start: $start, limit: 10){
                               _id
                               price
                               creator
                               creatorObject
                               createdAt
+                              updatedAt
                             }
                           }
-                        `
+                        `,
+                        variables: {
+                            "start": start
+                        }
                     }).then((res: any) => {
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
                     }).catch(e => {
@@ -113,7 +116,7 @@ export const getBuyDataByCreator = (creator: string) => {
     }
 }
 
-export const getSellDataByCreator = (creator: string) => {
+export const getAllSellData = (start: number = 0) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -121,8 +124,8 @@ export const getSellDataByCreator = (creator: string) => {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
-                        query{
-                            sells {
+                        query($start: Int){
+                            sells(start: $start, limit: 10) {
                               _id
                               price
                               creator
@@ -130,7 +133,10 @@ export const getSellDataByCreator = (creator: string) => {
                               createdAt
                             }
                           }
-                        `
+                        `,
+                        variables: {
+                            "start": start
+                        }
                     }).then((res: any) => {
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
                     }).catch(e => {
