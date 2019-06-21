@@ -1,12 +1,15 @@
 export interface IAuth {
     authtoken: string | null,
-    error: ISignupError | null
+    error: ISignupError | null,
+    onToggleSideBar: boolean | null,
+    range1: number | null, range2: number | null
 }
 
 export interface IReduxState {
     auth: IAuth,
     group?: IGroup,
-    buyOrSell?: any[]
+    buyOrSell?: any[],
+    webrtc?: any[]
 }
 
 export interface ISignup {
@@ -38,13 +41,25 @@ export interface IGroup {
     error: Error | null
 }
 
+export interface IWebrtc {
+    connected: boolean,
+    room_joined: boolean,
+    socketids: any,
+    socketId: string,
+    message: any,
+    datachan_stat: boolean,
+}
+
+
 export interface IGroupsInfo {
     _id: string,
     groupName: string,
     creator: string,
     createdAt: any,
     users: string[],
-    members: any[]
+    members: any[],
+    socketid?: string,
+    connected?: boolean
 }
 
 export interface ICreateGrpError extends Error { }

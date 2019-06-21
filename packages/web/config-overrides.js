@@ -51,5 +51,14 @@ module.exports = function override(config, env) {
     })
   )
 
+  config.plugins.push(
+    env === 'production' ? new webpack.DefinePlugin({
+      'process.env.SOCKET_SERVER_API': JSON.stringify(process.env.SOCKET_SERVER_API || 'http://104.248.145.85:4443/')
+    }) :
+    new webpack.DefinePlugin({
+      'process.env.SOCKET_SERVER_API': JSON.stringify(process.env.SOCKET_SERVER_API || 'http://localhost:4443/')
+    })
+  )
+
   return config
 }

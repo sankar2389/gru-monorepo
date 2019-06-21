@@ -52,7 +52,7 @@ export const signupUser = (payload: ISignup) => {
     const { username, email, password } = payload;
     return (dispatch: Function) => {
         axios
-            .post(CMS_API +  'auth/local/register', {
+            .post(CMS_API + 'auth/local/register', {
                 username: username,
                 email: email,
                 password: password
@@ -77,6 +77,20 @@ export const logoutUser = () => {
         logout(dispatch, '');
     }
 }
+
+
+
+export const toggleSideBar = (onToggleSideBar: Boolean, range1: number, range2: number) => {
+    return async (dispatch: Function) => {
+        dispatch({
+            type: "TOGGLE_SIDEBAR",
+            payload: onToggleSideBar,
+            range1: range1,
+            range2: range2
+        })
+    }
+}
+
 export const forgotPass = (payload: IForgotPass) => {
     const { email } = payload;
     return (dispatch: Function) => {
@@ -89,7 +103,6 @@ export const forgotPass = (payload: IForgotPass) => {
                 resetSuccess(dispatch, response);
             })
             .catch((error: AxiosError) => {
-                console.log(error.response);
                 const err: any = error.response!.data
                 resetError(dispatch, err);
             })

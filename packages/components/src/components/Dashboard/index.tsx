@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet } from "react-native"
-import { RateCard, UserRatesCard, CalculateRate} from "../common";
+import { RateCard, UserRatesCard, CalculateRate } from "../common";
 import { logoutUser } from '../../actions';
 import { connect } from "react-redux";
 import { IReduxState, InterfaceGRC } from "../../types";
@@ -13,24 +13,13 @@ interface IProps extends RouteComponentProps {
 }
 
 class Dashboard extends Component<IProps> {
-    
+
     constructor(props: IProps) {
         super(props);
     }
     async componentDidMount() {
-        /*const client = createApolloClient('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTU1NTg5MTkzLCJleHAiOjE1NTgxODExOTN9.DkdcPF0yek5FaHiDNrZOAqJhUMnZpLu_hi1Sg-83yho');
-        await client.query({
-          query: gql`
-          query {
-            groups {
-                groupName
-              }
-          }`        
-        }).then((res: any) => {
-            console.log('res :',res.data);
-        });*/
-      }
-    
+    }
+
     handleClicked() {
         console.log("Button clicked");
     }
@@ -79,7 +68,7 @@ const styles = StyleSheet.create({
         marginTop: 70,
         marginLeft: 70,
         padding: 50,
-        display: "flex"
+        display: "flex",
     },
     rateCardsContainer: {
         display: "flex",

@@ -1,28 +1,36 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Modal, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TextInput, AsyncStorage, Image, TouchableOpacity, Platform } from "react-native";
 import { IReduxState } from "../../types";
 import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
 
+
 interface IProps extends RouteComponentProps {
     logoutUser: () => void,
-    clicked?: () => void
+    clicked?: () => void,
+    toggleSideBar: (onToggleSideBar: Boolean, range1: number, range2: number) => void
+    removeSocketIdInUser: (_id: any) => void
 };
 interface IState {
     search: string | undefined,
     viewBuySell: boolean,
     mouseEvent: string | undefined,
+    dWidth: any,
+    onToggleSideBar: boolean
 }
 
 class NavbarComponent extends Component<IProps, IState> {
     state: IState = {
         search: undefined,
         viewBuySell: false,
-        mouseEvent: ""
+        mouseEvent: "",
+        dWidth: "",
+        onToggleSideBar: true
     }
     constructor(props: IProps) {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
+        this.onPressToggleSideBar = this.onPressToggleSideBar.bind(this);
     }
     handleLogout() {
         this.props.logoutUser();
@@ -39,18 +47,66 @@ class NavbarComponent extends Component<IProps, IState> {
         this.setState({ mouseEvent: " " })
     }
 
+    componentWillMount() {
+        this.updateDimension()
+    }
+
+    componentDidMount() {
+        window.addEventListener("resize", this.updateDimension)
+    }
+    updateDimension = () => {
+        this.setState({
+            dWidth: window.innerWidth
+        }, () => {
+            if (this.state.dWidth > 700) {
+                this.props.toggleSideBar(true, 0, 20)
+                this.setState({
+                    onToggleSideBar: true
+                })
+            }
+        })
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimension)
+    }
+
+    onPressToggleSideBar() {
+        this.setState({
+            onToggleSideBar: !this.state.onToggleSideBar
+        }, () => {
+            if (this.state.onToggleSideBar) {
+                this.props.toggleSideBar(this.state.onToggleSideBar, -70, 0)
+            } else {
+                this.props.toggleSideBar(this.state.onToggleSideBar, 0, -70)
+            }
+
+        })
+
+    }
+    async componentWillReceiveProps(newProps: any) {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        if (newProps.auth) {
+            this.setState({
+                onToggleSideBar: newProps.auth.onToggleSideBar
+            })
+        }
+        if (!newProps.webrtc.connected) {
+            this.props.removeSocketIdInUser(user._id)
+        }
+    }
+
     render() {
         const { navbar, headerText, inputStyle, navButtonCtnr, navButtonGroup, navButton,
             navButtonCtnrAdd, navButtonText, mouseOverBackgroundColor } = styles;
         return (
-            <View style={navbar}>
-                <Text style={headerText}>GRU</Text>
+            <View style={this.state.dWidth <= 700 ? styles.smNavbar : navbar}>
+                <Text style={this.state.dWidth <= 700 ? styles.smHeaderText : headerText}>GRU</Text>
                 <TextInput
                     value={this.state.search}
                     placeholder={'Search'}
-                    style={inputStyle}
+                    style={this.state.dWidth <= 700 ? styles.smInputStyle : inputStyle}
                 />
-                <View style={navButtonGroup}>
+                <View style={this.state.dWidth <= 700 ? styles.smNavButtonGroup : navButtonGroup}>
                     <View style={navButtonCtnrAdd}>
                         <TouchableOpacity onPress={this.showBuySell}>
                             <Image
@@ -96,14 +152,21 @@ class NavbarComponent extends Component<IProps, IState> {
 
                         </div>
                     </View>
+
+
+
                 </View>
+                {this.state.dWidth <= 700 ?
+                    <TouchableOpacity onPress={this.onPressToggleSideBar} style={{ position: "absolute", top: 15, right: 20, }}>
+                        <Text>{this.state.onToggleSideBar ? "Hide" : "Show"}</Text>
+                    </TouchableOpacity> : <Text />}
             </View >
         );
     }
 }
 
-const mapStateToProps = ({ auth }: any): IReduxState => {
-    return { auth };
+const mapStateToProps = ({ auth, webrtc }: any): IReduxState => {
+    return { auth, webrtc };
 };
 
 export const Navbar = connect<IReduxState>(mapStateToProps, {})(NavbarComponent);
@@ -119,24 +182,46 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        paddingLeft: 150
+        paddingLeft: 100
+    },
+    smNavbar: {
+        width: "100%",
+        height: 164,
+        backgroundColor: "#ffffff",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        padding: 10
     },
     headerText: {
         color: '#d72b2b',
         fontSize: 40
     },
+    smHeaderText: {
+        color: '#d72b2b',
+        fontSize: 30
+    },
+
     inputStyle: {
         height: 30,
         borderColor: '#ededed',
+        borderRadius: 20,
         borderBottomWidth: 1,
         margin: 15,
         backgroundColor: "rgba(226,226,226,0.21)",
-        borderRadius: 20,
-        padding: 20,
-        width: "20%",
         position: "absolute",
         top: 0,
-        left: "30%"
+        left: "30%",
+        width: 170,
+        padding: 10
+    },
+    smInputStyle: {
+        height: 10,
+        borderColor: '#ededed',
+        borderBottomWidth: 1,
+        backgroundColor: "rgba(226,226,226,0.21)",
+        borderRadius: 20,
+        padding: 15,
+        width: 150,
     },
     navButtonCtnr: {
         display: 'flex',
@@ -164,6 +249,11 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 0,
         right: 0
+    },
+    smNavButtonGroup: {
+        paddingTop: 5,
+        flexDirection: "row",
+        alignItems: "flex-start",
     },
     navButton: {
         width: 30,

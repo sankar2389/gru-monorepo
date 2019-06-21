@@ -2,6 +2,15 @@
 
 A quick description of gru.
 
+#### Run frontend with API
+```
+CMS_API=http://104.248.145.85:1337/ yarn dev:web
+```
+#### Run backend strapi cms
+```
+yarn dev:cms
+```
+
 ### **GraphQL API**
 
 ##### `get groups`
