@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
-
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, TextInput } from "react-native";
+import { fetchGroupQA } from "../../actions"
 type IProps = any
 
 interface IState {
-    dWidth: number
+    dWidth: number;
+    questionData: any[]
 }
 
 class GroupDashboard extends Component<IProps, IState> {
@@ -13,12 +14,14 @@ class GroupDashboard extends Component<IProps, IState> {
         super(props)
 
         this.state = {
-            dWidth: 0
+            dWidth: 0,
+            questionData: []
         }
     }
 
     componentDidMount() {
-        window.addEventListener("resize", this.updateDimension)
+        this.props.fetchGroupQA(this.props.match.params.groupName)
+        window.addEventListener("resize", this.updateDimension);
     }
 
     componentWillMount() {
@@ -45,18 +48,56 @@ class GroupDashboard extends Component<IProps, IState> {
                     </Text>
                         <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Group Q/A</Text>
                     </View>
+
+                    {/*  Table header */}
+
+                    <View style={styles.tableHeaderStyles}>
+                        <View style={{ flex: 2 }}>
+                            <Text style={styles.tableColumnText}>Title</Text>
+                        </View>
+                        <View style={styles.tableColumnView}>
+                            <Text style={styles.tableColumnText}>Creator</Text>
+                        </View>
+                        <View style={styles.tableColumnView}>
+                            <Text style={styles.tableColumnText}>Answers</Text>
+                        </View>
+                        <View style={styles.tableColumnView}>
+                            <Text style={styles.tableColumnText}>Date</Text>
+                        </View>
+
+                    </View>
+
+                    {/* ** Display Questions Table */}
+                    <View style={styles.tableRowStyles}>
+                        <View style={{ flex: 2 }}>
+                            <Text style={styles.tableRowText}>Title</Text>
+                        </View>
+                        <View style={styles.tableRowView}>
+                            <Text style={styles.tableRowText}>Creator</Text>
+                        </View>
+                        <View style={styles.tableRowView}>
+                            <Text style={styles.tableRowText}>Answers</Text>
+                        </View>
+                        <View style={styles.tableRowView}>
+                            <Text style={styles.tableRowText}>Date</Text>
+                        </View>
+
+                    </View>
+
                 </ScrollView>
-
-                {/* ** Display Questions Table */}
-
-                
 
             </View>
         )
     }
 }
 
-export default connect()(GroupDashboard);
+function mapStateToProps({ groups }: any) {
+    return {
+        groups
+    }
+}
+
+export default connect(mapStateToProps, { fetchGroupQA })(GroupDashboard);
 
 const styles = StyleSheet.create({
     mainViewContainer: { marginLeft: 70, height: 810, marginTop: 70 },
@@ -86,7 +127,7 @@ const styles = StyleSheet.create({
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
     smHeaderView: { flexDirection: "column", marginBottom: 20 },
     pageOpacity: {
-        opacity: 0.2
+        opacity: 1
     },
     headerSmallText: { marginBottom: 50, color: "#686662", fontSize: 18 },
     smHeaderSmallText: { marginBottom: 20, color: "#686662", fontSize: 18 },
@@ -97,4 +138,73 @@ const styles = StyleSheet.create({
     buyAndSellPageHeadText: {
         fontSize: 16
     },
+    textItemView: {
+        flex: 1,
+        flexWrap: "wrap",
+        justifyContent: "space-around"
+    },
+    nestedGroupListView: {
+        padding: 8,
+        backgroundColor: '#ffffff',
+        marginBottom: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap"
+    },
+    smNestedGroupListView: {
+        padding: 8,
+        backgroundColor: '#ffffff',
+        marginBottom: 10,
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap"
+    },
+    buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, alignSelf: "center" },
+    userNameText: { flexWrap: "wrap", paddingTop: 10, fontWeight: "900", fontSize: 14 },
+
+    tableHeaderStyles: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100vw",
+        flexDirection: "row",
+        flexWrap: "nowrap",
+        backgroundColor: 'transparent',
+        margin: 20,
+        color: "#888",
+        borderBottomWidth: 1,
+        borderBottomColor: "#aaa",
+        padding: 10
+
+    },
+    tableColumnView: {
+        flex: 1,
+    },
+    tableColumnText: {
+        fontSize: 21
+    },
+    tableRowStyles: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100vw",
+        flexDirection: "row",
+        flexWrap: "nowrap",
+        backgroundColor: '#fff',
+        margin: 20,
+        color: "#555",
+        padding: 10
+
+    },
+    tableRowView: {
+        flex: 1,
+    },
+    tableRowText: {
+        fontSize: 21
+    }
+
+
+
 })

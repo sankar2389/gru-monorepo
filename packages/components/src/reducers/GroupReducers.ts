@@ -23,6 +23,11 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
             return { ...state, ...initState, error: action.payload };
         case 'GRPS_LST':
             return { ...state, ...initState, ...action.payload };
+        case 'GET_GRP_QA':
+            return {
+                ...state,
+                groups: [...state.groups, ...action.payload]
+            };
 
         default:
             return state;
