@@ -30,7 +30,6 @@ interface IState {
     selectedPaginatateNumber: number,
     socketConnection: boolean,
     dWidth: any,
-    connectionMessage: boolean
 }
 
 
@@ -39,7 +38,6 @@ class GroupView extends Component<IProps, IState> {
         groupList: [],
         groupPageCount: [],
         modalVisible: false,
-        connectionMessage: true,
         groupName: "",
         updateGroup: "",
         startDataOnPage: 0,
@@ -404,8 +402,8 @@ class GroupView extends Component<IProps, IState> {
                         </View> : <Text />}
                     {/* PAGINATION VIEW END */}
 
-                    {this.state.connectionMessage ?
-                        <CustomeMessage message={"You are connected to socket"} openMessage={this.state.connectionMessage} />
+                    {this.state.socketConnection ?
+                        <CustomeMessage message={"You are connected to socket"} openMessage={this.state.socketConnection} />
                         :
                         <Text />
                     }
