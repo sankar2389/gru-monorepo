@@ -1,0 +1,39 @@
+{
+  "connection": "default",
+  "collectionName": "questions",
+  "info": {
+    "name": "questions",
+    "description": ""
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "title": {
+      "default": "",
+      "minLength": 10,
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "default": "",
+      "minLength": 40,
+      "type": "text",
+      "required": true
+    },
+    "creator": {
+      "default": "",
+      "type": "json",
+      "required": true
+    },
+    "comments": {
+      "default": "",
+      "type": "json"
+    },
+    "groupID": {
+      "default": "",
+      "type": "json",
+      "required": true
+    }
+  }
+}
