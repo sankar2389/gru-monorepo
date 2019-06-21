@@ -6,7 +6,7 @@ interface IProps {
     message: string,
     openMessage: boolean,
     clearMessageState: () => void
-    //type: string
+    type: string
 }
 
 interface IState {
@@ -14,6 +14,7 @@ interface IState {
     animatedValue: any,
     range1: number | null,
     range2: number | null,
+    type: string
 }
 
 class CustomMessage extends React.Component<IProps, IState> {
@@ -25,24 +26,25 @@ class CustomMessage extends React.Component<IProps, IState> {
         animatedValue: new Animated.Value(0),
         range1: 100,
         range2: 0,
+        type: ""
     }
     componentDidMount() {
         this.openAndCloseCustomMessage()
     }
 
-    componentWillUnmount() {
-        this.openAndCloseCustomMessage()
-    }
-
     openAndCloseCustomMessage = () => {
         if (this.props.openMessage) {
-            this.setState({ connectionMessage: true })
+            this.setState({
+                connectionMessage: true,
+                type: this.props.type
+            })
             this.animate(Easing.out(Easing.quad))
         }
         setTimeout(() => {
             this.props.clearMessageState()
             this.setState({
                 connectionMessage: false,
+                type: ""
             })
         }, 4000);
     }
@@ -55,9 +57,12 @@ class CustomMessage extends React.Component<IProps, IState> {
                 toValue: 1,
                 duration: 1000,
                 easing,
-                //useNativeDriver: true,
             }
         ).start()
+    }
+
+    componentWillUnmount() {
+        this.openAndCloseCustomMessage()
     }
 
     onPressCloseCustomMessage = () => {
@@ -74,7 +79,7 @@ class CustomMessage extends React.Component<IProps, IState> {
                 }),
             }],
         }}>
-            <View style={styles.animatedView}>
+            <View style={this.state.type === "error" ? styles.errorMessage : styles.animatedView}>
                 <View style={styles.buttonView}>
                     <TouchableOpacity style={{ alignItems: "flex-end" }} onPress={() => this.onPressCloseCustomMessage()}>
                         <Image
@@ -96,6 +101,7 @@ const styles = StyleSheet.create({
     animatedView: {
         backgroundColor: "#2d2d2d", position: "absolute", bottom: 10, borderRadius: 5, right: 20,
     },
+    errorMessage: { backgroundColor: "red", position: "absolute", bottom: 10, borderRadius: 5, right: 20, },
     buttonView: { backgroundColor: "black", padding: 5, borderTopRightRadius: 5, borderTopLeftRadius: 5 },
     messageText: { color: "#ffffff", padding: 5 }
 })

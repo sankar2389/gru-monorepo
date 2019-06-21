@@ -153,9 +153,12 @@ export const getAllBuyData = (start: number = 0) => {
                         }
                     }).then((res: any) => {
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
-                    }).catch(e => {
-                        console.log("grapql error", e)
-                        throw e;
+                    }).catch(err => {
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
                     });
                 }
             })
@@ -189,9 +192,12 @@ export const getAllSellData = (start: number = 0) => {
                         }
                     }).then((res: any) => {
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
-                    }).catch(e => {
-                        console.log("grapql error", e)
-                        throw e;
+                    }).catch(err => {
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
                     });
                 }
             })
@@ -281,7 +287,13 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                             }
                                         }
                                     }).then(buy => {
-                                        alert("One bid is created on Buy")
+                                        console.log("buy", buy)
+                                        dispatch({
+                                            type: "BUY_OR_SELL_BID_CREATED_SUCCESS",
+                                            messageType: "success",
+                                            message: "Bid is created successfully on buy",
+                                            payload: buy
+                                        })
                                     }).catch(err => {
                                         console.log(err.message)
                                     })

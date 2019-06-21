@@ -408,6 +408,7 @@ class GroupView extends Component<IProps, IState> {
 
                     {this.state.socketConnection ?
                         <CustomeMessage
+                            type={"success"}
                             message={"You are connected to socket"}
                             openMessage={this.state.socketConnection}
                             clearMessageState={this.clearMessageState}

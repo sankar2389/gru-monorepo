@@ -358,6 +358,7 @@ class Chat extends Component<IProps, IState> {
                 </View>
                 {this.state.connectionMessage ?
                     <CustomeMessage
+                        type={"success"}
                         message={"You are connected to socket"}
                         openMessage={this.state.connectionMessage}
                         clearMessageState={this.clearMessageState}

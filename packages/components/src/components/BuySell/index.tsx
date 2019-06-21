@@ -51,6 +51,7 @@ interface IState {
     bidStartNumber: number,
     bidEndNumber: number,
     userId: string,
+    messageType: string,
     message: string,
     openCustomMessage: boolean
 
@@ -87,8 +88,9 @@ class BuySell extends Component<IProps> {
         bidQuantity: "",
         bidStartNumber: 0,
         bidEndNumber: 5,
+        messageType: "",
         message: "",
-        openCustomMessage: false
+        openCustomMessage: true
 
     }
     constructor(props: IProps) {
@@ -258,7 +260,6 @@ class BuySell extends Component<IProps> {
     }
 
     componentWillReceiveProps(newProps: any) {
-        console.log("props", newProps.buyOrSell)
         if (newProps.buyOrSell.buyOrSellData.buys !== undefined) {
             const { buyData } = this.state;
             this.setState({
@@ -284,6 +285,16 @@ class BuySell extends Component<IProps> {
         }
         if (newProps.buyOrSell.messageType === "success") {
             this.setState({
+                messageType: "success",
+                message: newProps.buyOrSell.message,
+                openCustomMessage: true
+            })
+            this.props.clearBuyOrSellReducer()
+        }
+        // type
+        if (newProps.buyOrSell.messageType === "error") {
+            this.setState({
+                messageType: "error",
                 message: newProps.buyOrSell.message,
                 openCustomMessage: true
             })
@@ -969,6 +980,7 @@ class BuySell extends Component<IProps> {
 
                 {this.state.message ?
                     <CustomeMessage
+                        type={this.state.messageType}
                         message={this.state.message}
                         openMessage={this.state.openCustomMessage}
                         clearMessageState={this.clearMessageState}
