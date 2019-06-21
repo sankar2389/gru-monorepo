@@ -460,7 +460,6 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "BUY_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.buyData.map((buyOrSell: any, index: number) => {
-                                // if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
                                     <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
