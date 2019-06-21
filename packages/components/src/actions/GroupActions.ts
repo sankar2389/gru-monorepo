@@ -27,7 +27,6 @@ const emitGroupsList = (dispatch: Function, response: any) => {
 
 /** Create Group */
 export const createGroup = (payload: IGroupsInfo) => {
-    //console.log("payload", payload)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -265,4 +264,128 @@ export const onUpdateGroup = (groupId: string, groupName: string, creator: strin
 
 }
 
+
+export const onAddUserToGroup = (groupId: any, user: any) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                        query($_id:String!) {
+                            groups(where:{_id:$_id}) {
+                                _id
+                              members
+                             }
+                          }
+                        `, variables: {
+                            "_id": groupId
+                        }
+                    }).then(group => {
+                        let members = group.data.groups[0].members
+                        members.push(user._id)
+                        client.mutate({
+                            mutation: gql`
+                             mutation ($input: updateGroupInput) {
+                                 updateGroup(input: $input) {
+                                  group {
+                                    _id,
+                                    groupName,
+                                    creator,
+                                    members,
+                                    createdAt
+                                  }
+                                }
+                              }
+                             `,
+                            variables: {
+                                "input": {
+                                    "where": {
+                                        "id": groupId
+                                    }, "data": {
+                                        "members": members
+                                    }
+                                }
+                            }
+                        }).then(group => {
+                            dispatch({
+                                type: "GROUP_MEMBER_UPDATE_SUCCESS",
+                                payload: group.data.updateGroup.group
+                            })
+                        })
+                    }).catch(err => {
+                        console.log(err.message)
+                    })
+                }
+            }).catch(err => {
+                console.log(err.message)
+            })
+    }
+
+}
+
+export const onRemoveUserFromGroup = (groupId: any, user: any) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                        query($_id:String!) {
+                            groups(where:{_id:$_id}) {
+                                _id
+                              members
+                             }
+                          }
+                        `, variables: {
+                            "_id": groupId
+                        }
+                    }).then(group => {
+                        let members = group.data.groups[0].members
+                        for (var i = 0; i < members.length; i++) {
+                            if (members[i] === user._id) {
+                                members.splice(i, 1);
+                            }
+                        }
+                        client.mutate({
+                            mutation: gql`
+                             mutation ($input: updateGroupInput) {
+                                 updateGroup(input: $input) {
+                                  group {
+                                    _id,
+                                    groupName,
+                                    creator,
+                                    members,
+                                    createdAt
+                                  }
+                                }
+                              }
+                             `,
+                            variables: {
+                                "input": {
+                                    "where": {
+                                        "id": groupId
+                                    }, "data": {
+                                        "members": members
+                                    }
+                                }
+                            }
+                        }).then(group => {
+                            dispatch({
+                                type: "GROUP_MEMBER_UPDATE_SUCCESS",
+                                payload: group.data.updateGroup.group
+                            })
+                        })
+                    }).catch(err => {
+                        console.log(err.message)
+                    })
+                }
+            }).catch(err => {
+                console.log(err.message)
+            })
+    }
+
+}
 

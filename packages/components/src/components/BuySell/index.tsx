@@ -405,7 +405,9 @@ class BuySell extends Component<IProps> {
         window.removeEventListener("resize", this.updateDimension)
     }
 
+    onClikcSetGoldOrSilver = (type: string) => {
 
+    }
 
     render() {
         const { innerContainer } = styles;
@@ -611,6 +613,7 @@ class BuySell extends Component<IProps> {
                                             paddingBottom: 20, borderRadius: 5, marginRight: 30
                                         }}>
                                             <input type="radio" name="goldOrSilver"
+                                                onChange={() => this.onClikcSetGoldOrSilver("gold")}
                                             />
                                             Gold
                                      </label>
@@ -620,11 +623,11 @@ class BuySell extends Component<IProps> {
                                             paddingBottom: 20, borderRadius: 5,
                                         }}>
                                             <input type="radio" name="goldOrSilver"
+                                                onChange={() => this.onClikcSetGoldOrSilver("silver")}
                                             />
                                             Silver
                                      </label>
                                     </View>
-
                                     <View style={styles.textInput}>
                                         <TextInput
                                             autoFocus={true}

@@ -6,7 +6,8 @@ const initState: IAuth = {
     error: null,
     onToggleSideBar: null,
     range1: null,
-    range2: null
+    range2: null,
+    users: []
 }
 export default (state: IAuth = initState, action: AnyAction): IAuth => {
     switch (action.type) {
@@ -30,6 +31,11 @@ export default (state: IAuth = initState, action: AnyAction): IAuth => {
                 onToggleSideBar: action.payload,
                 range1: action.range1,
                 range2: action.range2
+            };
+        case "FIND_USER":
+            return {
+                ...state,
+                users: action.payload
             };
         default:
             return state;
