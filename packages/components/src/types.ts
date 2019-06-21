@@ -84,6 +84,7 @@ export interface IStrapiUser {
 
 export interface IBuyOrSell {
     buyOrSellData: any[],
+    bids: any[]
 }
 // export interface ICreateSell {
 //     buyOrsell: string,

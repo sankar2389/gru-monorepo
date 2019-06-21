@@ -5,6 +5,7 @@
       "connector": "strapi-hook-mongoose",
       "settings": {
         "client": "mongo",
+        "database": "gru",
         "host": "192.168.0.13",
         "username": "",
         "password": ""

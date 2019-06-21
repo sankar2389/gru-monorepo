@@ -26,7 +26,8 @@ interface IState {
     users: any,
     group: any
     startUserOnPage: number,
-    endUserOnPage: number
+    endUserOnPage: number,
+
 }
 
 class UpdateGroup extends Component<IProps, IState> {
@@ -37,8 +38,7 @@ class UpdateGroup extends Component<IProps, IState> {
         group: this.props.editedGroup,
         users: [],
         startUserOnPage: 0,
-        endUserOnPage: 2
-
+        endUserOnPage: 2,
     }
     constructor(props: IProps) {
         super(props);
@@ -57,7 +57,6 @@ class UpdateGroup extends Component<IProps, IState> {
     onPressSearchUserByUserName = (searchString: string) => {
         this.setState({ searchMemberText: searchString })
         this.props.searchUser(searchString)
-
     }
 
     onPressAddUserToGroup = async (user: any) => {

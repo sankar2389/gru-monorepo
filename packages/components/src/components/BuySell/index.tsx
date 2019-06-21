@@ -4,24 +4,26 @@ import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Imag
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
 import io from 'socket.io-client';
-import { createBuyOrSell, getAllBuyData, getAllSellData, onUpdateBuyPrice, onUpdateSellPrice } from '../../actions';
-import axios from "axios";
+import { createBuyOrSell, getAllBuyData, getAllSellData, onCreateBids, getBidsByBidId, bidAcceptOrReject } from '../../actions';
 const CMS_API = process.env.CMS_API;
+import moment from "moment";
+import axios from "axios";
 
 interface IProps extends RouteComponentProps {
-    createBuyOrSell: (buyOrsell: string, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
+    createBuyOrSell: (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
     getAllBuyData: (start?: number) => void,
     getAllSellData: (start?: number) => void,
-    onUpdateBuyPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
-    onUpdateSellPrice: (_id: any, buyOrSellPrice: number, creator: string) => void,
     buyOrSell: any,
-
+    onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string, bidQuantity: number, totalPrice: number) => void,
+    getBidsByBidId: (bids: any) => void,
+    bidAcceptOrReject: (type: string, status: string, _id: string, buyOrSellId: string) => void
 };
 
 interface IState {
     modalVisible: boolean,
     buyOrSellPrice: string,
     buyOrSellRadioOption: string,
+    buyOrSellType: string,
     dropDown: number,
     buyOrSellData: any[],
     buyData: any[],
@@ -33,10 +35,21 @@ interface IState {
     buysCount: number,
     sellsCount: number,
     selectedPaginatateNumber: number,
-    editPrice: boolean,
-    editIndex: any,
     userName: string,
     dWidth: number,
+    unit: string,
+    quantity: number,
+    bidModalVisible: boolean,
+    bidOnBuyOrSell: string,
+    buyOrSellId: string,
+    expandBidView: boolean,
+    buyOrSellIndex: number,
+    bids: any,
+    bidQuantity: string,
+    bidStartNumber: number,
+    bidEndNumber: number,
+    userId: string
+
 }
 
 class BuySell extends Component<IProps> {
@@ -44,6 +57,7 @@ class BuySell extends Component<IProps> {
         modalVisible: false,
         buyOrSellPrice: "",
         buyOrSellRadioOption: "",
+        buyOrSellType: "",
         dropDown: -1,
         buyOrSellData: [],
         buyData: [],
@@ -55,10 +69,21 @@ class BuySell extends Component<IProps> {
         buysCount: 0,
         sellsCount: 0,
         selectedPaginatateNumber: 1,
-        editPrice: false,
-        editIndex: "",
+        userId: "",
         userName: "",
         dWidth: 700,
+        unit: "mg",
+        quantity: 0,
+        bidModalVisible: false,
+        bidOnBuyOrSell: "",
+        buyOrSellId: "",
+        expandBidView: false,
+        buyOrSellIndex: -1,
+        bids: [],
+        bidQuantity: "",
+        bidStartNumber: 0,
+        bidEndNumber: 5
+
     }
     constructor(props: IProps) {
         super(props);
@@ -80,7 +105,8 @@ class BuySell extends Component<IProps> {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         await this.props.getAllBuyData()
         this.setState({
-            userName: user.username
+            userName: user.username,
+            userId: user._id
         })
         this.getTotalPages()
         window.addEventListener("resize", this.updateDimension)
@@ -174,8 +200,11 @@ class BuySell extends Component<IProps> {
     onCancelModal = () => {
         this.setState({
             modalVisible: false,
+            bidModalVisible: false,
             buyOrSellPrice: "",
-            buyOrSellRadioOption: ""
+            buyOrSellRadioOption: "",
+            buyOrSellType: "",
+            bidQuantity: ""
         })
     }
 
@@ -189,20 +218,22 @@ class BuySell extends Component<IProps> {
         const isNum = /^[0-9\b]+$/;
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         let buyOrSellPrice = this.state.buyOrSellPrice
-        if (isNum.test(buyOrSellPrice) !== true) {
+        if (this.state.buyOrSellType.length <= 0) {
+            alert("Please select gold or silver")
+        } else if (isNum.test(buyOrSellPrice) !== true) {
             alert("Please enter number only")
         }
         else if (this.state.buyOrSellRadioOption.length <= 0) {
-            alert("Please select either Buy or Sell")
+            alert("Please select any one Buy or Sell")
         }
         else {
-
             let buyOrsell = this.state.buyOrSellRadioOption
             let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
-            let creator = user.email
+            let creator = user._id
             let creatorObject = user
-
-            this.props.createBuyOrSell(buyOrsell, buyOrSellPrice, creator, creatorObject)
+            let unit = this.state.unit
+            let quantity = this.state.quantity
+            this.props.createBuyOrSell(buyOrsell, this.state.buyOrSellType, unit, quantity, buyOrSellPrice, creator, creatorObject)
             this.onCancelModal();
             this.getTotalPages()
         }
@@ -239,19 +270,62 @@ class BuySell extends Component<IProps> {
                 this.getTotalPages()
             });
         }
+        if (newProps.buyOrSell.bids) {
+            this.setState({
+                bids: newProps.buyOrSell.bids
+            })
+        }
+
+    }
+
+
+    onLoadPagePagination = (dLength: any) => {
+        let buyOrSellPageCount = []
+        let dataLength = dLength
+        let totalpage = dataLength / this.state.dataLimitOnPage
+        let count = dataLength % this.state.dataLimitOnPage
+        if (count !== 0) {
+            totalpage = totalpage + 1
+            if (totalpage > 1) {
+                for (let i = 1; i <= totalpage; i++) {
+                    buyOrSellPageCount.push(i)
+                }
+            }
+        } else {
+            if (totalpage > 1) {
+                for (let i = 1; i <= totalpage; i++) {
+                    buyOrSellPageCount.push(i)
+                }
+            }
+        }
+        this.setState({
+            buyOrSellPageCount: buyOrSellPageCount
+        })
     }
 
     // Get all sell  data on press
     onPressGetSellDataBYCreator = async () => {
         this.setState({
-            selectedPaginatateNumber: 1
+            startDataOnPage: 0,
+            endDataOnPage: 10,
+            dataLimitOnPage: 10,
+            selectedPaginatateNumber: 1,
+            expandBidView: false,
+            buyOrSellIndex: -1,
+            bids: []
         })
         this.props.getAllSellData();
     }
     // get all buy data on press
     onPressGetBuyDataBYCreator = async () => {
         this.setState({
-            selectedPaginatateNumber: 1
+            startDataOnPage: 0,
+            endDataOnPage: 10,
+            dataLimitOnPage: 10,
+            selectedPaginatateNumber: 1,
+            expandBidView: false,
+            buyOrSellIndex: -1,
+            bids: []
         })
         this.props.getAllBuyData()
     }
@@ -325,71 +399,12 @@ class BuySell extends Component<IProps> {
         }
     }
 
-    onPressEditBuyPrice = (price: number, index: number) => {
-        if (price) {
-            this.setState({
-                buyOrSellPrice: price.toString(),
-                editPrice: true,
-                editIndex: index
-            })
-        } else {
-            this.setState({
-                buyOrSellPrice: "",
-                editPrice: true,
-                editIndex: index
-            })
-        }
-
-    }
-
-    async onPressUpdateBuyPrice(_id: any) {
-        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        const isNum = /^[0-9\b]+$/;
-        if (isNum.test(this.state.buyOrSellPrice) !== true || this.state.buyOrSellPrice.length <= 0) {
-            alert("Please enter number only")
-        }
-        else {
-            let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
-            this.props.onUpdateBuyPrice(_id, buyOrSellPrice, user.email)
-            this.setState({
-                editPrice: false,
-                editIndex: ""
-            })
-
-        }
-    }
-
-    onPressEditSellPrice = (price: number, index: number) => {
-        if (price) {
-            this.setState({
-                buyOrSellPrice: price.toString(),
-                editPrice: true,
-                editIndex: index
-            })
-        } else {
-            this.setState({
-                buyOrSellPrice: "",
-                editPrice: true,
-                editIndex: index
-            })
-        }
-    }
-
-    async onPressUpdateSellPrice(_id: any) {
-        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
-        const isNum = /^[0-9\b]+$/;
-        if (isNum.test(this.state.buyOrSellPrice) !== true || this.state.buyOrSellPrice.length <= 0) {
-            alert("Please enter number only")
-        }
-        else {
-            let buyOrSellPrice = parseInt(this.state.buyOrSellPrice)
-            this.props.onUpdateSellPrice(_id, buyOrSellPrice, user.email)
-            this.setState({
-                editPrice: false,
-                editIndex: ""
-            })
-
-        }
+    onPressSetBidPrice = (bidOn: string, buyOrsellId: string) => {
+        this.setState({
+            bidModalVisible: true,
+            bidOnBuyOrSell: bidOn,
+            buyOrSellId: buyOrsellId
+        })
     }
 
     // CHECKPAGE LENGTH
@@ -406,48 +421,93 @@ class BuySell extends Component<IProps> {
     }
 
     onClikcSetGoldOrSilver = (type: string) => {
+        this.setState({ buyOrSellType: type })
+    }
 
+    onPressCreateBids = async () => {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        let bidsPrice = parseInt(this.state.buyOrSellPrice)
+        let buyOrSellId = this.state.buyOrSellId
+        let bidQuantity = parseInt(this.state.bidQuantity)
+        if ((bidsPrice && user._id) && bidQuantity) {
+            let totalPrice = bidsPrice * bidQuantity
+            this.props.onCreateBids(user._id, bidsPrice, buyOrSellId, this.state.bidOnBuyOrSell, bidQuantity, totalPrice)
+            this.onCancelModal()
+        }
+    }
+
+    onPressExpandedBid = (buyOrSell: any, index: number) => {
+        if (buyOrSell.bids.length > 0) {
+            this.props.getBidsByBidId(buyOrSell.bids)
+            this.setState({
+                expandBidView: true,
+                buyOrSellIndex: index,
+                bids: []
+            })
+        } else {
+            alert("Bids not found")
+        }
+
+    }
+
+    bidsNextOrPrevious = (mode: string) => {
+        if (mode === "next") {
+            this.setState({
+                bidStartNumber: this.state.bidStartNumber + 5,
+                bidEndNumber: this.state.bidEndNumber + 5,
+            })
+        }
+        if (mode === "previous") {
+            this.setState({
+                bidStartNumber: this.state.bidStartNumber - 5,
+                bidEndNumber: this.state.bidEndNumber - 5,
+            })
+        }
+    }
+
+    bidActionButtonFunc = (type: string, _id: string, buyOrSellId: string) => {
+        this.props.bidAcceptOrReject(type, "closed", _id, buyOrSellId)
     }
 
     render() {
         const { innerContainer } = styles;
+        const { dWidth, modalVisible, dataFromCollection, buyData, sellData, buyOrSellIndex, bids, bidStartNumber, bidEndNumber } = this.state;
         return (
-            <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
-                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
+            <View style={dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
+                <ScrollView style={dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     <View style={{ alignItems: "flex-start" }}>
                         <Text style={styles.headerBuyAndSell}>
                             Buy / Sell
                     </Text>
-                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Billion user gold rates</Text>
+                        <Text style={dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Bullion user gold rates</Text>
                     </View>
 
-
-                    <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
-                        <View style={this.state.dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
+                    <View style={modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
+                        <View style={dWidth <= 700 ? styles.smHeaderView : styles.headerView}>
                             <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                                 <TouchableOpacity onPress={this.onPressGetBuyDataBYCreator} style={this.state.dataFromCollection === "BUY_DATA" ?
                                     styles.buyOrSellButtonTab : styles.blankTextStyle
                                 }>
-                                    <Text style={this.state.dataFromCollection === "BUY_DATA" ?
+                                    <Text style={dataFromCollection === "BUY_DATA" ?
                                         [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>
-                                        BUY({this.state.buysCount})
+                                        BUY({buyData.length})
                                     </Text>
                                 </TouchableOpacity>
                                 <Text style={styles.buyAndSellPageHeadText}> / </Text>
-                                <TouchableOpacity onPress={this.onPressGetSellDataBYCreator}
-                                    style={this.state.dataFromCollection === "SELL_DATA" ?
+                                <TouchableOpacity onPress={() => this.onPressGetSellDataBYCreator()}
+                                    style={dataFromCollection === "SELL_DATA" ?
                                         styles.buyOrSellButtonTab : styles.blankTextStyle
                                     }
                                 >
                                     <Text style={this.state.dataFromCollection === "SELL_DATA" ?
                                         [styles.buyAndSellPageHeadText, styles.selectedTextColor] : styles.buyAndSellPageHeadText}>
-                                        SELL({this.state.sellsCount})
+                                        SELL({sellData.length})
                                     </Text>
                                 </TouchableOpacity>
 
                             </View>
-                            <View style={this.state.dWidth <= 700 ? styles.addButtonOutterView : styles.blankTextStyle}>
-                                <TouchableOpacity disabled={this.state.modalVisible ? true : false}
+                            <View style={dWidth <= 700 ? styles.addButtonOutterView : styles.blankTextStyle}>
+                                <TouchableOpacity disabled={modalVisible ? true : false}
                                     style={styles.addButtom} onPress={() => this.onPressVisibleModal()}>
                                     <Text style={styles.addGroupText}>+ Create Buy Or Sell</Text>
                                 </TouchableOpacity>
@@ -460,71 +520,137 @@ class BuySell extends Component<IProps> {
                     {/* DISPLAY BUY */}
                     {
                         this.state.dataFromCollection === "BUY_DATA" &&
-                        <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
+                        <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone} >
                             {this.state.buyData.map((buyOrSell: any, index: number) => {
-                                // if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
+
                                 return (
-                                    <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
-                                        <View style={styles.imageAndNameView}>
-                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
-                                        </View>
-                                        <View style={styles.textItemView}>
-                                            <Text style={styles.buyOrSellText}>
-                                                asks
-                                            </Text>
-                                        </View>
-                                        <View style={styles.secontRowView}>
-                                            <View style={styles.textItemView}>
-                                                <Text style={styles.buyOrSellText}>
-                                                    550gm
-                                            </Text>
-                                            </View>
-                                            <View style={styles.textItemView}>
-                                                <Text style={styles.buyOrSellText}>
-                                                    Gold
-                                            </Text>
-                                            </View>
-                                            <View style={styles.textItemView}>
-                                                {this.state.editPrice && this.state.editIndex == index ?
-                                                    <TextInput
-                                                        autoFocus={true}
-                                                        value={this.state.buyOrSellPrice}
-                                                        style={styles.editTextInput}
-                                                        onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                                        onSubmitEditing={() => {
-                                                            this.onPressUpdateBuyPrice(buyOrSell._id)
-                                                        }}
-                                                    />
-                                                    :
+                                    <View key={index}>
+                                        <TouchableOpacity onPress={() => this.onPressExpandedBid(buyOrSell, index)}>
+                                            <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView}>
+                                                <View style={styles.imageAndNameView}>
+                                                    <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                    <Text style={styles.userNameText}>{buyOrSell.creatorObject.username}</Text>
+                                                </View>
+                                                <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
-                                                        &#8377; {buyOrSell.price}
-                                                    </Text>
-                                                }
-                                            </View>
-                                        </View>
-                                        {/* <Text style={styles.buyOrSellText}>
+                                                        asks
+                                                     </Text>
+                                                </View>
+                                                <View style={styles.secontRowView}>
+                                                    <View style={styles.textItemView}>
+                                                        <Text style={styles.buyOrSellText}>
+                                                            {buyOrSell.quantity}{buyOrSell.unit}
+                                                        </Text>
+                                                    </View>
+                                                    <View style={styles.textItemView}>
+                                                        <Text style={styles.buyOrSellText}>
+                                                            {buyOrSell.type}
+                                                        </Text>
+                                                    </View>
+                                                    <View style={styles.textItemView}>
+                                                        <Text style={styles.buyOrSellText}>
+                                                            &#8377; {buyOrSell.price}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                                {/* <Text style={styles.buyOrSellText}>
                                             {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
                                         </Text> */}
-                                        <View>
-                                            {this.state.editPrice && this.state.editIndex == index ?
-                                                <TouchableOpacity style={styles.saveButton}
-                                                    onPress={() => this.onPressUpdateBuyPrice(buyOrSell._id)}
-                                                >
-                                                    <Text style={styles.saveButtonText}>Save</Text>
-                                                </TouchableOpacity> :
-                                                <TouchableOpacity style={styles.setPriceButton}
-                                                    onPress={() => this.onPressEditBuyPrice(buyOrSell.price, index)}
-                                                >
-                                                    <Text>Set Price</Text>
-                                                </TouchableOpacity>
-                                            }
-                                        </View>
+                                                <View>
+                                                    <TouchableOpacity style={styles.setPriceButton}
+                                                        onPress={() => this.onPressSetBidPrice("buy", buyOrSell._id)}
+                                                    >
+                                                        <Text>Set Price</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+                                        </TouchableOpacity>
+
+                                        {/* EXPANDABLE BID START */}
+                                        {
+                                            this.state.expandBidView && buyOrSellIndex === index ?
+                                                <View>
+                                                    <View style={styles.firstBidViewStyle}>
+                                                        <Text style={styles.bidHeaderText}>User name</Text>
+                                                        <Text style={styles.bidHeaderText}>Bid Price</Text>
+                                                        <Text style={styles.bidHeaderText}>Bid Quantity</Text>
+                                                        <Text style={styles.bidHeaderText}>Total Price</Text>
+                                                        <Text style={styles.bidHeaderText}>Date</Text>
+                                                        <Text style={styles.bidHeaderText}>Action</Text>
+                                                    </View>
+
+                                                    {
+                                                        bids.length > 0 ?
+                                                            bids.map((bid: any, index: number) => {
+
+                                                                if (index >= bidStartNumber && index < bidEndNumber)
+                                                                    return (
+                                                                        <View key={index} style={styles.bidStyle}>
+                                                                            <Text style={{ flex: 1 }}>{bid.user[0].username}</Text>
+                                                                            <Text style={{ flex: 1 }}>{bid.bidPrice}</Text>
+                                                                            <Text style={{ flex: 1 }}>{bid.bidQuantity}</Text>
+                                                                            <Text style={{ flex: 1 }}>{bid.totalPrice}</Text>
+                                                                            <Text style={{ flex: 1 }}>{moment(bid.createdAt).format('LL')}</Text>
+                                                                            {
+                                                                                this.state.userId === buyOrSell.creator ?
+                                                                                    <View style={styles.actionButtonView}>
+                                                                                        <TouchableOpacity
+                                                                                            style={[styles.bidActionButton, styles.bidAcceptButton]}
+                                                                                            onPress={() => this.bidActionButtonFunc("buy", bid._id, buyOrSell._id)}
+                                                                                        >
+                                                                                            <Text style={styles.bidActionButtonText}>
+                                                                                                Accept
+                                                                                    </Text>
+                                                                                        </TouchableOpacity>
+                                                                                        <TouchableOpacity
+                                                                                            style={[styles.bidActionButton, styles.bidRejectButton]}
+                                                                                            onPress={() => this.bidActionButtonFunc("buy", bid._id, buyOrSell._id)}
+                                                                                        >
+                                                                                            <Text style={styles.bidActionButtonText}>
+                                                                                                Reject
+                                                                                    </Text>
+                                                                                        </TouchableOpacity>
+                                                                                    </View> :
+                                                                                    <View style={styles.actionButtonView} />
+                                                                            }
+
+                                                                        </View>
+                                                                    )
+                                                            }) : <Text />
+                                                    }
+                                                    {
+                                                        bids.length > 5 ?
+                                                            <View style={styles.bidPaginationView}>
+                                                                <TouchableOpacity style={styles.bidPreviousButton}
+                                                                    disabled={bidStartNumber === 0 ? true : false}
+                                                                    onPress={() => this.bidsNextOrPrevious("previous")}
+                                                                >
+                                                                    <Text style={styles.bidButtonText}>
+                                                                        {"<"}
+                                                                    </Text>
+                                                                </TouchableOpacity>
+                                                                <TouchableOpacity style={styles.bidNextButton}
+                                                                    disabled={bidEndNumber >= bids.length ? true : false}
+                                                                    onPress={() => this.bidsNextOrPrevious("next")}
+                                                                >
+                                                                    <Text style={styles.bidButtonText}>
+                                                                        {">"}
+                                                                    </Text>
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                            :
+                                                            <Text />
+                                                    }
+                                                </View>
+                                                :
+                                                <Text />
+                                        }
+                                        {/* EXPANDABLE BID END */}
                                     </View>
                                 )
-                                // }
 
                             })}
+
                         </View>
                     }
                     {/* DISPLAY SELL */}
@@ -532,67 +658,121 @@ class BuySell extends Component<IProps> {
                         this.state.dataFromCollection === "SELL_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                             {this.state.sellData.map((buyOrSell: any, index: number) => {
-                                // if (index >= this.state.startDataOnPage && index < this.state.endDataOnPage) {
                                 return (
-                                    <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
-                                        <View style={styles.imageAndNameView}>
-                                            <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                            <Text style={styles.userNameText}>{buyOrSell.creatorObject !== undefined ? buyOrSell.creatorObject.username : ""}</Text>
-                                        </View>
-                                        <View style={styles.textItemView}>
-                                            <Text style={styles.buyOrSellText}>
-                                                asks
-                                            </Text>
-                                        </View>
-                                        <View style={styles.secontRowView}>
-                                            <View style={styles.textItemView}>
-                                                <Text style={styles.buyOrSellText}>
-                                                    550gm
-                                            </Text>
-                                            </View>
-                                            <View style={styles.textItemView}>
-                                                <Text style={styles.buyOrSellText}>
-                                                    Gold
-                                            </Text>
-                                            </View>
-                                            <View style={styles.textItemView}>
-                                                {this.state.editPrice && this.state.editIndex == index ?
-                                                    <TextInput
-                                                        autoFocus={true}
-                                                        value={this.state.buyOrSellPrice}
-                                                        style={styles.editTextInput}
-                                                        onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                                        onSubmitEditing={() => {
-                                                            this.onPressUpdateSellPrice(buyOrSell._id)
-                                                        }}
-                                                    />
-                                                    :
+                                    <View key={index}>
+                                        <TouchableOpacity onPress={() => this.onPressExpandedBid(buyOrSell, index)}>
+                                            <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
+                                                <View style={styles.imageAndNameView}>
+                                                    <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
+                                                    <Text style={styles.userNameText}>{buyOrSell.creatorObject !== undefined ? buyOrSell.creatorObject.username : ""}</Text>
+                                                </View>
+                                                <View style={styles.textItemView}>
                                                     <Text style={styles.buyOrSellText}>
-                                                        &#8377; {buyOrSell.price}
-                                                    </Text>
-                                                }
+                                                        asks
+                                            </Text>
+                                                </View>
+                                                <View style={styles.secontRowView}>
+                                                    <View style={styles.textItemView}>
+                                                        <Text style={styles.buyOrSellText}>
+                                                            {buyOrSell.quantity}{buyOrSell.unit}
+                                                        </Text>
+                                                    </View>
+                                                    <View style={styles.textItemView}>
+                                                        <Text style={styles.buyOrSellText}>
+                                                            {buyOrSell.type}
+                                                        </Text>
+                                                    </View>
+                                                    <View style={styles.textItemView}>
+                                                        <Text style={styles.buyOrSellText}>
+                                                            &#8377; {buyOrSell.price}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                                <TouchableOpacity style={styles.setPriceButton}
+                                                    onPress={() => this.onPressSetBidPrice("sell", buyOrSell._id)}
+                                                >
+                                                    <Text>Set Price</Text>
+                                                </TouchableOpacity>
                                             </View>
-                                        </View>
-                                        {/* <Text style={styles.buyOrSellText}>
-                                            {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                        </Text> */}
-                                        {this.state.editPrice && this.state.editIndex == index ?
-                                            <TouchableOpacity style={styles.saveButton}
-                                                onPress={() => this.onPressUpdateSellPrice(buyOrSell._id)}
-                                            >
-                                                <Text style={styles.saveButtonText}>Save</Text>
-                                            </TouchableOpacity> :
-                                            <TouchableOpacity style={styles.setPriceButton}
-                                                onPress={() => this.onPressEditSellPrice(buyOrSell.price, index)}
-                                            >
-                                                <Text>Set Price</Text>
-                                            </TouchableOpacity>
+                                        </TouchableOpacity>
+
+                                        {/* EXPANDABLE BID START */}
+                                        {
+                                            this.state.expandBidView && buyOrSellIndex === index ?
+                                                <View >
+                                                    <View style={styles.firstBidViewStyle}>
+                                                        <Text style={styles.bidHeaderText}>User name</Text>
+                                                        <Text style={styles.bidHeaderText}>Bid Price</Text>
+                                                        <Text style={styles.bidHeaderText}>Bid Quantity</Text>
+                                                        <Text style={styles.bidHeaderText}>Total Price</Text>
+                                                        <Text style={styles.bidHeaderText}>Date</Text>
+                                                        <Text style={styles.bidHeaderText}>Action</Text>
+                                                    </View>
+                                                    {
+                                                        bids.length > 0 ?
+                                                            bids.map((bid: any, index: number) => {
+                                                                if (index >= bidStartNumber && index < bidEndNumber)
+                                                                    return (
+                                                                        <View key={index} style={styles.bidStyle}>
+                                                                            <Text style={styles.bidHeaderText}>{bid.user[0].username}</Text>
+                                                                            <Text style={styles.bidHeaderText}>{bid.bidPrice}</Text>
+                                                                            <Text style={styles.bidHeaderText}>{bid.bidQuantity}</Text>
+                                                                            <Text style={styles.bidHeaderText}>{bid.totalPrice}</Text>
+                                                                            <Text style={styles.bidHeaderText}>{moment(bid.createdAt).format('LL')}</Text>
+                                                                            {
+                                                                                this.state.userId === buyOrSell.creator ?
+                                                                                    <View style={styles.actionButtonView}>
+                                                                                        <TouchableOpacity style={[styles.bidActionButton, styles.bidAcceptButton]}
+                                                                                            onPress={() => this.bidActionButtonFunc("sell", bid._id, buyOrSell._id)}
+                                                                                        >
+                                                                                            <Text style={styles.bidActionButtonText}>
+                                                                                                Accept
+                                                                                    </Text>
+                                                                                        </TouchableOpacity>
+                                                                                        <TouchableOpacity style={[styles.bidActionButton, styles.bidRejectButton]}
+                                                                                            onPress={() => this.bidActionButtonFunc("sell", bid._id, buyOrSell._id)}
+                                                                                        >
+                                                                                            <Text style={styles.bidActionButtonText}>
+                                                                                                Reject
+                                                                                    </Text>
+                                                                                        </TouchableOpacity>
+                                                                                    </View> :
+                                                                                    <View style={styles.actionButtonView} />
+                                                                            }
+                                                                        </View>
+                                                                    )
+                                                            }) : <Text />
+                                                    }
+                                                    {
+                                                        bids.length > 5 ?
+                                                            <View style={styles.bidPaginationView}>
+                                                                <TouchableOpacity style={styles.bidPreviousButton}
+                                                                    disabled={bidStartNumber === 0 ? true : false}
+                                                                    onPress={() => this.bidsNextOrPrevious("previous")}
+                                                                >
+                                                                    <Text style={styles.bidButtonText}>
+                                                                        {"<"}
+                                                                    </Text>
+                                                                </TouchableOpacity>
+                                                                <TouchableOpacity style={styles.bidNextButton}
+                                                                    disabled={bidEndNumber >= bids.length ? true : false}
+                                                                    onPress={() => this.bidsNextOrPrevious("next")}
+                                                                >
+                                                                    <Text style={styles.bidButtonText}>
+                                                                        {">"}
+                                                                    </Text>
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                            :
+                                                            <Text />
+                                                    }
+                                                </View>
+                                                :
+                                                <Text />
                                         }
-
+                                        {/* EXPANDABLE BID END */}
                                     </View>
-
                                 )
-                                // }
 
                             })}
                         </View>
@@ -627,6 +807,27 @@ class BuySell extends Component<IProps> {
                                             />
                                             Silver
                                      </label>
+                                        <View style={{ marginLeft: 10, alignItems: "flex-start" }}>
+                                            <Text>
+                                                Enter quantity
+                                            </Text>
+                                            <TextInput style={{ width: "50%", borderWidth: 2, padding: 2 }}
+                                                // value={this.state.quantity}
+                                                onChangeText={quantity => {
+                                                    this.setState({ quantity: parseInt(quantity) });
+                                                }}
+                                            />
+
+                                            <Text>
+                                                Select unit
+                                         </Text>
+                                            <select value={this.state.unit} onChange={(evt) => this.setState({ unit: evt.target.value })}>
+                                                <option value="mg">Miligram</option>
+                                                <option value="gm">gram</option>
+                                            </select>
+
+                                        </View>
+
                                     </View>
                                     <View style={styles.textInput}>
                                         <TextInput
@@ -657,7 +858,6 @@ class BuySell extends Component<IProps> {
 
                                     </View>
 
-
                                     <View style={this.state.dWidth ? styles.smButtonView : styles.buttonView}>
                                         <TouchableOpacity onPress={() => this.onCancelModal()}
                                             style={styles.modalCancelButton}>
@@ -677,6 +877,51 @@ class BuySell extends Component<IProps> {
                             <Text />
                     }
                     {/* BUY AND SELL MODAL END */}
+
+                    {/* BID MODAL START */}
+                    {
+                        this.state.bidModalVisible ?
+                            <View style={styles.modalContainer}>
+                                <View style={this.state.dWidth <= 700 ? styles.smModalView : styles.modalView}>
+                                    <Text style={styles.createBuySellText}>{this.state.bidOnBuyOrSell === "buy" ? "BIDS ON BUY" : "BIDS ON SELL"}</Text>
+
+                                    <TextInput
+                                        autoFocus={true}
+                                        value={this.state.buyOrSellPrice}
+                                        placeholder={'Set bids price'}
+                                        style={styles.inputStyle}
+                                        onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
+                                    // onSubmitEditing={() => {
+                                    //     this.onPressCreateBuyOrSell()
+                                    // }}
+                                    />
+                                    <TextInput
+                                        value={this.state.bidQuantity}
+                                        placeholder={'Quantity'}
+                                        style={styles.bidQuantityInputStyle}
+                                        onChangeText={(bidQuantity) => this.setState({ bidQuantity: bidQuantity })}
+
+                                    />
+                                    <View style={this.state.dWidth ? styles.setPriceSmButtonView : styles.setPricebuttonView}>
+                                        <TouchableOpacity onPress={() => this.onCancelModal()}
+                                            style={styles.modalCancelButton}>
+                                            <Text style={styles.buttonText}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.submitButton}
+                                            onPress={() => this.onPressCreateBids()}
+                                        >
+                                            <Text style={styles.buttonText}>Set Bids</Text>
+                                        </TouchableOpacity>
+
+                                    </View>
+
+                                </View>
+
+                            </View> :
+                            <Text />
+                    }
+                    {/* BIDS MODAL END */}
+
                 </ScrollView >
                 {/* PAGINATION VIEW START */}
                 <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
@@ -705,7 +950,7 @@ class BuySell extends Component<IProps> {
                     </TouchableOpacity>
                 </View>
                 {/* PAGINATION VIEW END */}
-            </View>
+            </View >
 
 
         );
@@ -715,7 +960,7 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
     return { auth, buyOrSell };
 };
 
-export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getAllBuyData, getAllSellData, onUpdateBuyPrice, onUpdateSellPrice })(BuySell);
+export default connect<IReduxState>(mapStateToProps, { createBuyOrSell, getAllBuyData, getAllSellData, onCreateBids, getBidsByBidId, bidAcceptOrReject })(BuySell);
 
 const BuyList = () => (
     <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
@@ -746,6 +991,32 @@ const styles = StyleSheet.create({
         display: "flex",
         height: 490,
     },
+    firstBidViewStyle: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderColor: '#2a4944',
+        borderTopWidth: 1,
+        backgroundColor: '#hg65796',
+        marginLeft: 15,
+        marginRight: 15
+    },
+    bidHeaderText: { flex: 1 },
+    actionButtonView: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center" },
+    bidStyle: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+        margin: 2,
+        borderColor: '#2a4944',
+        borderWidth: 1,
+        backgroundColor: '#d2f7f1'
+    },
+    bidActionButton: { padding: 4, marginRight: 5, borderRadius: 5, alignItems: "center", justifyContent: "center" },
+    bidAcceptButton: { backgroundColor: "#1D96A8", },
+    bidRejectButton: { backgroundColor: "#FF1C14" },
+    bidActionButtonText: { color: "#ffffff", fontSize: 14 },
     scene: {
         flex: 1,
     },
@@ -781,8 +1052,11 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: "100vh"
-
     },
+    bidPaginationView: { flexDirection: "row", justifyContent: "flex-end", padding: 5, marginRight: 10 },
+    bidPreviousButton: { marginRight: 20, paddingLeft: 5, paddingRight: 5 },
+    bidNextButton: { paddingLeft: 5, paddingRight: 5 },
+    bidButtonText: { fontSize: 18 },
     secontRowView: {
         flexDirection: "row", flex: 1,
         justifyContent: "space-around", alignItems: "flex-start", width: "95%", padding: 10
@@ -843,7 +1117,18 @@ const styles = StyleSheet.create({
         padding: 20,
         width: "60%",
         position: "absolute",
-        top: 120,
+        top: 100,
+        left: "15%"
+    },
+    bidQuantityInputStyle: {
+        height: 30,
+        margin: 15,
+        backgroundColor: "rgba(106,106,106,0.41)",
+        borderRadius: 20,
+        padding: 20,
+        width: "60%",
+        position: "absolute",
+        top: 150,
         left: "15%"
     },
     buttonView: {
@@ -856,7 +1141,20 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "flex-end",
         position: "absolute",
-        top: 300, left: 40,
+        top: 300, left: 100,
+    },
+
+    setPricebuttonView: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "absolute",
+        top: 50, left: 350,
+    },
+    setPriceSmButtonView: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        position: "absolute",
+        top: 250, left: 200,
     },
     modalCancelButton: {
         backgroundColor: "red",
@@ -893,7 +1191,7 @@ const styles = StyleSheet.create({
     nestedGroupListView: {
         padding: 8,
         backgroundColor: '#ffffff',
-        marginBottom: 10,
+        marginTop: 10,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -902,7 +1200,7 @@ const styles = StyleSheet.create({
     smNestedGroupListView: {
         padding: 8,
         backgroundColor: '#ffffff',
-        marginBottom: 10,
+        marginTop: 10,
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "space-between",
