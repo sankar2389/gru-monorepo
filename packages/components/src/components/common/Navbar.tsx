@@ -1,13 +1,15 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Modal, Image, TouchableOpacity, Platform } from "react-native";
+import { View, Text, StyleSheet, TextInput, AsyncStorage, Image, TouchableOpacity, Platform } from "react-native";
 import { IReduxState } from "../../types";
 import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
+
 
 interface IProps extends RouteComponentProps {
     logoutUser: () => void,
     clicked?: () => void,
     toggleSideBar: (onToggleSideBar: Boolean, range1: number, range2: number) => void
+    removeSocketIdInUser: (_id: any) => void
 };
 interface IState {
     search: string | undefined,
@@ -81,11 +83,15 @@ class NavbarComponent extends Component<IProps, IState> {
         })
 
     }
-    componentWillReceiveProps(newProps: any) {
+    async componentWillReceiveProps(newProps: any) {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         if (newProps.auth) {
             this.setState({
                 onToggleSideBar: newProps.auth.onToggleSideBar
             })
+        }
+        if (!newProps.webrtc.connected) {
+            this.props.removeSocketIdInUser(user._id)
         }
     }
 
@@ -159,8 +165,8 @@ class NavbarComponent extends Component<IProps, IState> {
     }
 }
 
-const mapStateToProps = ({ auth }: any): IReduxState => {
-    return { auth };
+const mapStateToProps = ({ auth, webrtc }: any): IReduxState => {
+    return { auth, webrtc };
 };
 
 export const Navbar = connect<IReduxState>(mapStateToProps, {})(NavbarComponent);

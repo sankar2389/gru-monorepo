@@ -1,3 +1,8 @@
+import createApolloClient from '../apollo';
+import gql from 'graphql-tag';
+import { AsyncStorage } from 'react-native';
+import axios, { AxiosError } from 'axios';
+const CMS_API = process.env.CMS_API;
 
 export const webSocketMiddlewareConnectOrJoin = (type: string, groupName: string) => {
     return (dispatch: Function) => {
@@ -26,10 +31,14 @@ export const webSocketConnect = (socketId: any) => {
 
 export const onSendMessage = (groupId: string, message: string) => {
     return (dispatch: Function) => {
+        let messageData = {
+            groupId: groupId,
+            message: message
+        }
         dispatch({
             type: "SEND_MESSAGE",
-            payload: message,
-            groupId: groupId
+            payload: messageData,
+
         })
     }
 }
@@ -47,6 +56,7 @@ export const connected = (dispatch: any) => {
 }
 
 export const disconnected = (dispatch: any) => {
+    //To Do . If need then we can call any funtion to remove socketId form user collection.
     dispatch({
         type: "DISCONNECTED"
     });
@@ -57,17 +67,11 @@ export const roomJoin = (dispatch: any) => {
         type: "ROOM_JOIN"
     });
 }
-export function roomMembers(socketIds: string) {
+export function roomMembers(socketIds: string, socketId: any) {
     return {
         type: "SOCKETIDS",
-        payload: socketIds
-    }
-}
-
-export function roomMember(socketId: string) {
-    return {
-        type: "SOCKETIDS",
-        payload: socketId
+        payload: socketIds,
+        socketId: socketId
     }
 }
 
@@ -87,3 +91,75 @@ export function datachannelOpened() {
         payload: true
     }
 }
+export const saveSocketIdInUser = (_id: any, socketId: any) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    if (authtoken) {
+                        if (authtoken) {
+                            const client = createApolloClient(authtoken);
+                            client.mutate({
+                                mutation: gql`
+                             mutation ($input: updateUserInput) {
+                                 updateUser(input: $input) {
+                                  user {
+                                    socketId
+                                  }
+                                }
+                              }
+                             `,
+                                variables: {
+                                    "input": {
+                                        "where": {
+                                            "id": _id
+                                        }, "data": {
+                                            "socketId": socketId
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    }
+
+                }
+            })
+    }
+}
+
+export const removeSocketIdInUser = (_id: any, ) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    if (authtoken) {
+                        if (authtoken) {
+                            const client = createApolloClient(authtoken);
+                            client.mutate({
+                                mutation: gql`
+                             mutation ($input: updateUserInput) {
+                                 updateUser(input: $input) {
+                                  user {
+                                    socketId
+                                  }
+                                }
+                              }
+                             `,
+                                variables: {
+                                    "input": {
+                                        "where": {
+                                            "id": _id
+                                        }, "data": {
+                                            "socketId": ""
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    }
+
+                }
+            })
+    }
+}
+

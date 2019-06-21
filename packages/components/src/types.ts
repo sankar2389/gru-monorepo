@@ -45,6 +45,7 @@ export interface IWebrtc {
     connected: boolean,
     room_joined: boolean,
     socketids: any,
+    socketId: string,
     message: any,
     datachan_stat: boolean,
 }

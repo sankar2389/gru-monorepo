@@ -4,6 +4,7 @@ import { IWebrtc } from '../types'
 const initState: IWebrtc = {
     connected: false,
     socketids: [],
+    socketId: "",
     message: {},
     datachan_stat: false,
     room_joined: false
@@ -13,9 +14,13 @@ export default (state: IWebrtc = initState, action: AnyAction): IWebrtc => {
         case "CONNECTED":
             return { ...state, connected: true };
         case "DISCONNECTED":
-            return { ...state, connected: false, room_joined: false };
+            return { ...state, connected: false, room_joined: false, };
         case "SOCKETIDS":
-            return { ...state, socketids: action.payload };
+            return {
+                ...state,
+                socketids: action.payload,
+                socketId: action.socketId
+            };
         case "MESSAGE":
             return { ...state, message: action.payload };
         case "DATACHAN_STAT":

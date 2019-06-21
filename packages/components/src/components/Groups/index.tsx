@@ -74,7 +74,6 @@ class GroupView extends Component<IProps, IState> {
         window.removeEventListener("resize", this.updateDimension)
     }
 
-
     componentWillReceiveProps(newProps: any) {
         let groupPageCount = []
         let groupLength = newProps.group.groups.length
@@ -223,7 +222,7 @@ class GroupView extends Component<IProps, IState> {
                 .then((authtoken: string | null) => {
                     if (authtoken) {
                         this.props.history.push({
-                            pathname: '/secure/group-chat',
+                            pathname: '/secure/chat',
                             state: { authtoken, group }
                         });
                     }

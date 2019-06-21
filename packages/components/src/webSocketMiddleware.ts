@@ -1,10 +1,10 @@
 import { AsyncStorage } from 'react-native';
 import io from 'socket.io-client';
-import { connecting, connected, disconnected, roomMembers, roomMember, roomJoin } from './actions/index';
+import { connecting, connected, disconnected, roomMembers, roomJoin } from './actions/index';
 
 export const MEMBERS_KEY = '@RNAWebRTCApp:room_members';
 export const ROOMS_KEY = '@RNAWebRTCApp:rooms';
-
+const SOCKET_SERVER_API = process.env.SOCKET_SERVER_API;
 
 const webSocketMiddleware = (function () {
     let socket: any
@@ -30,13 +30,12 @@ const webSocketMiddleware = (function () {
             }
             socketIds.push(socketId);
             AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-            store.dispatch(roomMembers(socketIds));
+            store.dispatch(roomMembers(socketIds, socketId));
         })
     }
     return (store: any) => (next: any) => (action: any) => {
         switch (action.type) {
             case "CONNECT":
-                console.log("connect")
                 // Start a new connection to the server
                 if (socket !== undefined && socket !== null) {
                     socket.close();
@@ -45,7 +44,7 @@ const webSocketMiddleware = (function () {
                 try {
                     //Attempt to connect (we could send a 'failed' action on error)
                     AsyncStorage.getItem('token').then(token => {
-                        socket = io('http://192.168.0.7:4443' + '', {
+                        socket = io(SOCKET_SERVER_API + '', {
                             query: { token: token },
                             transports: ['websocket']
                         });
@@ -76,7 +75,7 @@ const webSocketMiddleware = (function () {
                     socket.emit('join', action.groupName, (socketIds: any) => {
                         store.dispatch(roomJoin);
                         AsyncStorage.setItem(MEMBERS_KEY, JSON.stringify(socketIds));
-                        store.dispatch(roomMembers(socketIds));
+                        // store.dispatch(roomMembers(socketIds));
                     });
                 }
                 break;

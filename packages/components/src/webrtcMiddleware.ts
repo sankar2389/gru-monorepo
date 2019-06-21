@@ -60,12 +60,12 @@ const webrtcMiddleware = (() => {
         }
 
         if (data.sdp) {
-            console.log('exchange sdp', data);
             peerconn.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
                 if (peerconn.remoteDescription)
                     peerconn.createAnswer((desc) => {
                         peerconn.setLocalDescription(desc, () => {
                             store.dispatch({ type: "EXCHANGE", payload: { 'to': data.from, 'sdp': peerconn.localDescription } });
+
                         }, logError);
                     }, logError);
             }, logError);
@@ -99,7 +99,11 @@ const webrtcMiddleware = (() => {
                 exchange(store, action.payload);
                 break;
             case "SEND_MESSAGE":
-                dataChannel.send(action.payload);
+                if (dataChannel.readyState === "open") {
+                    dataChannel.send(JSON.stringify(action.payload));
+                } else {
+                    alert("Please connect one first")
+                }
                 break;
             default:
                 return next(action);
