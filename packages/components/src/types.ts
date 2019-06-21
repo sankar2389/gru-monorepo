@@ -2,7 +2,8 @@ export interface IAuth {
     authtoken: string | null,
     error: ISignupError | null,
     onToggleSideBar: boolean | null,
-    range1: number | null, range2: number | null
+    range1: number | null, range2: number | null,
+    users: any[]
 }
 
 export interface IReduxState {
@@ -83,6 +84,7 @@ export interface IStrapiUser {
 
 export interface IBuyOrSell {
     buyOrSellData: any[],
+    bids: any[]
 }
 // export interface ICreateSell {
 //     buyOrsell: string,

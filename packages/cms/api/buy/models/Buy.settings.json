@@ -28,6 +28,18 @@
     "creatorObject": {
       "default": "",
       "type": "json"
+    },
+    "type": {
+      "default": "",
+      "type": "string"
+    },
+    "bids": {
+      "default": "",
+      "type": "json"
+    },
+    "acceptedBids": {
+      "default": "",
+      "type": "json"
     }
   }
 }
