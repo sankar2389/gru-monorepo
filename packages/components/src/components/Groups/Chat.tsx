@@ -7,6 +7,7 @@ import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, w
 import moment from "moment";
 import PeopleChat from "./peopleChat"
 import GroupChat from "./groupChat"
+import CustomeMessage from "../common/customMessage"
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
@@ -73,10 +74,10 @@ class Chat extends Component<IProps, IState> {
             const { groups } = this.props.group;
             const { messages } = this.state;
             const { socketids, message, socketId } = newProps.webrtc;
-            // socketids.forEach((sid: any, i: number) => {
-            //     groups[i].socketid = sid;
-            //     groups[i].connected = false;
-            // });
+            socketids.forEach((sid: any, i: number) => {
+                groups[i].socketid = sid;
+                groups[i].connected = false;
+            });
 
             if (this.state.messageBackup.length > 0) {
                 this.setState({ messages: this.state.messageBackup, messageBackup: [] })
@@ -351,6 +352,11 @@ class Chat extends Component<IProps, IState> {
                     </View>
                     {/* RIGHT SIDE MESSAGE PART END */}
                 </View>
+                {this.state.connectionMessage ?
+                    <CustomeMessage message={"You are connected to socket"} openMessage={this.state.connectionMessage} />
+                    :
+                    <Text />
+                }
             </View>
         )
     }
