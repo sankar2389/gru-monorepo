@@ -6,7 +6,7 @@ import UpdateGroup from "./updateGroupComponent";
 import { View, StyleSheet, AsyncStorage, Text, TouchableOpacity, Alert, Image, TextInput, ScrollView } from "react-native";
 import { getGroupsList, createGroup, onDeleteGroup, onUpdateGroup, webSocketMiddlewareConnectOrJoin } from '../../actions';
 import moment from "moment";
-
+import CustomeMessage from "../common/customMessage"
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
@@ -29,7 +29,8 @@ interface IState {
     dropDown: number,
     selectedPaginatateNumber: number,
     socketConnection: boolean,
-    dWidth: any
+    dWidth: any,
+    connectionMessage: boolean
 }
 
 
@@ -38,6 +39,7 @@ class GroupView extends Component<IProps, IState> {
         groupList: [],
         groupPageCount: [],
         modalVisible: false,
+        connectionMessage: true,
         groupName: "",
         updateGroup: "",
         startDataOnPage: 0,
@@ -402,6 +404,11 @@ class GroupView extends Component<IProps, IState> {
                         </View> : <Text />}
                     {/* PAGINATION VIEW END */}
 
+                    {this.state.connectionMessage ?
+                        <CustomeMessage message={"You are connected to socket"} openMessage={this.state.connectionMessage} />
+                        :
+                        <Text />
+                    }
                 </View>
             )
 

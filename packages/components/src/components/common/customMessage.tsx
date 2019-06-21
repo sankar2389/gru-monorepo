@@ -5,7 +5,9 @@ import { StyleSheet, View, Text, Easing, Animated, Image, TouchableOpacity } fro
 interface IProps {
     message: string,
     openMessage: boolean,
+    //type: string
 }
+
 
 interface IState {
     connectionMessage: boolean,
@@ -15,12 +17,17 @@ interface IState {
 }
 
 class CustomMessage extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
+        super(props);
+    }
     state: IState = {
         connectionMessage: false,
         animatedValue: new Animated.Value(0),
         range1: 100,
         range2: 0,
     }
+
+
 
     componentDidMount() {
         if (this.props.openMessage) {
@@ -31,12 +38,6 @@ class CustomMessage extends React.Component<IProps, IState> {
             connectionMessage: false
         }), 4000);
 
-        // setTimeout(() => this.setState({
-        //     range1: 5,
-        //     range2: 250,
-        // }, () => {
-        //     this.animate(Easing.in(Easing.quad))
-        // }), 4000);
 
     }
 
@@ -48,26 +49,19 @@ class CustomMessage extends React.Component<IProps, IState> {
                 toValue: 1,
                 duration: 1000,
                 easing,
-                useNativeDriver: true,
+                //useNativeDriver: true,
             }
         ).start()
     }
 
-    constructor(props: IProps) {
-        super(props);
-    }
+
+
     onPressCloseCustomMessage = () => {
         this.setState({ connectionMessage: false })
     }
 
 
     render() {
-        // const marginLeft = this.state.animatedValue.interpolate({
-        //     inputRange: [0, 1],
-        //     outputRange: [this.state.range1, this.state.range2],
-        // })
-        // https://cdn.pixabay.com/photo/2013/07/12/12/40/abort-146096_960_720.png
-
         return this.state.connectionMessage ? <Animated.View style={{
             opacity: this.state.animatedValue,
             transform: [{
