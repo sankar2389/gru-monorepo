@@ -88,7 +88,6 @@ class BuySell extends Component<IProps> {
     }
     async componentDidMount() {
         const socket = io(CMS_API + '');
-        // socket.on('hello', (res: any) => console.log(res));
         socket.on('buy', (res: any) => {
             const { buyData } = this.state;
             buyData.push(JSON.parse(res).message);

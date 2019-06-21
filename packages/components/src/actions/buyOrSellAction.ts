@@ -252,11 +252,6 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                         }
                                     }).then(buy => {
                                         alert("One bid is created on Buy")
-                                        // dispatch({
-                                        //     type: "BID_ON_BUY_CREATED_SUCCESS",
-                                        //     payload:buy.data.updateBuy.buy
-                                        // })
-
                                     }).catch(err => {
                                         console.log(err.message)
                                     })
