@@ -474,7 +474,7 @@ export const getBidsByBidId = (bids: any) => {
     }
 }
 
-export const bidAcceptOrReject = (type: string, status: string, _id: string, buyOrSellId: string) => {
+export const bidAcceptOrReject = (type: string, evt: string, status: string, _id: string, buyOrSellId: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -543,6 +543,8 @@ export const bidAcceptOrReject = (type: string, status: string, _id: string, buy
                                     dispatch({
                                         type: "BID_ACCEPTED_OR_REJECTED_SUCCESS",
                                         payload: bid.data.updateBid.bid,
+                                        messageType: "success",
+                                        message: `One bid is ${evt} successfully for buy`
                                     })
                                 })
                             }).catch(err => {
@@ -623,6 +625,8 @@ export const bidAcceptOrReject = (type: string, status: string, _id: string, buy
                                     dispatch({
                                         type: "BID_ACCEPTED_OR_REJECTED_SUCCESS",
                                         payload: bid.data.updateBid.bid,
+                                        messageType: "success",
+                                        message: `One bid is ${evt} successfully for Sell`
                                     })
                                 })
                             }).catch(err => {

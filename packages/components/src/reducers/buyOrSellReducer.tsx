@@ -49,6 +49,8 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
             return {
                 ...state,
                 bids: state.bids.filter(bid => bid._id !== bidData._id),
+                messageType: action.messageType,
+                message: action.message
             }
         case "BID_ON_BUY_CREATED_SUCCESS":
             const updatedBuy = action.payload

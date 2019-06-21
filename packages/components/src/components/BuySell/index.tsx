@@ -17,7 +17,7 @@ interface IProps extends RouteComponentProps {
     buyOrSell: any,
     onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string, bidQuantity: number, totalPrice: number) => void,
     getBidsByBidId: (bids: any) => void,
-    bidAcceptOrReject: (type: string, status: string, _id: string, buyOrSellId: string) => void,
+    bidAcceptOrReject: (type: string, evt: string, status: string, _id: string, buyOrSellId: string) => void,
     clearBuyOrSellReducer: () => void
 };
 
@@ -491,8 +491,8 @@ class BuySell extends Component<IProps> {
         }
     }
 
-    bidActionButtonFunc = (type: string, _id: string, buyOrSellId: string) => {
-        this.props.bidAcceptOrReject(type, "closed", _id, buyOrSellId)
+    bidActionButtonFunc = (type: string, evt: string, _id: string, buyOrSellId: string) => {
+        this.props.bidAcceptOrReject(type, evt, "closed", _id, buyOrSellId)
     }
 
     render() {
@@ -623,7 +623,7 @@ class BuySell extends Component<IProps> {
                                                                                 <View style={styles.actionButtonView}>
                                                                                     <TouchableOpacity
                                                                                         style={[styles.bidActionButton, styles.bidAcceptButton]}
-                                                                                        onPress={() => this.bidActionButtonFunc("buy", bid._id, buyOrSell._id)}
+                                                                                        onPress={() => this.bidActionButtonFunc("buy", "accepted", bid._id, buyOrSell._id)}
                                                                                     >
                                                                                         <Text style={styles.bidActionButtonText}>
                                                                                             Accept
@@ -631,7 +631,7 @@ class BuySell extends Component<IProps> {
                                                                                     </TouchableOpacity>
                                                                                     <TouchableOpacity
                                                                                         style={[styles.bidActionButton, styles.bidRejectButton]}
-                                                                                        onPress={() => this.bidActionButtonFunc("buy", bid._id, buyOrSell._id)}
+                                                                                        onPress={() => this.bidActionButtonFunc("buy", "rejected", bid._id, buyOrSell._id)}
                                                                                     >
                                                                                         <Text style={styles.bidActionButtonText}>
                                                                                             Reject
@@ -750,14 +750,14 @@ class BuySell extends Component<IProps> {
                                                                                 this.state.userId === buyOrSell.creator ?
                                                                                     <View style={styles.actionButtonView}>
                                                                                         <TouchableOpacity style={[styles.bidActionButton, styles.bidAcceptButton]}
-                                                                                            onPress={() => this.bidActionButtonFunc("sell", bid._id, buyOrSell._id)}
+                                                                                            onPress={() => this.bidActionButtonFunc("sell", "accepted", bid._id, buyOrSell._id)}
                                                                                         >
                                                                                             <Text style={styles.bidActionButtonText}>
                                                                                                 Accept
                                                                                     </Text>
                                                                                         </TouchableOpacity>
                                                                                         <TouchableOpacity style={[styles.bidActionButton, styles.bidRejectButton]}
-                                                                                            onPress={() => this.bidActionButtonFunc("sell", bid._id, buyOrSell._id)}
+                                                                                            onPress={() => this.bidActionButtonFunc("sell", "rejected", bid._id, buyOrSell._id)}
                                                                                         >
                                                                                             <Text style={styles.bidActionButtonText}>
                                                                                                 Reject
