@@ -1,5 +1,13 @@
 # GRU cms [minimum required version node v10]
 
+#### Run in dev mode
+```
+cd packages/cms
+npm i
+cd ../../
+DB_HOST=192.168.0.13 yarn dev:cms
+```
+
 #### Create docker
 ```
 docker image build -t gru-cms .
