@@ -16,6 +16,7 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 message: "",
             };
         case 'BUY_DATA_LIST_SUCCESS':
+            console.log("rrr", action.payload)
             return {
                 ...state,
                 buyOrSellData: action.payload
@@ -38,6 +39,9 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 ...state,
                 messageType: action.messageType,
                 message: action.message,
+                // buyOrSellData: state.buyOrSellData.buys.map(
+                //     (data: any) => (data._id === updatedData._id ? buy : data)
+                // )
             };
         case "GET_BID_BY_ID_SUCCESS":
             return {

@@ -606,10 +606,7 @@ class BuySell extends Component<IProps> {
                                                             <Text style={styles.bidHeaderText}>Action</Text>
                                                         </View>
 
-
-
                                                         {bids.map((bid: any, index: number) => {
-
                                                             if (index >= bidStartNumber && index < bidEndNumber)
                                                                 return (
                                                                     <View key={index} style={styles.bidStyle}>
@@ -640,7 +637,6 @@ class BuySell extends Component<IProps> {
                                                                                 </View> :
                                                                                 <View style={styles.actionButtonView} />
                                                                         }
-
                                                                     </View>
                                                                 )
                                                         })}
@@ -800,7 +796,6 @@ class BuySell extends Component<IProps> {
                                         {/* EXPANDABLE BID END */}
                                     </View>
                                 )
-
                             })}
                         </View>
                     }
@@ -824,7 +819,6 @@ class BuySell extends Component<IProps> {
                                             />
                                             Gold
                                      </label>
-
                                         <label style={{
                                             backgroundColor: "#D3D3D3", paddingRight: 50, paddingTop: 20,
                                             paddingBottom: 20, borderRadius: 5,
@@ -844,7 +838,6 @@ class BuySell extends Component<IProps> {
                                                     this.setState({ quantity: parseInt(quantity) });
                                                 }}
                                             />
-
                                             <Text>
                                                 Select unit
                                          </Text>
@@ -854,7 +847,6 @@ class BuySell extends Component<IProps> {
                                             </select>
 
                                         </View>
-
                                     </View>
                                     <View style={styles.textInput}>
                                         <TextInput
@@ -918,9 +910,6 @@ class BuySell extends Component<IProps> {
                                         placeholder={'Set bids price'}
                                         style={styles.inputStyle}
                                         onChangeText={(buySellInput) => this.onHandelChangeInput(buySellInput)}
-                                    // onSubmitEditing={() => {
-                                    //     this.onPressCreateBuyOrSell()
-                                    // }}
                                     />
                                     <TextInput
                                         value={this.state.bidQuantity}
@@ -985,13 +974,10 @@ class BuySell extends Component<IProps> {
                         openMessage={this.state.openCustomMessage}
                         clearMessageState={this.clearMessageState}
                     />
-
                     :
                     <Text />
                 }
             </View >
-
-
         );
     }
 }

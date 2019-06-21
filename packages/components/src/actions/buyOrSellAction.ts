@@ -152,6 +152,7 @@ export const getAllBuyData = (start: number = 0) => {
                             "start": start
                         }
                     }).then((res: any) => {
+                        console.log("ressssssssssssssssssss", res)
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
                     }).catch(err => {
                         dispatch({
@@ -291,7 +292,6 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                             type: "BUY_OR_SELL_BID_CREATED_SUCCESS",
                                             messageType: "success",
                                             message: "Bid is created successfully on buy",
-                                            payload: buy
                                         })
                                     }).catch(err => {
                                         dispatch({
