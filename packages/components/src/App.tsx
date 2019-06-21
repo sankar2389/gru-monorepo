@@ -10,6 +10,7 @@ import Dashboard from './components/Dashboard';
 import BuySell from './components/BuySell';
 import GroupView from './components/Groups';
 import Chat from "./components/Groups/Chat";
+import GroupDashboard from './components/Groups/GroupDashboard';
 
 import './App.css';
 import Navigation from './components/Navigation';
@@ -26,7 +27,8 @@ export function App() {
           <PrivateRoute path="/secure" component={Dashboard} exact />
           <PrivateRoute path="/secure/dashboard" component={Dashboard} />
           <PrivateRoute path="/secure/buysell" component={BuySell} />
-          <PrivateRoute path="/secure/groups" component={GroupView} />
+          <PrivateRoute path="/secure/groups/:groupName" component={GroupDashboard} />
+          <PrivateRoute path="/secure/groups" component={GroupView} exact/>
           <PrivateRoute path="/secure/chat" component={Chat} />
         </Router>
       </div>
@@ -42,7 +44,7 @@ const PrivateRoute: any = ({ component: PrivateComponent, auth, ...rest }: { com
 
 function isAuthenticated(props: any): boolean {
   // TODO: authentication token restores if stored in redux
-  // Fetching authtoken from store can follow following workflow
+  // ** Fetching authtoken from store can follow following workflow
   // props.getAuthToken()
   // props.didUpdate() [on store update]
   // read authtoken
