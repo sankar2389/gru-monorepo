@@ -2,48 +2,48 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/buys",
-      "handler": "Buy.find",
+      "path": "/bids",
+      "handler": "Bid.find",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/buys/count",
-      "handler": "Buy.count",
+      "path": "/bids/count",
+      "handler": "Bid.count",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/buys/:_id",
-      "handler": "Buy.findOne",
+      "path": "/bids/:_id",
+      "handler": "Bid.findOne",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/buys",
-      "handler": "Buy.create",
+      "path": "/bids",
+      "handler": "Bid.create",
       "config": {
         "policies": []
       }
     },
     {
       "method": "PUT",
-      "path": "/buys/:_id",
-      "handler": "Buy.update",
+      "path": "/bids/:_id",
+      "handler": "Bid.update",
       "config": {
         "policies": []
       }
     },
     {
       "method": "DELETE",
-      "path": "/buys/:_id",
-      "handler": "Buy.destroy",
+      "path": "/bids/:_id",
+      "handler": "Bid.destroy",
       "config": {
         "policies": []
       }

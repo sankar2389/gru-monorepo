@@ -21,7 +21,6 @@ class PeopleChat extends Component<IProps, IState> {
         super(props);
     }
     render() {
-        console.log(this.state.peopleName)
         return (
             this.props.groups.length > 0 ?
                 <View style={styles.groupView}>

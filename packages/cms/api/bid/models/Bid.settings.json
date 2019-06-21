@@ -1,0 +1,42 @@
+{
+  "connection": "default",
+  "collectionName": "bids",
+  "info": {
+    "name": "bid",
+    "description": "sell or buy bids"
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "bidPrice": {
+      "default": "",
+      "type": "float",
+      "required": true
+    },
+    "createdAt": {
+      "default": "",
+      "type": "date"
+    },
+    "updatedAt": {
+      "default": "",
+      "type": "date"
+    },
+    "userId": {
+      "default": "",
+      "type": "string"
+    },
+    "bidQuantity": {
+      "default": "",
+      "type": "float"
+    },
+    "totalPrice": {
+      "default": "",
+      "type": "float"
+    },
+    "status": {
+      "default": "",
+      "type": "string"
+    }
+  }
+}
