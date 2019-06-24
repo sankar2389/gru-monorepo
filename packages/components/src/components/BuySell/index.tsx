@@ -495,6 +495,38 @@ class BuySell extends Component<IProps> {
         this.props.bidAcceptOrReject(type, evt, "closed", _id, buyOrSellId)
     }
 
+    shortingArray(a: any, b: any) {
+        return a - b
+    }
+
+    shortBuyOrSellData = (sortOnField: string) => {
+        const { dataFromCollection, buyData, sellData } = this.state
+        let sortData
+        if (dataFromCollection === "BUY_DATA") {
+
+            sortData = buyData.sort((a: any, b: any) => {
+                if (a[sortOnField] < b[sortOnField]) {
+                    return -1 //sort ascending
+                }
+                return 0 //default return
+            })
+            this.setState({ buyData: sortData })
+        }
+
+        // if (dataFromCollection === "SELL_DATA") {
+        //     sortData = sellData.sort((a: any, b: any) => {
+        //         if (a.sortOnField < b.sortOnField) {
+        //             return -1 //sort ascending
+        //         }
+        //         return 0 //default return
+        //     })
+        //     this.setState({ sellData: sortData })
+        // }
+
+    }
+
+
+
     render() {
         const { innerContainer } = styles;
         const { dWidth, modalVisible, dataFromCollection, buyData, sellData, buyOrSellIndex, bids, bidStartNumber, bidEndNumber } = this.state;
@@ -547,6 +579,50 @@ class BuySell extends Component<IProps> {
                     {
                         this.state.dataFromCollection === "BUY_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone} >
+
+                            {/* BUY TABLE HEADER */}
+
+                            <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListViewHeader : styles.nestedGroupListViewHeader}>
+                                <View style={styles.imageAndNameView}>
+                                    <TouchableOpacity >
+                                        <Text style={[styles.userNameText, { marginLeft: 50 }]}>{"UserName"}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.textItemView}>
+                                    <Text style={styles.buyOrSellTextHeader}>
+                                        asks
+                                    </Text>
+                                </View>
+                                <View style={styles.secontRowView}>
+                                    <View style={styles.textItemView}>
+                                        <TouchableOpacity onPress={() => { this.shortBuyOrSellData("quantity") }}>
+                                            <Text style={styles.buyOrSellTextHeader}>
+                                                Quantity / Unit
+                                        </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.textItemView}>
+                                        <TouchableOpacity onPress={() => { this.shortBuyOrSellData("type") }}>
+                                            <Text style={styles.buyOrSellTextHeader}>
+                                                Type
+                                        </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.textItemView}>
+                                        <TouchableOpacity onPress={() => { this.shortBuyOrSellData("price") }}>
+                                            <Text style={styles.buyOrSellTextHeader}>
+                                                &#8377; Price
+                                        </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <View style={{ width: 70, }} />
+                            </View>
+
+                            {/* END BUY HEADER */}
+
+
+
                             {this.state.buyData.map((buyOrSell: any, index: number) => {
 
                                 return (
@@ -680,6 +756,54 @@ class BuySell extends Component<IProps> {
                     {
                         this.state.dataFromCollection === "SELL_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
+                            {/* SELL TABLE HEADER */}
+
+                            <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListViewHeader : styles.nestedGroupListViewHeader}>
+                                <View style={styles.imageAndNameView}>
+                                    <TouchableOpacity>
+                                        <Text style={[styles.userNameText, { marginLeft: 50 }]}>{"UserName"}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.textItemView}>
+                                    <TouchableOpacity>
+                                        <Text style={styles.buyOrSellTextHeader}>
+                                            asks
+                                    </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.secontRowView}>
+                                    <View style={styles.textItemView}>
+                                        <TouchableOpacity>
+                                            <Text style={styles.buyOrSellTextHeader}>
+                                                Quantity / Unit
+                                        </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.textItemView}>
+                                        <TouchableOpacity>
+                                            <Text style={styles.buyOrSellTextHeader}>
+                                                Type
+                                        </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.textItemView}>
+                                        <TouchableOpacity>
+                                            <Text style={styles.buyOrSellTextHeader}>
+                                                &#8377; Price
+                                        </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                {/* <Text style={styles.buyOrSellText}>
+                                            {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
+                                        </Text> */}
+                                <View style={{ width: 70, }}>
+
+                                </View>
+
+                            </View>
+
+                            {/* END SELL HEADER */}
                             {this.state.sellData.map((buyOrSell: any, index: number) => {
                                 return (
                                     <View key={index}>
@@ -1228,6 +1352,15 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         flexWrap: "wrap"
     },
+    nestedGroupListViewHeader: {
+        padding: 8,
+        backgroundColor: '#707070',
+        marginTop: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap"
+    },
     smNestedGroupListView: {
         padding: 8,
         backgroundColor: '#ffffff',
@@ -1237,7 +1370,17 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         flexWrap: "wrap"
     },
+    smNestedGroupListViewHeader: {
+        padding: 8,
+        backgroundColor: '#303030',
+        marginTop: 10,
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap"
+    },
     buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, alignSelf: "center" },
+    buyOrSellTextHeader: { flexWrap: "wrap", fontSize: 14, alignSelf: "center", fontWeight: "900" },
     userNameText: { flexWrap: "wrap", paddingTop: 10, fontWeight: "900", fontSize: 14 },
     buyOrSellDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },

@@ -152,7 +152,6 @@ export const getAllBuyData = (start: number = 0) => {
                             "start": start
                         }
                     }).then((res: any) => {
-                        console.log("ressssssssssssssssssss", res)
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
                     }).catch(err => {
                         dispatch({
@@ -441,7 +440,6 @@ export const getBidsByBidId = (bids: any) => {
                                         bid["user"] = user;
                                     }
                                 });
-                                //console.log("bidddddd", bids)
                             }
                             dispatch({
                                 type: "GET_BID_BY_ID_SUCCESS",
