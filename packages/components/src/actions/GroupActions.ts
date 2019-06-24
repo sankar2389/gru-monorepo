@@ -396,7 +396,7 @@ export const onRemoveUserFromGroup = (groupId: any, user: any) => {
 
 
 // To fetch all group QA
-export const fetchGroupQA = (groupID: string) => {
+export const fetchGroupQA = (groupID: string, start: number = 0) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -404,8 +404,8 @@ export const fetchGroupQA = (groupID: string) => {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
-                            query($groupID: String) {
-                                questions(sort: "updatedAt:desc", where: {
+                            query($groupID: String, $start: Int) {
+                                questions(sort: "updatedAt:desc", start: $start, where: {
                                     groupID: $groupID
                                 }) {
                                     title
@@ -418,7 +418,8 @@ export const fetchGroupQA = (groupID: string) => {
                             }
                         `,
                         variables: {
-                            "groupID":groupID
+                            "groupID": groupID,
+                            "start": start
                         }
                     }).then((res: any) => {
                         getGrpQA(dispatch, res.data);

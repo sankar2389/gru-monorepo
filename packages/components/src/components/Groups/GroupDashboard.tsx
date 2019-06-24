@@ -1,19 +1,28 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, TextInput } from "react-native";
+import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from "react-native";
 import { fetchGroupQA } from "../../actions"
 import { IReduxState } from "../../types";
+import axios from "axios";
+
+
+
+// ** Used in render function. DONOT REMOVE
 import moment from "moment";
 
 interface IProps {
-    fetchGroupQA: (groupID: string) => void
-    location: any,
-    group: any
+    fetchGroupQA: (groupID: string, start?: number) => void
+    location: any;
+    group: any;
 }
 
 interface IState {
     dWidth: number;
     questionData: any[];
+    dataLimitOnPage: number;
+    selectedPaginatateNumber: number;
+    totalPages: number[];
+    visiblePages: number[];
 }
 
 class GroupDashboard extends Component<IProps, IState> {
@@ -23,16 +32,23 @@ class GroupDashboard extends Component<IProps, IState> {
         this.state = {
             dWidth: 0,
             questionData: [],
+            dataLimitOnPage: 10,
+            selectedPaginatateNumber: 1,
+            totalPages: [],
+            visiblePages: [],
+
         }
     }
 
     async componentDidMount() {
         await this.props.fetchGroupQA(this.props.location.state.groupID)
+        this.getTotalPages()
         window.addEventListener("resize", this.updateDimension);
     }
 
     componentWillReceiveProps(newProps: IProps) {
         this.setState({ questionData: newProps.group.questions.questions })
+        this.getTotalPages()
 
     }
 
@@ -44,9 +60,117 @@ class GroupDashboard extends Component<IProps, IState> {
             dWidth: window.innerWidth
         })
     }
+
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateDimension)
     }
+
+
+
+    // Function to get Total pages
+
+    getTotalPages = () => {
+        AsyncStorage.getItem("token").then(async (authtoken: string | null) => {
+            if (authtoken) {
+
+                const res = await this.getCount("questions", authtoken)
+
+                this.setState({
+                    totalPages: res,
+                }, () => {
+                    this.updateVisiblePages()
+                })
+            }
+
+        })
+
+    }
+
+
+
+    // Function to get all records in the DB by datatype as BUY/SELL
+
+    getCount = async (dataType: string, authtoken: string) => {
+        const res = await axios.get(process.env.CMS_API + `${dataType}/count`, {
+            headers: {
+                Authorization: "Bearer " + authtoken
+            }
+        })
+        const { dataLimitOnPage } = this.state;
+
+        const { data } = res;
+        let totalPages = Math.floor(data / dataLimitOnPage);
+
+        if (data % dataLimitOnPage) {
+            totalPages += 1
+        }
+        const pagesArray: number[] = []
+
+        for (let i = 1; i <= totalPages; i++) {
+            pagesArray.push(i)
+        }
+
+        return pagesArray
+
+    }
+
+
+    // function to update visible pages to show 3 pages only
+    updateVisiblePages = () => {
+        const { totalPages, selectedPaginatateNumber } = this.state
+        if (selectedPaginatateNumber !== 1 && selectedPaginatateNumber !== totalPages.length) {
+            const visiblePages = totalPages.slice(selectedPaginatateNumber - 2, selectedPaginatateNumber + 1)
+            this.setState({ visiblePages })
+        }
+        else if (selectedPaginatateNumber === 1) {
+            const visiblePages = totalPages.slice(0, 3)
+            this.setState({ visiblePages })
+        }
+        else {
+            const visiblePages = totalPages.slice(-3)
+            this.setState({ visiblePages })
+
+        }
+    }
+
+    onPressPaginateNext = () => {
+        const { selectedPaginatateNumber, totalPages } = this.state;
+
+        if (selectedPaginatateNumber !== totalPages.length) {
+            this.setState((prevState: any) => {
+                return { selectedPaginatateNumber: prevState.selectedPaginatateNumber + 1 }
+            }, () => {
+                const { selectedPaginatateNumber, dataLimitOnPage } = this.state
+                const start = (selectedPaginatateNumber - 1) * dataLimitOnPage;
+                this.props.fetchGroupQA(this.props.location.state.groupID, start)
+            })
+        }
+    }
+
+    // pagination Previous
+    onPressPaginatePrevious = () => {
+        const { selectedPaginatateNumber } = this.state
+        if (selectedPaginatateNumber !== 1) {
+            this.setState((prevState: any) => {
+                return { selectedPaginatateNumber: prevState.selectedPaginatateNumber - 1 }
+            }, () => {
+                const { selectedPaginatateNumber, dataLimitOnPage } = this.state
+                const start = (selectedPaginatateNumber - 1) * dataLimitOnPage;
+                this.props.fetchGroupQA(this.props.location.state.groupID, start)
+            })
+        }
+    }
+
+    async onPressPaginate(pageCount: number) {
+        const { dataLimitOnPage } = this.state
+        this.setState({ selectedPaginatateNumber: pageCount }, () => {
+            const start = (pageCount - 1) * dataLimitOnPage;
+            this.props.fetchGroupQA(this.props.location.state.groupID, start)
+        })
+
+
+    }
+
 
     render() {
         const { innerContainer } = styles;
@@ -99,6 +223,34 @@ class GroupDashboard extends Component<IProps, IState> {
                     ))}
 
                 </ScrollView>
+
+                {/* PAGINATION VIEW START */}
+                <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
+                    <TouchableOpacity
+                        onPress={this.onPressPaginatePrevious}
+                        style={styles.paginationButton}>
+                        <Text>{"<"}</Text>
+                    </TouchableOpacity>
+
+                    {this.state.visiblePages.map((pageCount: number) => {
+                        return (<TouchableOpacity key={pageCount}
+                            onPress={this.onPressPaginate.bind(this, pageCount)}
+                            style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountStyle : styles.paginationButton}
+                        >
+                            <Text style={this.state.selectedPaginatateNumber === pageCount ? styles.pageCountTextStyle : null}>
+                                {pageCount}
+                            </Text>
+                        </TouchableOpacity>)
+                    })}
+
+
+                    <TouchableOpacity
+                        onPress={this.onPressPaginateNext}
+                        style={styles.paginationButton}>
+                        <Text>{">"}</Text>
+                    </TouchableOpacity>
+                </View>
+                {/* PAGINATION VIEW END */}
 
             </View>
         )
@@ -214,6 +366,38 @@ const styles = StyleSheet.create({
     },
     tableRowText: {
         fontSize: 21
+    },
+
+    paginationView: {
+        flexDirection: "row", padding: 20, justifyContent: "center", marginLeft: 10,
+        position: "absolute", top: "99%",
+    },
+    smPaginationView: {
+        flexDirection: "row", padding: 20, justifyContent: "center", alignItems: "center",
+        position: "absolute", top: "99%", width: "100%"
+    },
+    paginationButton: {
+        marginRight: 20,
+        backgroundColor: '#ffffff',
+        borderRadius: 30,
+        padding: 10,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    pageCountStyle: {
+        marginRight: 20,
+        backgroundColor: '#d72b2b',
+        borderRadius: 30,
+        padding: 10,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    pageCountTextStyle: {
+        color: "#ffffff"
     }
 
 
