@@ -53,7 +53,8 @@ interface IState {
     userId: string,
     messageType: string,
     message: string,
-    openCustomMessage: boolean
+    openCustomMessage: boolean,
+    sortingOrder: string
 
 }
 
@@ -90,8 +91,8 @@ class BuySell extends Component<IProps> {
         bidEndNumber: 5,
         messageType: "",
         message: "",
-        openCustomMessage: true
-
+        openCustomMessage: true,
+        sortingOrder: "asc"
     }
     constructor(props: IProps) {
         super(props);
@@ -495,33 +496,52 @@ class BuySell extends Component<IProps> {
         this.props.bidAcceptOrReject(type, evt, "closed", _id, buyOrSellId)
     }
 
-    shortingArray(a: any, b: any) {
-        return a - b
-    }
-
     sortBuyOrSellData = (sortOnField: string) => {
-        const { dataFromCollection, buyData, sellData } = this.state
+        const { dataFromCollection, buyData, sellData, sortingOrder } = this.state
         let sortData
         if (dataFromCollection === "BUY_DATA") {
+            if (sortingOrder === "asc") {
+                sortData = buyData.sort((a: any, b: any) => {
+                    if (a[sortOnField] < b[sortOnField]) {
+                        return -1 //sort ascending
+                    }
+                    return 0 //default return
+                })
+                this.setState({ buyData: sortData, sortingOrder: "desc" })
+            }
+            if (sortingOrder === "desc") {
+                sortData = buyData.sort((a: any, b: any) => {
+                    if (b[sortOnField] < a[sortOnField]) {
+                        return -1 //sort descending
+                    }
+                    return 0 //default return
+                })
+                this.setState({ buyData: sortData, sortingOrder: "asc" })
+            }
 
-            sortData = buyData.sort((a: any, b: any) => {
-                if (a[sortOnField] < b[sortOnField]) {
-                    return -1 //sort ascending
-                }
-                return 0 //default return
-            })
-            this.setState({ buyData: sortData })
         }
 
-        // if (dataFromCollection === "SELL_DATA") {
-        //     sortData = sellData.sort((a: any, b: any) => {
-        //         if (a.sortOnField < b.sortOnField) {
-        //             return -1 //sort ascending
-        //         }
-        //         return 0 //default return
-        //     })
-        //     this.setState({ sellData: sortData })
-        // }
+        if (dataFromCollection === "SELL_DATA") {
+            if (sortingOrder === "asc") {
+                sortData = sellData.sort((a: any, b: any) => {
+                    if (a[sortOnField] < b[sortOnField]) {
+                        return -1 //sort ascending
+                    }
+                    return 0 //default return
+                })
+                this.setState({ sellData: sortData, sortingOrder: "desc" })
+            }
+            if (sortingOrder === "desc") {
+                sortData = sellData.sort((a: any, b: any) => {
+                    if (b[sortOnField] < a[sortOnField]) {
+                        return -1 //sort descending
+                    }
+                    return 0 //default return
+                })
+                this.setState({ sellData: sortData, sortingOrder: "asc" })
+            }
+
+        }
 
     }
 
@@ -756,54 +776,46 @@ class BuySell extends Component<IProps> {
                     {
                         this.state.dataFromCollection === "SELL_DATA" &&
                         <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
-                            {/* SELL TABLE HEADER */}
 
+                            {/* SELL TABLE HEADER */}
                             <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListViewHeader : styles.nestedGroupListViewHeader}>
                                 <View style={styles.imageAndNameView}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity >
                                         <Text style={[styles.userNameText, { marginLeft: 50 }]}>{"UserName"}</Text>
                                     </TouchableOpacity>
                                 </View>
                                 <View style={styles.textItemView}>
-                                    <TouchableOpacity>
-                                        <Text style={styles.buyOrSellTextHeader}>
-                                            asks
+                                    <Text style={styles.buyOrSellTextHeader}>
+                                        asks
                                     </Text>
-                                    </TouchableOpacity>
                                 </View>
                                 <View style={styles.secontRowView}>
                                     <View style={styles.textItemView}>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("quantity") }}>
                                             <Text style={styles.buyOrSellTextHeader}>
                                                 Quantity / Unit
                                         </Text>
                                         </TouchableOpacity>
                                     </View>
                                     <View style={styles.textItemView}>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("type") }}>
                                             <Text style={styles.buyOrSellTextHeader}>
                                                 Type
                                         </Text>
                                         </TouchableOpacity>
                                     </View>
                                     <View style={styles.textItemView}>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("price") }}>
                                             <Text style={styles.buyOrSellTextHeader}>
                                                 &#8377; Price
                                         </Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                                {/* <Text style={styles.buyOrSellText}>
-                                            {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                        </Text> */}
-                                <View style={{ width: 70, }}>
-
-                                </View>
-
+                                <View style={{ width: 70, }} />
                             </View>
-
                             {/* END SELL HEADER */}
+
                             {this.state.sellData.map((buyOrSell: any, index: number) => {
                                 return (
                                     <View key={index}>
