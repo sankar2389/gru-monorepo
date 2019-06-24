@@ -472,7 +472,12 @@ class BuySell extends Component<IProps> {
                 bids: []
             })
         } else {
-            alert("Bids not found")
+            this.setState({
+                messageType: "success",
+                message: "No bids found",
+                openCustomMessage: true
+            })
+            this.props.clearBuyOrSellReducer()
         }
 
     }
@@ -542,6 +547,33 @@ class BuySell extends Component<IProps> {
             }
 
         }
+
+    }
+
+    sortONBuyOrSellBids = (field: string) => {
+        const { bids, sortingOrder } = this.state
+        let sortData
+
+        if (sortingOrder === "asc") {
+            sortData = bids.sort((a: any, b: any) => {
+                if (a[field] < b[field]) {
+                    return -1 //sort ascending
+                }
+                return 0 //default return
+            })
+            this.setState({ bids: sortData, sortingOrder: "desc" })
+        }
+        if (sortingOrder === "desc") {
+            sortData = bids.sort((a: any, b: any) => {
+                if (b[field] < a[field]) {
+                    return -1 //sort descending
+                }
+                return 0 //default return
+            })
+            this.setState({ bids: sortData, sortingOrder: "asc" })
+        }
+
+
 
     }
 
@@ -675,9 +707,6 @@ class BuySell extends Component<IProps> {
                                                         </Text>
                                                     </View>
                                                 </View>
-                                                {/* <Text style={styles.buyOrSellText}>
-                                            {moment(buyOrSell.createdAt).fromNow()} {moment(buyOrSell.createdAt).format('h:mm')}
-                                        </Text> */}
                                                 <View>
                                                     <TouchableOpacity style={styles.setPriceButton}
                                                         onPress={() => this.onPressSetBidPrice("buy", buyOrSell._id)}
@@ -695,9 +724,15 @@ class BuySell extends Component<IProps> {
                                                     <View>
                                                         <View style={styles.firstBidViewStyle}>
                                                             <Text style={styles.bidHeaderText}>User name</Text>
-                                                            <Text style={styles.bidHeaderText}>Bid Price</Text>
-                                                            <Text style={styles.bidHeaderText}>Bid Quantity</Text>
-                                                            <Text style={styles.bidHeaderText}>Total Price</Text>
+                                                            <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("bidPrice")}>
+                                                                <Text style={styles.bidHeaderText}>Bid Price</Text>
+                                                            </TouchableOpacity>
+                                                            <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("bidQuantity")}>
+                                                                <Text >Bid Quantity</Text>
+                                                            </TouchableOpacity>
+                                                            <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("totalPrice")}>
+                                                                <Text style={styles.bidHeaderText}>Total Price</Text>
+                                                            </TouchableOpacity>
                                                             <Text style={styles.bidHeaderText}>Date</Text>
                                                             <Text style={styles.bidHeaderText}>Action</Text>
                                                         </View>
@@ -861,9 +896,15 @@ class BuySell extends Component<IProps> {
                                                 <View >
                                                     <View style={styles.firstBidViewStyle}>
                                                         <Text style={styles.bidHeaderText}>User name</Text>
-                                                        <Text style={styles.bidHeaderText}>Bid Price</Text>
-                                                        <Text style={styles.bidHeaderText}>Bid Quantity</Text>
-                                                        <Text style={styles.bidHeaderText}>Total Price</Text>
+                                                        <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("bidPrice")}>
+                                                            <Text style={styles.bidHeaderText}>Bid Price</Text>
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("bidQuantity")}>
+                                                            <Text style={styles.bidHeaderText}>Bid Quantity</Text>
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("totalPrice")}>
+                                                            <Text style={styles.bidHeaderText}>Total Price</Text>
+                                                        </TouchableOpacity>
                                                         <Text style={styles.bidHeaderText}>Date</Text>
                                                         <Text style={styles.bidHeaderText}>Action</Text>
                                                     </View>
