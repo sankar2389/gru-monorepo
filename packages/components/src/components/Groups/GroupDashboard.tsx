@@ -14,6 +14,7 @@ interface IProps {
     fetchGroupQA: (groupID: string, start?: number) => void
     location: any;
     group: any;
+    match: any;
 }
 
 interface IState {
@@ -182,7 +183,7 @@ class GroupDashboard extends Component<IProps, IState> {
                         <Text style={styles.headerGroupDashboard}>
                             Group Dashboard
                     </Text>
-                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Group Q/A</Text>
+                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Group Q/A : {this.props.match.params.groupName.toUpperCase()}</Text>
                     </View>
 
                     {/*  Table header */}
@@ -205,7 +206,7 @@ class GroupDashboard extends Component<IProps, IState> {
 
                     {/* ** Display Questions Table */}
                     {this.state.questionData && this.state.questionData.length > 0 && this.state.questionData.map((question: any) => (
-                        <TouchableOpacity style={styles.tableRowStyles}>
+                        <TouchableOpacity style={styles.tableRowStyles} key={question._id}>
                             <View style={{ flex: 2 }}>
                                 <Text style={[styles.tableRowText, { color: "#555" }]}>{question.title}</Text>
                             </View>
@@ -221,6 +222,14 @@ class GroupDashboard extends Component<IProps, IState> {
 
                         </TouchableOpacity>
                     ))}
+
+                    {this.state.questionData && this.state.questionData.length == 0 &&
+                        <TouchableOpacity style={styles.tableRowStyles} >
+                            <View style={{ flex: 2 }}>
+                                <Text style={[styles.tableRowText, { color: "#555" }]}>No questions Found</Text>
+                            </View>
+                        </TouchableOpacity>
+                    }
 
                 </ScrollView>
 
