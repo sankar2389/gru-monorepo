@@ -499,7 +499,7 @@ class BuySell extends Component<IProps> {
         return a - b
     }
 
-    shortBuyOrSellData = (sortOnField: string) => {
+    sortBuyOrSellData = (sortOnField: string) => {
         const { dataFromCollection, buyData, sellData } = this.state
         let sortData
         if (dataFromCollection === "BUY_DATA") {
@@ -595,21 +595,21 @@ class BuySell extends Component<IProps> {
                                 </View>
                                 <View style={styles.secontRowView}>
                                     <View style={styles.textItemView}>
-                                        <TouchableOpacity onPress={() => { this.shortBuyOrSellData("quantity") }}>
+                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("quantity") }}>
                                             <Text style={styles.buyOrSellTextHeader}>
                                                 Quantity / Unit
                                         </Text>
                                         </TouchableOpacity>
                                     </View>
                                     <View style={styles.textItemView}>
-                                        <TouchableOpacity onPress={() => { this.shortBuyOrSellData("type") }}>
+                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("type") }}>
                                             <Text style={styles.buyOrSellTextHeader}>
                                                 Type
                                         </Text>
                                         </TouchableOpacity>
                                     </View>
                                     <View style={styles.textItemView}>
-                                        <TouchableOpacity onPress={() => { this.shortBuyOrSellData("price") }}>
+                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("price") }}>
                                             <Text style={styles.buyOrSellTextHeader}>
                                                 &#8377; Price
                                         </Text>
