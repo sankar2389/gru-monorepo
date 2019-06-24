@@ -2,11 +2,18 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity, TextInput } from "react-native";
 import { fetchGroupQA } from "../../actions"
-type IProps = any
+import { IReduxState } from "../../types";
+import moment from "moment";
+
+interface IProps {
+    fetchGroupQA: (groupID: string) => void
+    location: any,
+    group: any
+}
 
 interface IState {
     dWidth: number;
-    questionData: any[]
+    questionData: any[];
 }
 
 class GroupDashboard extends Component<IProps, IState> {
@@ -15,17 +22,21 @@ class GroupDashboard extends Component<IProps, IState> {
 
         this.state = {
             dWidth: 0,
-            questionData: []
+            questionData: [],
         }
     }
 
     async componentDidMount() {
-        // this.setState({ questionData: this.props.group.questions.questions })
+        await this.props.fetchGroupQA(this.props.location.state.groupID)
         window.addEventListener("resize", this.updateDimension);
     }
-    
+
+    componentWillReceiveProps(newProps: IProps) {
+        this.setState({ questionData: newProps.group.questions.questions })
+
+    }
+
     async componentWillMount() {
-        await this.props.fetchGroupQA(this.props.location.state.groupID)
         this.updateDimension()
     }
     updateDimension = () => {
@@ -63,27 +74,28 @@ class GroupDashboard extends Component<IProps, IState> {
                             <Text style={[styles.tableColumnText, { color: "#888" }]}>Answers</Text>
                         </View>
                         <View style={styles.tableColumnView}>
-                            <Text style={[styles.tableColumnText, { color: "#888" }]}>Date</Text>
+                            <Text style={[styles.tableColumnText, { color: "#888" }]}>Last Activity</Text>
                         </View>
 
                     </View>
 
                     {/* ** Display Questions Table */}
-                    {this.props.group.questions && this.props.group.questions.questions.map((question: any) => (<View style={styles.tableRowStyles}>
-                        <View style={{ flex: 2 }}>
-                            <Text style={[styles.tableRowText, { color: "#555" }]}>question.title</Text>
-                        </View>
-                        <View style={styles.tableRowView}>
-                            <Text style={[styles.tableRowText, { color: "#555" }]}>question.creator.username</Text>
-                        </View>
-                        <View style={styles.tableRowView}>
-                            <Text style={[styles.tableRowText, { color: "#555" }]}>question.comments.length</Text>
-                        </View>
-                        <View style={styles.tableRowView}>
-                            <Text style={[styles.tableRowText, { color: "#555" }]}>question.createdAt</Text>
-                        </View>
+                    {this.state.questionData && this.state.questionData.length > 0 && this.state.questionData.map((question: any) => (
+                        <TouchableOpacity style={styles.tableRowStyles}>
+                            <View style={{ flex: 2 }}>
+                                <Text style={[styles.tableRowText, { color: "#555" }]}>{question.title}</Text>
+                            </View>
+                            <View style={styles.tableRowView}>
+                                <Text style={[styles.tableRowText, { color: "#555" }]}>{question.creator.username}</Text>
+                            </View>
+                            <View style={styles.tableRowView}>
+                                <Text style={[styles.tableRowText, { color: "#555" }]}>{Object.keys(question.comments).length}</Text>
+                            </View>
+                            <View style={styles.tableRowView}>
+                                <Text style={[styles.tableRowText, { color: "#555" }]}>{moment(question.updatedAt).fromNow()}</Text>
+                            </View>
 
-                    </View>
+                        </TouchableOpacity>
                     ))}
 
                 </ScrollView>
@@ -93,16 +105,17 @@ class GroupDashboard extends Component<IProps, IState> {
     }
 }
 
-function mapStateToProps({ groups }: any) {
+function mapStateToProps({ auth, group }: any): IReduxState {
     return {
-        groups
+        auth,
+        group
     }
 }
 
-export default connect(mapStateToProps, { fetchGroupQA })(GroupDashboard);
+export default connect<IReduxState>(mapStateToProps, { fetchGroupQA })(GroupDashboard);
 
 const styles = StyleSheet.create({
-    mainViewContainer: { marginLeft: 70, height: 810, marginTop: 70 },
+    mainViewContainer: { marginLeft: 55, height: 810, marginTop: 70 },
     smMainViewContainer: { marginLeft: 5, height: 503, zIndex: -1 },
     innerContainer: {
         marginTop: 10,
@@ -124,7 +137,6 @@ const styles = StyleSheet.create({
         height: 490,
     },
     headerGroupDashboard: { fontWeight: "900", fontSize: 30 },
-    blankTextStyle: {},
     imageAndNameView: { flexDirection: "row", flexWrap: "wrap" },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
     smHeaderView: { flexDirection: "column", marginBottom: 20 },
@@ -163,7 +175,6 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         flexWrap: "wrap"
     },
-    buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, alignSelf: "center" },
     userNameText: { flexWrap: "wrap", paddingTop: 10, fontWeight: "900", fontSize: 14 },
 
     tableHeaderStyles: {
@@ -194,7 +205,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "nowrap",
         backgroundColor: '#fff',
-        margin: 20,
+        margin: 10,
         padding: 10
 
     },

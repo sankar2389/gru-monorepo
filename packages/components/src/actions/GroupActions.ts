@@ -405,7 +405,7 @@ export const fetchGroupQA = (groupID: string) => {
                     client.query({
                         query: gql`
                             query($groupID: String) {
-                                questions(where: {
+                                questions(sort: "updatedAt:desc", where: {
                                     groupID: $groupID
                                 }) {
                                     title
