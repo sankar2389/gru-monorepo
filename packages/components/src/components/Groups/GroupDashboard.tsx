@@ -19,12 +19,13 @@ class GroupDashboard extends Component<IProps, IState> {
         }
     }
 
-    componentDidMount() {
-        this.props.fetchGroupQA(this.props.match.params.groupName)
+    async componentDidMount() {
+        // this.setState({ questionData: this.props.group.questions.questions })
         window.addEventListener("resize", this.updateDimension);
     }
-
-    componentWillMount() {
+    
+    async componentWillMount() {
+        await this.props.fetchGroupQA(this.props.location.state.groupID)
         this.updateDimension()
     }
     updateDimension = () => {
@@ -53,36 +54,37 @@ class GroupDashboard extends Component<IProps, IState> {
 
                     <View style={styles.tableHeaderStyles}>
                         <View style={{ flex: 2 }}>
-                            <Text style={styles.tableColumnText}>Title</Text>
+                            <Text style={[styles.tableColumnText, { color: "#888" }]}>Title</Text>
                         </View>
                         <View style={styles.tableColumnView}>
-                            <Text style={styles.tableColumnText}>Creator</Text>
+                            <Text style={[styles.tableColumnText, { color: "#888" }]}>Creator</Text>
                         </View>
                         <View style={styles.tableColumnView}>
-                            <Text style={styles.tableColumnText}>Answers</Text>
+                            <Text style={[styles.tableColumnText, { color: "#888" }]}>Answers</Text>
                         </View>
                         <View style={styles.tableColumnView}>
-                            <Text style={styles.tableColumnText}>Date</Text>
+                            <Text style={[styles.tableColumnText, { color: "#888" }]}>Date</Text>
                         </View>
 
                     </View>
 
                     {/* ** Display Questions Table */}
-                    <View style={styles.tableRowStyles}>
+                    {this.props.group.questions && this.props.group.questions.questions.map((question: any) => (<View style={styles.tableRowStyles}>
                         <View style={{ flex: 2 }}>
-                            <Text style={styles.tableRowText}>Title</Text>
+                            <Text style={[styles.tableRowText, { color: "#555" }]}>question.title</Text>
                         </View>
                         <View style={styles.tableRowView}>
-                            <Text style={styles.tableRowText}>Creator</Text>
+                            <Text style={[styles.tableRowText, { color: "#555" }]}>question.creator.username</Text>
                         </View>
                         <View style={styles.tableRowView}>
-                            <Text style={styles.tableRowText}>Answers</Text>
+                            <Text style={[styles.tableRowText, { color: "#555" }]}>question.comments.length</Text>
                         </View>
                         <View style={styles.tableRowView}>
-                            <Text style={styles.tableRowText}>Date</Text>
+                            <Text style={[styles.tableRowText, { color: "#555" }]}>question.createdAt</Text>
                         </View>
 
                     </View>
+                    ))}
 
                 </ScrollView>
 
@@ -173,7 +175,6 @@ const styles = StyleSheet.create({
         flexWrap: "nowrap",
         backgroundColor: 'transparent',
         margin: 20,
-        color: "#888",
         borderBottomWidth: 1,
         borderBottomColor: "#aaa",
         padding: 10
@@ -194,7 +195,6 @@ const styles = StyleSheet.create({
         flexWrap: "nowrap",
         backgroundColor: '#fff',
         margin: 20,
-        color: "#555",
         padding: 10
 
     },

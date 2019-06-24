@@ -3,6 +3,7 @@ import { IGroup } from '../types'
 
 const initState: IGroup = {
     groups: [],
+    questions: [],
     error: null
 }
 export default (state: IGroup = initState, action: AnyAction): IGroup => {
@@ -26,7 +27,7 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
         case 'GET_GRP_QA':
             return {
                 ...state,
-                groups: [...state.groups, ...action.payload]
+                questions: action.payload
             };
 
         default:
