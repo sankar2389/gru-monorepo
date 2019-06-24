@@ -404,16 +404,21 @@ export const fetchGroupQA = (groupID: string) => {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
-                            query(groupID: String) {
+                            query($groupID: String) {
                                 questions(where: {
                                     groupID: $groupID
                                 }) {
+                                    title
                                     groupID
+                                    comments
+                                    creator
+                                    createdAt
+                                    updatedAt
                                 }
                             }
                         `,
                         variables: {
-                            "groupID": groupID
+                            "groupID":groupID
                         }
                     }).then((res: any) => {
                         getGrpQA(dispatch, res.data);

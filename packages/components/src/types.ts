@@ -39,6 +39,7 @@ export interface IRootState {
 
 export interface IGroup {
     groups: IGroupsInfo[],
+    questions: any[],
     error: Error | null
 }
 
