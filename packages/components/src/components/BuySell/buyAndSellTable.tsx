@@ -220,7 +220,7 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
                                         <View style={styles.textItemView}>
                                             <Text style={styles.buyOrSellText}>
                                                 asks
-                                </Text>
+                                            </Text>
                                         </View>
                                         <View style={styles.secondRowView}>
                                             <View style={styles.textItemView}>

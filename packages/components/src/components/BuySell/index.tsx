@@ -770,14 +770,6 @@ const styles = StyleSheet.create({
         display: "flex",
         height: 490,
     },
-
-
-
-
-
-
-
-
     scene: {
         flex: 1,
     },
@@ -786,7 +778,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2, borderBottomColor: "red"
     },
     blankTextStyle: {},
-    imageAndNameView: { flexDirection: "row", flexWrap: "wrap" },
     headerView: { flexDirection: 'row', justifyContent: "space-between", marginBottom: 20 },
     smHeaderView: { flexDirection: "column", marginBottom: 20 },
     pageOpacity: {
@@ -794,9 +785,7 @@ const styles = StyleSheet.create({
     },
     headerSmallText: { marginBottom: 50, color: "#686662" },
     smHeaderSmallText: { marginBottom: 20, color: "#686662" },
-
     pageOpacityNone: {
-
     },
     buyAndSellPageHeadText: {
         fontSize: 16
@@ -814,10 +803,6 @@ const styles = StyleSheet.create({
         right: 0,
         height: "100vh"
     },
-
-
-
-
     secontRowView: {
         flexDirection: "row", flex: 1,
         justifyContent: "space-around", alignItems: "flex-start", width: "95%", padding: 10
@@ -830,10 +815,6 @@ const styles = StyleSheet.create({
     },
     saveButtonText: {
         color: "#ffffff"
-    },
-    setPriceButton: {
-        borderWidth: 1, borderColor: "#f4c242",
-        padding: 10, alignItems: "flex-end", justifyContent: "flex-end", borderRadius: 5
     },
     saveButton: {
         backgroundColor: "#e01134", paddingLeft: 22,
@@ -904,7 +885,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 300, left: 100,
     },
-
     setPricebuttonView: {
         flexDirection: "row",
         alignItems: "flex-end",
@@ -926,11 +906,6 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "#ffffff"
     },
-    textItemView: {
-        flex: 1,
-        flexWrap: "wrap",
-        justifyContent: "space-around"
-    },
     submitButton: {
         backgroundColor: "green",
         padding: 10, borderRadius: 5
@@ -940,7 +915,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 250,
         left: "21%"
-
     },
     goldOrSilverView: {
         flexDirection: "row",
@@ -948,46 +922,6 @@ const styles = StyleSheet.create({
         top: 70,
         left: "21%"
     },
-
-    nestedGroupListView: {
-        padding: 8,
-        backgroundColor: '#ffffff',
-        marginTop: 10,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap"
-    },
-    nestedGroupListViewHeader: {
-        padding: 8,
-        backgroundColor: '#707070',
-        marginTop: 10,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap"
-    },
-    smNestedGroupListView: {
-        padding: 8,
-        backgroundColor: '#ffffff',
-        marginTop: 10,
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap"
-    },
-    smNestedGroupListViewHeader: {
-        padding: 8,
-        backgroundColor: '#303030',
-        marginTop: 10,
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap"
-    },
-    buyOrSellText: { flexWrap: "wrap", color: "#686662", fontSize: 14, alignSelf: "center" },
-    buyOrSellTextHeader: { flexWrap: "wrap", fontSize: 14, alignSelf: "center", fontWeight: "900" },
-    userNameText: { flexWrap: "wrap", paddingTop: 10, fontWeight: "900", fontSize: 14 },
     buyOrSellDateTime: { marginBottom: 10, color: "gray", fontSize: 12 },
     droupDownView: { marginTop: 20, marginRight: 20 },
     dropdownDots: {
@@ -1028,14 +962,6 @@ const styles = StyleSheet.create({
     },
     pageCountTextStyle: {
         color: "#ffffff"
-    },
-    avatarStyle: {
-        height: 35,
-        width: 35,
-        backgroundColor: "#bfbfbf",
-        borderRadius: 40,
-        // marginLeft: 20,
-        marginRight: 15
     },
     paginationView: {
         flexDirection: "row", padding: 20, justifyContent: "center", marginLeft: 10,
