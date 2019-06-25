@@ -100,7 +100,6 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
                     <Text style={styles.bidHeaderText}>Date</Text>
                     <Text style={styles.bidHeaderText}>Action</Text>
                 </View>
-
                 {bids.map((bid: any, index: number) => {
                     if (userId === bid.userId || userId === buyOrSell.creator) {
                         if (index >= bidStartNumber && index < bidEndNumber)

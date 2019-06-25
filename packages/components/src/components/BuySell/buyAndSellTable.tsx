@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View, Text, Easing, Animated, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, AsyncStorage, Image, TouchableOpacity } from "react-native";
 import moment from "moment";
 import BuyAndSellBidsTable from "./buyAndSellBidsTable";
 
@@ -21,7 +21,8 @@ interface IState {
     sortingFieldName: string,
     previousSortingOrder: string,
     buyOrSellId: string,
-    bidOn: string
+    bidOn: string,
+    userId: string
 }
 
 class BuyAndSellTable extends React.Component<IProps, IState> {
@@ -36,12 +37,19 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
         sortingFieldName: "",
         previousSortingOrder: "",
         buyOrSellId: "",
-        bidOn: ""
+        bidOn: "",
+        userId: ""
 
     }
 
     componentWillReceiveProps(newProps: any) {
         this.setState({ buyOrSellData: newProps.data })
+    }
+    async componentDidMount() {
+        const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        this.setState({
+            userId: user._id
+        })
     }
 
     sortBuyOrSellData = (sortOnField: string) => {
@@ -162,7 +170,7 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
 
     render() {
         const { dWidth, bids, bidOn } = this.props
-        const { buyOrSellData, buyOrSellId } = this.state
+        const { buyOrSellData, buyOrSellId, userId } = this.state
         return (
             buyOrSellData.length > 0 ?
                 <View>
@@ -235,11 +243,16 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
                                                 </Text>
                                             </View>
                                         </View>
-                                        <TouchableOpacity style={styles.setPriceButton}
-                                            onPress={() => this.props.onPressSetBidPrice(bidOn, buyOrSell._id)}
-                                        >
-                                            <Text>Set Price</Text>
-                                        </TouchableOpacity>
+                                        {userId !== buyOrSell.creator ?
+                                            < TouchableOpacity style={styles.setPriceButton}
+                                                onPress={() => this.props.onPressSetBidPrice(bidOn, buyOrSell._id)}
+                                            >
+                                                <Text>Set Price</Text>
+                                            </TouchableOpacity>
+
+                                            :
+                                            <View style={{ width: 70 }} />
+                                        }
                                     </View>
                                 </TouchableOpacity>
 

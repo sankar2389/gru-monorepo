@@ -16,7 +16,6 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 message: "",
             };
         case 'BUY_DATA_LIST_SUCCESS':
-            console.log("rrr", action.payload)
             return {
                 ...state,
                 buyOrSellData: action.payload
