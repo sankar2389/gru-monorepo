@@ -83,7 +83,7 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
 
     render() {
         const { buyOrSell, bidOn } = this.props
-        const { bidStartNumber, bidEndNumber, bids } = this.state
+        const { bidStartNumber, bidEndNumber, bids, userId } = this.state
         return bids.length > 0 ?
             <View>
                 <View style={styles.firstBidViewStyle}>
@@ -102,38 +102,40 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
                 </View>
 
                 {bids.map((bid: any, index: number) => {
-                    if (index >= bidStartNumber && index < bidEndNumber)
-                        return (
-                            <View key={index} style={styles.bidStyle}>
-                                <Text style={{ flex: 1 }}>{bid.user[0].username}</Text>
-                                <Text style={{ flex: 1 }}>{bid.bidPrice}</Text>
-                                <Text style={{ flex: 1 }}>{bid.bidQuantity}</Text>
-                                <Text style={{ flex: 1 }}>{bid.totalPrice}</Text>
-                                <Text style={{ flex: 1 }}>{moment(bid.createdAt).format('LL')}</Text>
-                                {
-                                    this.state.userId === buyOrSell.creator ?
-                                        <View style={styles.actionButtonView}>
-                                            <TouchableOpacity
-                                                style={[styles.bidActionButton, styles.bidAcceptButton]}
-                                                onPress={() => this.props.bidActionButtonFunc(bidOn, "accepted", bid._id, buyOrSell._id)}
-                                            >
-                                                <Text style={styles.bidActionButtonText}>
-                                                    Accept
+                    if (userId === bid.userId || userId === buyOrSell.creator) {
+                        if (index >= bidStartNumber && index < bidEndNumber)
+                            return (
+                                <View key={index} style={styles.bidStyle}>
+                                    <Text style={{ flex: 1 }}>{bid.user[0].username}</Text>
+                                    <Text style={{ flex: 1 }}>{bid.bidPrice}</Text>
+                                    <Text style={{ flex: 1 }}>{bid.bidQuantity}</Text>
+                                    <Text style={{ flex: 1 }}>{bid.totalPrice}</Text>
+                                    <Text style={{ flex: 1 }}>{moment(bid.createdAt).format('LL')}</Text>
+                                    {
+                                        userId === buyOrSell.creator ?
+                                            <View style={styles.actionButtonView}>
+                                                <TouchableOpacity
+                                                    style={[styles.bidActionButton, styles.bidAcceptButton]}
+                                                    onPress={() => this.props.bidActionButtonFunc(bidOn, "accepted", bid._id, buyOrSell._id)}
+                                                >
+                                                    <Text style={styles.bidActionButtonText}>
+                                                        Accept
                                                 </Text>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                style={[styles.bidActionButton, styles.bidRejectButton]}
-                                                onPress={() => this.props.bidActionButtonFunc(bidOn, "rejected", bid._id, buyOrSell._id)}
-                                            >
-                                                <Text style={styles.bidActionButtonText}>
-                                                    Reject
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[styles.bidActionButton, styles.bidRejectButton]}
+                                                    onPress={() => this.props.bidActionButtonFunc(bidOn, "rejected", bid._id, buyOrSell._id)}
+                                                >
+                                                    <Text style={styles.bidActionButtonText}>
+                                                        Reject
                                                 </Text>
-                                            </TouchableOpacity>
-                                        </View> :
-                                        <View style={styles.actionButtonView} />
-                                }
-                            </View>
-                        )
+                                                </TouchableOpacity>
+                                            </View> :
+                                            <View style={styles.actionButtonView} />
+                                    }
+                                </View>
+                            )
+                    }
                 })}
 
                 {

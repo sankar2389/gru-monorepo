@@ -154,7 +154,6 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
         if (buyOrSell.bids.length > 0) {
             this.props.onPressExpandedBid(buyOrSell)
             this.setState({ buyOrSellId: buyOrSell._id })
-
         } else {
             this.props.onPressExpandedBid(buyOrSell)
             this.setState({ buyOrSellId: "" })
