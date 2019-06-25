@@ -508,34 +508,9 @@ class BuySell extends Component<IProps> {
     }
 
     bidActionButtonFunc = (type: string, evt: string, _id: string, buyOrSellId: string) => {
+        console.log("Type", type)
         this.props.bidAcceptOrReject(type, evt, "closed", _id, buyOrSellId)
     }
-
-    sortONBuyOrSellBids = (field: string) => {
-        const { bids, sortingOrder } = this.state
-        let sortData
-
-        if (sortingOrder === "asc") {
-            sortData = bids.sort((a: any, b: any) => {
-                if (a[field] < b[field]) {
-                    return -1 //sort ascending
-                }
-                return 0 //default return
-            })
-            this.setState({ bids: sortData, sortingOrder: "desc" })
-        }
-        if (sortingOrder === "desc") {
-            sortData = bids.sort((a: any, b: any) => {
-                if (b[field] < a[field]) {
-                    return -1 //sort descending
-                }
-                return 0 //default return
-            })
-            this.setState({ bids: sortData, sortingOrder: "asc" })
-        }
-    }
-
-
 
     render() {
         const { innerContainer } = styles;
@@ -592,6 +567,7 @@ class BuySell extends Component<IProps> {
                             dWidth={dWidth}
                             onPressExpandedBid={this.onPressExpandedBid}
                             onPressSetBidPrice={this.onPressSetBidPrice}
+                            bidActionButtonFunc={this.bidActionButtonFunc}
 
                         />
                     </View>
@@ -822,12 +798,12 @@ const styles = StyleSheet.create({
     },
 
 
-    actionButtonView: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center" },
 
-    bidActionButton: { padding: 4, marginRight: 5, borderRadius: 5, alignItems: "center", justifyContent: "center" },
-    bidAcceptButton: { backgroundColor: "#1D96A8", },
-    bidRejectButton: { backgroundColor: "#FF1C14" },
-    bidActionButtonText: { color: "#ffffff", fontSize: 14 },
+
+
+
+
+
     scene: {
         flex: 1,
     },

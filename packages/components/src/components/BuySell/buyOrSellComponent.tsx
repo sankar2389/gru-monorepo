@@ -9,7 +9,8 @@ interface IProps {
     bids: any
     dWidth: Number,
     onPressExpandedBid: Function,
-    onPressSetBidPrice: Function
+    onPressSetBidPrice: Function,
+    bidActionButtonFunc: Function
 }
 
 interface IState {
@@ -248,7 +249,9 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
                                     buyOrSellIndex === index ?
                                         <BuyAndSellBidsComponent
                                             bids={bids}
+                                            bidOn={bidOn}
                                             buyOrSell={buyOrSell}
+                                            bidActionButtonFunc={this.props.bidActionButtonFunc}
                                         /> :
                                         <Text />
                                 }
