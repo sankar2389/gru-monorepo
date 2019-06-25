@@ -74,7 +74,7 @@ class GroupDashboard extends Component<IProps, IState> {
         AsyncStorage.getItem("token").then(async (authtoken: string | null) => {
             if (authtoken) {
 
-                const res = await this.getCount("questions", authtoken)
+                const res = await this.getCount("questions", authtoken, this.props.location.state.groupID)
 
                 this.setState({
                     totalPages: res,
@@ -91,8 +91,8 @@ class GroupDashboard extends Component<IProps, IState> {
 
     // Function to get all records in the DB by datatype as BUY/SELL
 
-    getCount = async (dataType: string, authtoken: string) => {
-        const res = await axios.get(process.env.CMS_API + `${dataType}/count`, {
+    getCount = async (dataType: string, authtoken: string, groupID: number) => {
+        const res = await axios.get(process.env.CMS_API + `${dataType}/count?groupID=${groupID}`, {
             headers: {
                 Authorization: "Bearer " + authtoken
             }

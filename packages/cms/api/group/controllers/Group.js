@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Group.js controller
@@ -7,14 +7,13 @@
  */
 
 module.exports = {
-
   /**
    * Retrieve group records.
    *
    * @return {Object|Array}
    */
 
-  find: async (ctx) => {
+  find: async ctx => {
     if (ctx.query._q) {
       return strapi.services.group.search(ctx.query);
     } else {
@@ -28,7 +27,7 @@ module.exports = {
    * @return {Object}
    */
 
-  findOne: async (ctx) => {
+  findOne: async ctx => {
     if (!ctx.params._id.match(/^[0-9a-fA-F]{24}$/)) {
       return ctx.notFound();
     }
@@ -42,7 +41,7 @@ module.exports = {
    * @return {Number}
    */
 
-  count: async (ctx) => {
+  count: async ctx => {
     return strapi.services.group.count(ctx.query);
   },
 
@@ -52,7 +51,7 @@ module.exports = {
    * @return {Object}
    */
 
-  create: async (ctx) => {
+  create: async ctx => {
     return strapi.services.group.add(ctx.request.body);
   },
 
