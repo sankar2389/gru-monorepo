@@ -14,6 +14,7 @@ import GroupDashboard from './components/Groups/GroupDashboard';
 
 import './App.css';
 import Navigation from './components/Navigation';
+import GroupQuestionPage from './components/Groups/GroupQuestionPage';
 export function App() {
   const store = configureStore();
   return (
@@ -27,7 +28,8 @@ export function App() {
           <PrivateRoute path="/secure" component={Dashboard} exact />
           <PrivateRoute path="/secure/dashboard" component={Dashboard} />
           <PrivateRoute path="/secure/buysell" component={BuySell} />
-          <PrivateRoute path="/secure/groups/:groupName" component={GroupDashboard} />
+          <PrivateRoute path="/secure/groups/:groupName/:questionID"  component={GroupQuestionPage} />
+          <PrivateRoute path="/secure/groups/:groupName" component={GroupDashboard} exact/>
           <PrivateRoute path="/secure/groups" component={GroupView} exact/>
           <PrivateRoute path="/secure/chat" component={Chat} />
         </Router>
