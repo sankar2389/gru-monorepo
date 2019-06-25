@@ -510,32 +510,23 @@ class BuySell extends Component<IProps> {
     }
 
     sortBuyOrSellData = (sortOnField: string) => {
-        const { sortingCounter, dataFromCollection, sortedQueue, buyData, sellData, sortingOrder, sortingFieldName, previousSortingOrder } = this.state
-        let sortData
+        const { sortingCounter, sortedQueue, sortingOrder, sortingFieldName, previousSortingOrder } = this.state
         let counter = sortingCounter + 1
         if (sortingFieldName === sortOnField) {
             console.log("sortedQueue a if 1", sortedQueue)
             if (counter >= 2) {
                 if (sortedQueue.length > 1) {
                     sortedQueue.pop()
-                    console.log("sortedQueue after pop 2", sortedQueue)
                     let field = sortedQueue[sortedQueue.length - 1]
-                    console.log("sortedQueue  else 2 filed", field)
                     this.onCallPreviousSortBuyAndSellFunction(field, sortOnField)
-
                 } else {
-                    console.log("sortedQueue b else 3", sortedQueue)
                     let field = sortedQueue[sortedQueue.length - 1]
-                    console.log("sortedQueue  else 3 filed", field)
-
                     this.callOnSortingBuyAndSell(field, sortOnField, counter = 0, previousSortingOrder)
                 }
 
 
             } else {
-                console.log("sortedQueue  else 4", sortedQueue)
                 let field = sortedQueue[sortedQueue.length - 1]
-                console.log("sortedQueue  else 4 filed", field)
                 this.callOnSortingBuyAndSell(field, sortOnField, counter, previousSortingOrder)
             }
         } else {
@@ -547,14 +538,12 @@ class BuySell extends Component<IProps> {
             if (sortingOrder === "desc") {
                 this.callOnSortingBuyAndSell(field, sortOnField, counter, "desc")
             }
-
-            console.log("sortedQueue b else 5", sortedQueue)
         }
 
     }
 
     onCallPreviousSortBuyAndSellFunction = (field: string, sortOnField: string) => {
-        const { dataFromCollection, sortedQueue, buyData, sellData, previousSortingOrder } = this.state
+        const { dataFromCollection, sortedQueue, buyData, previousSortingOrder } = this.state
         let sortData
         if (dataFromCollection === "BUY_DATA") {
             if (previousSortingOrder === "asc") {
@@ -591,7 +580,7 @@ class BuySell extends Component<IProps> {
     }
 
     callOnSortingBuyAndSell = (field: string, sortOnField: string, counter: number, previousSortingOrder: string) => {
-        const { dataFromCollection, sortedQueue, buyData, sellData, sortingOrder, } = this.state
+        const { dataFromCollection, sortedQueue, buyData, sortingOrder, } = this.state
         let sortData
         if (dataFromCollection === "BUY_DATA") {
             if (sortingOrder === "asc") {
@@ -628,93 +617,6 @@ class BuySell extends Component<IProps> {
             }
         }
     }
-
-
-    //     console.log("If", counter, sortedQueue)
-    // else {
-    //     sortedQueue.push(sortOnField)
-    //     if (counter >= 3) {
-    //         console.log("counterssss", counter)
-    //         this.setState({
-    //             sortingCounter: 0,
-    //         })
-
-    //     } else {
-    //         let field = sortedQueue[sortedQueue.length - 1]
-    //         if (dataFromCollection === "BUY_DATA") {
-    //             if (sortingOrder === "asc") {
-    //                 sortData = buyData.sort((a: any, b: any) => {
-    //                     if (a[field] < b[field]) {
-    //                         return -1 //sort ascending
-    //                     }
-    //                     return 0 //default return
-    //                 })
-    //                 this.setState({
-    //                     buyData: sortData,
-    //                     sortingOrder: "desc",
-    //                     sortingCounter: counter,
-    //                     sortedQueue: sortedQueue,
-    //                     sortingFieldName: sortOnField,
-    //                 })
-    //             }
-    //             if (sortingOrder === "desc") {
-    //                 sortData = buyData.sort((a: any, b: any) => {
-    //                     if (b[field] < a[field]) {
-    //                         return -1 //sort descending
-    //                     }
-    //                     return 0 //default return
-    //                 })
-    //                 this.setState({
-    //                     buyData: sortData,
-    //                     sortingOrder: "desc",
-    //                     sortingCounter: counter,
-    //                     sortedQueue: sortedQueue,
-    //                     sortingFieldName: sortOnField,
-    //                 })
-    //             }
-    //         }
-    //     }
-    //     console.log("else", counter, sortedQueue)
-    // }
-    // 
-    // 
-    // if (counter === 3) {
-    //     console.log("counter if", counter)
-    //     this.setState({ sortingCounter: 0 })
-    // } else {
-    //     sortedQueue.push(sortOnField)
-    //     console.log("sortedQueue", sortedQueue)
-    //     
-
-    //     //console.log("field", field);
-
-
-    // console.log("counter else", counter)
-
-    // }
-
-
-    // if (dataFromCollection === "SELL_DATA") {
-    //     if (sortingOrder === "asc") {
-    //         sortData = sellData.sort((a: any, b: any) => {
-    //             if (a[sortOnField] < b[sortOnField]) {
-    //                 return -1 //sort ascending
-    //             }
-    //             return 0 //default return
-    //         })
-    //         this.setState({ sellData: sortData, sortingOrder: "desc" })
-    //     }
-    //     if (sortingOrder === "desc") {
-    //         sortData = sellData.sort((a: any, b: any) => {
-    //             if (b[sortOnField] < a[sortOnField]) {
-    //                 return -1 //sort descending
-    //             }
-    //             return 0 //default return
-    //         })
-    //         this.setState({ sellData: sortData, sortingOrder: "asc" })
-    //     }
-
-    // }
 
     sortONBuyOrSellBids = (field: string) => {
         const { bids, sortingOrder } = this.state
