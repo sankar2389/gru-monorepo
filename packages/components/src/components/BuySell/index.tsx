@@ -472,19 +472,20 @@ class BuySell extends Component<IProps> {
         }
     }
 
-    onPressExpandedBid = (buyOrSell: any, index: number) => {
+    onPressExpandedBid = (buyOrSell: any) => {
         if (buyOrSell.bids.length > 0) {
             this.props.getBidsByBidId(buyOrSell.bids)
             this.setState({
                 expandBidView: true,
-                buyOrSellIndex: index,
                 bids: []
             })
         } else {
             this.setState({
                 messageType: "success",
                 message: "No bids found",
-                openCustomMessage: true
+                openCustomMessage: true,
+                bids: [],
+                expandBidView: false,
             })
             this.props.clearBuyOrSellReducer()
         }
@@ -510,115 +511,6 @@ class BuySell extends Component<IProps> {
         this.props.bidAcceptOrReject(type, evt, "closed", _id, buyOrSellId)
     }
 
-    // sortBuyOrSellData = (sortOnField: string) => {
-    //     const { sortingCounter, sortedQueue, sortingOrder, sortingFieldName, previousSortingOrder } = this.state
-    //     let counter = sortingCounter + 1
-    //     if (sortingFieldName === sortOnField) {
-    //         console.log("sortedQueue a if 1", sortedQueue)
-    //         if (counter >= 2) {
-    //             if (sortedQueue.length > 1) {
-    //                 sortedQueue.pop()
-    //                 let field = sortedQueue[sortedQueue.length - 1]
-    //                 this.onCallPreviousSortBuyAndSellFunction(field, sortOnField)
-    //             } else {
-    //                 let field = sortedQueue[sortedQueue.length - 1]
-    //                 this.callOnSortingBuyAndSell(field, sortOnField, counter = 0, previousSortingOrder)
-    //             }
-
-
-    //         } else {
-    //             let field = sortedQueue[sortedQueue.length - 1]
-    //             this.callOnSortingBuyAndSell(field, sortOnField, counter, previousSortingOrder)
-    //         }
-    //     } else {
-    //         sortedQueue.push(sortOnField)
-    //         let field = sortedQueue[sortedQueue.length - 1]
-    //         if (sortingOrder === "asc") {
-    //             this.callOnSortingBuyAndSell(field, sortOnField, counter, "asc")
-    //         }
-    //         if (sortingOrder === "desc") {
-    //             this.callOnSortingBuyAndSell(field, sortOnField, counter, "desc")
-    //         }
-    //     }
-
-    // }
-
-    // onCallPreviousSortBuyAndSellFunction = (field: string, sortOnField: string) => {
-    //     const { dataFromCollection, sortedQueue, buyData, previousSortingOrder } = this.state
-    //     let sortData
-    //     if (dataFromCollection === "BUY_DATA") {
-    //         if (previousSortingOrder === "asc") {
-    //             sortData = buyData.sort((a: any, b: any) => {
-    //                 if (a[field] < b[field]) {
-    //                     return -1 //sort ascending
-    //                 }
-    //                 return 0 //default return
-    //             })
-    //             this.setState({
-    //                 buyData: sortData,
-    //                 sortingOrder: "desc",
-    //                 sortingCounter: 0,
-    //                 sortedQueue: sortedQueue,
-    //                 sortingFieldName: sortOnField,
-    //             })
-    //         }
-    //         if (previousSortingOrder === "desc") {
-    //             sortData = buyData.sort((a: any, b: any) => {
-    //                 if (b[field] < a[field]) {
-    //                     return -1 //sort descending
-    //                 }
-    //                 return 0 //default return
-    //             })
-    //             this.setState({
-    //                 buyData: sortData,
-    //                 sortingOrder: "asc",
-    //                 sortingCounter: 0,
-    //                 sortedQueue: sortedQueue,
-    //                 sortingFieldName: sortOnField,
-    //             })
-    //         }
-    //     }
-    // }
-
-    // callOnSortingBuyAndSell = (field: string, sortOnField: string, counter: number, previousSortingOrder: string) => {
-    //     const { dataFromCollection, sortedQueue, buyData, sortingOrder, } = this.state
-    //     let sortData
-    //     if (dataFromCollection === "BUY_DATA") {
-    //         if (sortingOrder === "asc") {
-    //             sortData = buyData.sort((a: any, b: any) => {
-    //                 if (a[field] < b[field]) {
-    //                     return -1 //sort ascending
-    //                 }
-    //                 return 0 //default return
-    //             })
-    //             this.setState({
-    //                 buyData: sortData,
-    //                 sortingOrder: "desc",
-    //                 sortingCounter: counter,
-    //                 sortedQueue: sortedQueue,
-    //                 sortingFieldName: sortOnField,
-    //                 previousSortingOrder: previousSortingOrder
-    //             })
-    //         }
-    //         if (sortingOrder === "desc") {
-    //             sortData = buyData.sort((a: any, b: any) => {
-    //                 if (b[field] < a[field]) {
-    //                     return -1 //sort descending
-    //                 }
-    //                 return 0 //default return
-    //             })
-    //             this.setState({
-    //                 buyData: sortData,
-    //                 sortingOrder: "asc",
-    //                 sortingCounter: counter,
-    //                 sortedQueue: sortedQueue,
-    //                 sortingFieldName: sortOnField,
-    //                 previousSortingOrder: previousSortingOrder
-    //             })
-    //         }
-    //     }
-    // }
-
     sortONBuyOrSellBids = (field: string) => {
         const { bids, sortingOrder } = this.state
         let sortData
@@ -641,9 +533,6 @@ class BuySell extends Component<IProps> {
             })
             this.setState({ bids: sortData, sortingOrder: "asc" })
         }
-
-
-
     }
 
 
@@ -694,182 +583,20 @@ class BuySell extends Component<IProps> {
                         </View>
                         {/* <TabView /> */}
                     </View>
+
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
                         <BuyOrSellComponent
                             data={dataFromCollection === "SELL_DATA" ? sellData : buyData}
+                            bidOn={dataFromCollection === "SELL_DATA" ? "sell" : "buy"}
+                            bids={this.state.bids}
                             dWidth={dWidth}
+                            onPressExpandedBid={this.onPressExpandedBid}
+                            onPressSetBidPrice={this.onPressSetBidPrice}
 
                         />
                     </View>
                     {/* DISPLAY SELL */}
-                    {
-                        this.state.dataFromCollection === "SELL_DATA" &&
-                        <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
 
-                            {/* SELL TABLE HEADER */}
-                            <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListViewHeader : styles.nestedGroupListViewHeader}>
-                                <View style={styles.imageAndNameView}>
-                                    <TouchableOpacity >
-                                        <Text style={[styles.userNameText, { marginLeft: 50 }]}>{"UserName"}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={styles.textItemView}>
-                                    <Text style={styles.buyOrSellTextHeader}>
-                                        asks
-                                    </Text>
-                                </View>
-                                <View style={styles.secontRowView}>
-                                    <View style={styles.textItemView}>
-                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("quantity") }}>
-                                            <Text style={styles.buyOrSellTextHeader}>
-                                                Quantity / Unit
-                                        </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={styles.textItemView}>
-                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("type") }}>
-                                            <Text style={styles.buyOrSellTextHeader}>
-                                                Type
-                                        </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={styles.textItemView}>
-                                        <TouchableOpacity onPress={() => { this.sortBuyOrSellData("price") }}>
-                                            <Text style={styles.buyOrSellTextHeader}>
-                                                &#8377; Price
-                                        </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                                <View style={{ width: 70, }} />
-                            </View>
-                            {/* END SELL HEADER */}
-
-                            {this.state.sellData.map((buyOrSell: any, index: number) => {
-                                return (
-                                    <View key={index}>
-                                        <TouchableOpacity onPress={() => this.onPressExpandedBid(buyOrSell, index)}>
-                                            <View style={this.state.dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
-                                                <View style={styles.imageAndNameView}>
-                                                    <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
-                                                    <Text style={styles.userNameText}>{buyOrSell.creatorObject !== undefined ? buyOrSell.creatorObject.username : ""}</Text>
-                                                </View>
-                                                <View style={styles.textItemView}>
-                                                    <Text style={styles.buyOrSellText}>
-                                                        asks
-                                            </Text>
-                                                </View>
-                                                <View style={styles.secontRowView}>
-                                                    <View style={styles.textItemView}>
-                                                        <Text style={styles.buyOrSellText}>
-                                                            {buyOrSell.quantity}{buyOrSell.unit}
-                                                        </Text>
-                                                    </View>
-                                                    <View style={styles.textItemView}>
-                                                        <Text style={styles.buyOrSellText}>
-                                                            {buyOrSell.type}
-                                                        </Text>
-                                                    </View>
-                                                    <View style={styles.textItemView}>
-                                                        <Text style={styles.buyOrSellText}>
-                                                            &#8377; {buyOrSell.price}
-                                                        </Text>
-                                                    </View>
-                                                </View>
-                                                <TouchableOpacity style={styles.setPriceButton}
-                                                    onPress={() => this.onPressSetBidPrice("sell", buyOrSell._id)}
-                                                >
-                                                    <Text>Set Price</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </TouchableOpacity>
-
-                                        {/* EXPANDABLE BID START */}
-                                        {
-                                            this.state.expandBidView && buyOrSellIndex === index ?
-                                                <View >
-                                                    <View style={styles.firstBidViewStyle}>
-                                                        <Text style={styles.bidHeaderText}>User name</Text>
-                                                        <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("bidPrice")}>
-                                                            <Text style={styles.bidHeaderText}>Bid Price</Text>
-                                                        </TouchableOpacity>
-                                                        <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("bidQuantity")}>
-                                                            <Text style={styles.bidHeaderText}>Bid Quantity</Text>
-                                                        </TouchableOpacity>
-                                                        <TouchableOpacity style={styles.bidHeaderText} onPress={() => this.sortONBuyOrSellBids("totalPrice")}>
-                                                            <Text style={styles.bidHeaderText}>Total Price</Text>
-                                                        </TouchableOpacity>
-                                                        <Text style={styles.bidHeaderText}>Date</Text>
-                                                        <Text style={styles.bidHeaderText}>Action</Text>
-                                                    </View>
-                                                    {
-                                                        bids.length > 0 ?
-                                                            bids.map((bid: any, index: number) => {
-                                                                if (index >= bidStartNumber && index < bidEndNumber)
-                                                                    return (
-                                                                        <View key={index} style={styles.bidStyle}>
-                                                                            <Text style={styles.bidHeaderText}>{bid.user[0].username}</Text>
-                                                                            <Text style={styles.bidHeaderText}>{bid.bidPrice}</Text>
-                                                                            <Text style={styles.bidHeaderText}>{bid.bidQuantity}</Text>
-                                                                            <Text style={styles.bidHeaderText}>{bid.totalPrice}</Text>
-                                                                            <Text style={styles.bidHeaderText}>{moment(bid.createdAt).format('LL')}</Text>
-                                                                            {
-                                                                                this.state.userId === buyOrSell.creator ?
-                                                                                    <View style={styles.actionButtonView}>
-                                                                                        <TouchableOpacity style={[styles.bidActionButton, styles.bidAcceptButton]}
-                                                                                            onPress={() => this.bidActionButtonFunc("sell", "accepted", bid._id, buyOrSell._id)}
-                                                                                        >
-                                                                                            <Text style={styles.bidActionButtonText}>
-                                                                                                Accept
-                                                                                    </Text>
-                                                                                        </TouchableOpacity>
-                                                                                        <TouchableOpacity style={[styles.bidActionButton, styles.bidRejectButton]}
-                                                                                            onPress={() => this.bidActionButtonFunc("sell", "rejected", bid._id, buyOrSell._id)}
-                                                                                        >
-                                                                                            <Text style={styles.bidActionButtonText}>
-                                                                                                Reject
-                                                                                    </Text>
-                                                                                        </TouchableOpacity>
-                                                                                    </View> :
-                                                                                    <View style={styles.actionButtonView} />
-                                                                            }
-                                                                        </View>
-                                                                    )
-                                                            }) : <Text />
-                                                    }
-                                                    {
-                                                        bids.length > 5 ?
-                                                            <View style={styles.bidPaginationView}>
-                                                                <TouchableOpacity style={styles.bidPreviousButton}
-                                                                    disabled={bidStartNumber === 0 ? true : false}
-                                                                    onPress={() => this.bidsNextOrPrevious("previous")}
-                                                                >
-                                                                    <Text style={styles.bidButtonText}>
-                                                                        {"<"}
-                                                                    </Text>
-                                                                </TouchableOpacity>
-                                                                <TouchableOpacity style={styles.bidNextButton}
-                                                                    disabled={bidEndNumber >= bids.length ? true : false}
-                                                                    onPress={() => this.bidsNextOrPrevious("next")}
-                                                                >
-                                                                    <Text style={styles.bidButtonText}>
-                                                                        {">"}
-                                                                    </Text>
-                                                                </TouchableOpacity>
-                                                            </View>
-                                                            :
-                                                            <Text />
-                                                    }
-                                                </View>
-                                                :
-                                                <Text />
-                                        }
-                                        {/* EXPANDABLE BID END */}
-                                    </View>
-                                )
-                            })}
-                        </View>
-                    }
 
                     {/* BUY AND SELL MODAL START */}
                     {
@@ -1093,28 +820,10 @@ const styles = StyleSheet.create({
         display: "flex",
         height: 490,
     },
-    firstBidViewStyle: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderColor: '#2a4944',
-        borderTopWidth: 1,
-        backgroundColor: '#hg65796',
-        marginLeft: 15,
-        marginRight: 15
-    },
-    bidHeaderText: { flex: 1 },
+
+
     actionButtonView: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center" },
-    bidStyle: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 10,
-        margin: 2,
-        borderColor: '#2a4944',
-        borderWidth: 1,
-        backgroundColor: '#d2f7f1'
-    },
+
     bidActionButton: { padding: 4, marginRight: 5, borderRadius: 5, alignItems: "center", justifyContent: "center" },
     bidAcceptButton: { backgroundColor: "#1D96A8", },
     bidRejectButton: { backgroundColor: "#FF1C14" },
@@ -1155,8 +864,8 @@ const styles = StyleSheet.create({
         right: 0,
         height: "100vh"
     },
-    bidPaginationView: { flexDirection: "row", justifyContent: "flex-end", padding: 5, marginRight: 10 },
-    bidPreviousButton: { marginRight: 20, paddingLeft: 5, paddingRight: 5 },
+
+
     bidNextButton: { paddingLeft: 5, paddingRight: 5 },
     bidButtonText: { fontSize: 18 },
     secontRowView: {

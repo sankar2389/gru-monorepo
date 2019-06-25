@@ -1,10 +1,15 @@
 import React from "react"
 import { StyleSheet, View, Text, Easing, Animated, Image, TouchableOpacity } from "react-native";
-
+import moment from "moment";
+import BuyAndSellBidsComponent from "./buyOrSellBidsComponent";
 
 interface IProps {
     data: any,
-    dWidth: Number
+    bidOn: string,
+    bids: any
+    dWidth: Number,
+    onPressExpandedBid: Function,
+    onPressSetBidPrice: Function
 }
 
 interface IState {
@@ -13,7 +18,8 @@ interface IState {
     sortedQueue: any,
     sortingOrder: string,
     sortingFieldName: string,
-    previousSortingOrder: string
+    previousSortingOrder: string,
+    buyOrSellIndex: number
 }
 
 class BuyAndSellComponent extends React.Component<IProps, IState> {
@@ -26,10 +32,13 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
         sortedQueue: [],
         sortingOrder: "asc",
         sortingFieldName: "",
-        previousSortingOrder: ""
+        previousSortingOrder: "",
+        buyOrSellIndex: -1
+
     }
 
     componentWillReceiveProps(newProps: any) {
+        console.log("newJProps", newProps)
         this.setState({ buyOrSellData: newProps.data })
     }
 
@@ -140,10 +149,20 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
 
     }
 
+    onPressExpandedBids = (buyOrSell: any, index: number) => {
+        if (buyOrSell.bids.length > 0) {
+            this.setState({ buyOrSellIndex: index })
+            this.props.onPressExpandedBid(buyOrSell)
+        } else {
+            this.props.onPressExpandedBid(buyOrSell)
+        }
+
+
+    }
 
     render() {
-        const { dWidth } = this.props
-        const { buyOrSellData } = this.state
+        const { dWidth, bidOn, bids } = this.props
+        const { buyOrSellData, buyOrSellIndex } = this.state
         return (
             buyOrSellData.length > 0 ?
                 <View>
@@ -186,7 +205,7 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
                     {buyOrSellData.map((buyOrSell: any, index: number) => {
                         return (
                             <View key={index}>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.onPressExpandedBids(buyOrSell, index)}>
                                     <View style={dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
@@ -217,7 +236,7 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
                                             </View>
                                         </View>
                                         <TouchableOpacity style={styles.setPriceButton}
-                                        //onPress={() => this.onPressSetBidPrice("sell", buyOrSell._id)}
+                                            onPress={() => this.props.onPressSetBidPrice(bidOn, buyOrSell._id)}
                                         >
                                             <Text>Set Price</Text>
                                         </TouchableOpacity>
@@ -225,6 +244,15 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
                                 </TouchableOpacity>
 
                                 {/* EXPANDABLE BID START */}
+                                {
+                                    buyOrSellIndex === index ?
+                                        <BuyAndSellBidsComponent
+                                            bids={bids}
+                                            buyOrSell={buyOrSell}
+                                        /> :
+                                        <Text />
+                                }
+
 
                                 {/* EXPANDABLE BID END */}
                             </View>
@@ -234,7 +262,7 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
 
                 </View>
                 :
-                <Text>nasldkjf</Text>
+                <Text />
 
         )
     }
@@ -302,5 +330,6 @@ const styles = StyleSheet.create({
         borderWidth: 1, borderColor: "#f4c242",
         padding: 10, alignItems: "flex-end", justifyContent: "flex-end", borderRadius: 5
     },
+
 })
 
