@@ -408,11 +408,11 @@ export const fetchGroupQA = (groupID: string, start: number = 0) => {
                                 questions(sort: "updatedAt:desc", limit: 10, start: $start, where: {
                                     groupID: $groupID
                                 }) {
+                                    _id
                                     title
                                     groupID
                                     comments
                                     creator
-                                    createdAt
                                     updatedAt
                                 }
                             }
