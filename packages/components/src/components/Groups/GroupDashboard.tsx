@@ -181,7 +181,6 @@ class GroupDashboard extends Component<IProps, IState> {
 
     render() {
         const { innerContainer } = styles;
-
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
                 <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
@@ -334,11 +333,6 @@ const styles = StyleSheet.create({
     },
     headerSmallText: { marginBottom: 50, color: '#686662', fontSize: 18 },
     smHeaderSmallText: { marginBottom: 20, color: '#686662', fontSize: 18 },
-
-    pageOpacityNone: {},
-    buyAndSellPageHeadText: {
-        fontSize: 16,
-    },
     textItemView: {
         flex: 1,
         flexWrap: 'wrap',
