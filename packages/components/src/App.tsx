@@ -1,7 +1,7 @@
 import React, { ComponentType } from 'react';
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { View, StyleSheet } from 'react-native';
 import LoginScreen from './components/Login';
 import HomeScreen from './components/Home/HomeScreen';
@@ -9,13 +9,16 @@ import UserRegScreen from './components/UserReg';
 import Dashboard from './components/Dashboard';
 import BuySell from './components/BuySell';
 import GroupView from './components/Groups';
-import Chat from "./components/Groups/Chat";
+import Chat from './components/Groups/Chat';
 import GroupDashboard from './components/Groups/GroupDashboard';
+<<<<<<< HEAD
 import MyBid from "./components/BuySell/myBid";
+=======
+import GroupQuestionPage from './components/Groups/GroupQuestionPage';
+>>>>>>> adding groupQuestionPage with title
 
 import './App.css';
 import Navigation from './components/Navigation';
-import GroupQuestionPage from './components/Groups/GroupQuestionPage';
 export function App() {
   const store = configureStore();
   return (
@@ -40,28 +43,38 @@ export function App() {
   )
 }
 
-const PrivateRoute: any = ({ component: PrivateComponent, auth, ...rest }: { component: ComponentType, auth: any }) => (
-  <Route {...rest} render={(props: any) => (
-    isAuthenticated(props) === true ? <View style={styles.container}><Navigation {...props} /><PrivateComponent {...props} /></View> : <Redirect to='/login' />
-  )} />
-)
+const PrivateRoute: any = ({ component: PrivateComponent, auth, ...rest }: { component: ComponentType; auth: any }) => (
+    <Route
+        {...rest}
+        render={(props: any) =>
+            isAuthenticated(props) === true ? (
+                <View style={styles.container}>
+                    <Navigation {...props} />
+                    <PrivateComponent {...props} />
+                </View>
+            ) : (
+                <Redirect to="/login" />
+            )
+        }
+    />
+);
 
 function isAuthenticated(props: any): boolean {
-  // TODO: authentication token restores if stored in redux
-  // ** Fetching authtoken from store can follow following workflow
-  // props.getAuthToken()
-  // props.didUpdate() [on store update]
-  // read authtoken
-  // return true/false
-  const { state } = props.location;
-  if (state && state.authtoken) {
-    return true
-  }
-  return false
+    // TODO: authentication token restores if stored in redux
+    // ** Fetching authtoken from store can follow following workflow
+    // props.getAuthToken()
+    // props.didUpdate() [on store update]
+    // read authtoken
+    // return true/false
+    const { state } = props.location;
+    if (state && state.authtoken) {
+        return true;
+    }
+    return false;
 }
 
 const styles = StyleSheet.create({
-  container: {
-    //height: "100%",
-  }
-})
+    container: {
+        //height: "100%",
+    },
+});
