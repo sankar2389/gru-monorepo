@@ -159,14 +159,11 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
             this.props.onPressExpandedBid(buyOrSell)
             this.setState({ buyOrSellId: "" })
         }
-
-
     }
 
     render() {
-
-        const { dWidth, bids } = this.props
-        const { buyOrSellData, buyOrSellId, bidOn } = this.state
+        const { dWidth, bids, bidOn } = this.props
+        const { buyOrSellData, buyOrSellId } = this.state
         return (
             buyOrSellData.length > 0 ?
                 <View>
