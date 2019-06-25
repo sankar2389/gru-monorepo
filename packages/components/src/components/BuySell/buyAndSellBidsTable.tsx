@@ -115,7 +115,7 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
                                             <View style={styles.actionButtonView}>
                                                 <TouchableOpacity
                                                     style={[styles.bidActionButton, styles.bidAcceptButton]}
-                                                    onPress={() => this.props.bidActionButtonFunc(bidOn, "accepted", bid._id, buyOrSell._id)}
+                                                    onPress={() => this.props.bidActionButtonFunc(bidOn, "accepted", bid._id, buyOrSell._id, bid.userId)}
                                                 >
                                                     <Text style={styles.bidActionButtonText}>
                                                         Accept
@@ -123,7 +123,7 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
                                                 </TouchableOpacity>
                                                 <TouchableOpacity
                                                     style={[styles.bidActionButton, styles.bidRejectButton]}
-                                                    onPress={() => this.props.bidActionButtonFunc(bidOn, "rejected", bid._id, buyOrSell._id)}
+                                                    onPress={() => this.props.bidActionButtonFunc(bidOn, "rejected", bid._id, buyOrSell._id, bid.userId)}
                                                 >
                                                     <Text style={styles.bidActionButtonText}>
                                                         Reject

@@ -18,7 +18,7 @@ interface IProps extends RouteComponentProps {
     buyOrSell: any,
     onCreateBids: (userId: string, bidsPrice: number, buyOrSellId: string, bidOnBuyOrSell: string, bidQuantity: number, totalPrice: number) => void,
     getBidsByBidId: (bids: any) => void,
-    bidAcceptOrReject: (type: string, evt: string, status: string, _id: string, buyOrSellId: string) => void,
+    bidAcceptOrReject: (type: string, evt: string, status: string, _id: string, buyOrSellId: string, userId: string) => void,
     clearBuyOrSellReducer: () => void
 };
 
@@ -490,9 +490,9 @@ class BuySell extends Component<IProps> {
 
     }
 
-    bidActionButtonFunc = (type: string, evt: string, _id: string, buyOrSellId: string) => {
+    bidActionButtonFunc = (type: string, evt: string, _id: string, buyOrSellId: string, userId: string) => {
         console.log("Type", type)
-        this.props.bidAcceptOrReject(type, evt, "closed", _id, buyOrSellId)
+        this.props.bidAcceptOrReject(type, evt, "closed", _id, buyOrSellId, userId)
     }
 
     render() {

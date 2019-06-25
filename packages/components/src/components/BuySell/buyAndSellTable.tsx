@@ -249,7 +249,6 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
                                             >
                                                 <Text>Set Price</Text>
                                             </TouchableOpacity>
-
                                             :
                                             <View style={{ width: 70 }} />
                                         }

@@ -472,7 +472,7 @@ export const getBidsByBidId = (bids: any) => {
     }
 }
 
-export const bidAcceptOrReject = (type: string, evt: string, status: string, _id: string, buyOrSellId: string) => {
+export const bidAcceptOrReject = (type: string, evt: string, status: string, _id: string, buyOrSellId: string, userId: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
