@@ -17,7 +17,7 @@ interface IState {
     sortingOrder: string,
 }
 
-class BuyAndSellBidsComponent extends React.Component<IProps, IState> {
+class BuyAndSellBidsTable extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
     }
@@ -64,6 +64,21 @@ class BuyAndSellBidsComponent extends React.Component<IProps, IState> {
                 return 0 //default return
             })
             this.setState({ bids: sortData, sortingOrder: "asc" })
+        }
+    }
+
+    bidsNextOrPrevious = (mode: string) => {
+        if (mode === "next") {
+            this.setState({
+                bidStartNumber: this.state.bidStartNumber + 5,
+                bidEndNumber: this.state.bidEndNumber + 5,
+            })
+        }
+        if (mode === "previous") {
+            this.setState({
+                bidStartNumber: this.state.bidStartNumber - 5,
+                bidEndNumber: this.state.bidEndNumber - 5,
+            })
         }
     }
 
@@ -123,7 +138,7 @@ class BuyAndSellBidsComponent extends React.Component<IProps, IState> {
                         )
                 })}
 
-                {/* {
+                {
                     bids.length > 5 ?
                         <View style={styles.bidPaginationView}>
                             <TouchableOpacity style={styles.bidPreviousButton}
@@ -145,14 +160,14 @@ class BuyAndSellBidsComponent extends React.Component<IProps, IState> {
                         </View>
                         :
                         <Text />
-                } */}
+                }
             </View> : <Text />
 
 
 
     }
 }
-export default BuyAndSellBidsComponent;
+export default BuyAndSellBidsTable;
 
 const styles = StyleSheet.create({
     firstBidViewStyle: {
@@ -183,5 +198,7 @@ const styles = StyleSheet.create({
     bidAcceptButton: { backgroundColor: "#1D96A8", },
     bidActionButtonText: { color: "#ffffff", fontSize: 14 },
     bidRejectButton: { backgroundColor: "#FF1C14" },
+    bidButtonText: { fontSize: 18 },
+    bidNextButton: { paddingLeft: 5, paddingRight: 5 },
 })
 

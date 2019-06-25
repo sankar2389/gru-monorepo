@@ -1,7 +1,7 @@
 import React from "react"
 import { StyleSheet, View, Text, Easing, Animated, Image, TouchableOpacity } from "react-native";
 import moment from "moment";
-import BuyAndSellBidsComponent from "./buyOrSellBidsComponent";
+import BuyAndSellBidsTable from "./buyAndSellBidsTable";
 
 interface IProps {
     data: any,
@@ -23,7 +23,7 @@ interface IState {
     buyOrSellIndex: number
 }
 
-class BuyAndSellComponent extends React.Component<IProps, IState> {
+class BuyAndSellTable extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
     }
@@ -247,7 +247,7 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
                                 {/* EXPANDABLE BID START */}
                                 {
                                     buyOrSellIndex === index ?
-                                        <BuyAndSellBidsComponent
+                                        <BuyAndSellBidsTable
                                             bids={bids}
                                             bidOn={bidOn}
                                             buyOrSell={buyOrSell}
@@ -261,8 +261,6 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
                             </View>
                         )
                     })}
-
-
                 </View>
                 :
                 <Text />
@@ -270,7 +268,7 @@ class BuyAndSellComponent extends React.Component<IProps, IState> {
         )
     }
 }
-export default BuyAndSellComponent;
+export default BuyAndSellTable;
 
 const styles = StyleSheet.create({
     nestedGroupListViewHeader: {

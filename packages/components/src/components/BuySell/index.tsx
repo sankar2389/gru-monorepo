@@ -9,7 +9,7 @@ const CMS_API = process.env.CMS_API;
 import moment from "moment";
 import axios from "axios";
 import CustomeMessage from "../common/customMessage";
-import BuyOrSellComponent from "./buyOrSellComponent";
+import BuyAndSellTable from "./buyAndSellTable";
 
 interface IProps extends RouteComponentProps {
     createBuyOrSell: (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => void,
@@ -442,7 +442,6 @@ class BuySell extends Component<IProps> {
             buyOrSellId: buyOrsellId
         })
     }
-
     // CHECKPAGE LENGTH
     componentWillMount() {
         this.updateDimension()
@@ -462,12 +461,13 @@ class BuySell extends Component<IProps> {
 
     onPressCreateBids = async () => {
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
+        const { onCreateBids } = this.props
         let bidsPrice = parseInt(this.state.buyOrSellPrice)
         let buyOrSellId = this.state.buyOrSellId
         let bidQuantity = parseInt(this.state.bidQuantity)
         if ((bidsPrice && user._id) && bidQuantity) {
             let totalPrice = bidsPrice * bidQuantity
-            this.props.onCreateBids(user._id, bidsPrice, buyOrSellId, this.state.bidOnBuyOrSell, bidQuantity, totalPrice)
+            onCreateBids(user._id, bidsPrice, buyOrSellId, this.state.bidOnBuyOrSell, bidQuantity, totalPrice)
             this.onCancelModal()
         }
     }
@@ -490,21 +490,6 @@ class BuySell extends Component<IProps> {
             this.props.clearBuyOrSellReducer()
         }
 
-    }
-
-    bidsNextOrPrevious = (mode: string) => {
-        if (mode === "next") {
-            this.setState({
-                bidStartNumber: this.state.bidStartNumber + 5,
-                bidEndNumber: this.state.bidEndNumber + 5,
-            })
-        }
-        if (mode === "previous") {
-            this.setState({
-                bidStartNumber: this.state.bidStartNumber - 5,
-                bidEndNumber: this.state.bidEndNumber - 5,
-            })
-        }
     }
 
     bidActionButtonFunc = (type: string, evt: string, _id: string, buyOrSellId: string) => {
@@ -560,7 +545,7 @@ class BuySell extends Component<IProps> {
                     </View>
 
                     <View style={this.state.modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
-                        <BuyOrSellComponent
+                        <BuyAndSellTable
                             data={dataFromCollection === "SELL_DATA" ? sellData : buyData}
                             bidOn={dataFromCollection === "SELL_DATA" ? "sell" : "buy"}
                             bids={this.state.bids}
@@ -568,7 +553,6 @@ class BuySell extends Component<IProps> {
                             onPressExpandedBid={this.onPressExpandedBid}
                             onPressSetBidPrice={this.onPressSetBidPrice}
                             bidActionButtonFunc={this.bidActionButtonFunc}
-
                         />
                     </View>
                     {/* DISPLAY SELL */}
@@ -650,7 +634,6 @@ class BuySell extends Component<IProps> {
                                      </label>
 
                                     </View>
-
                                     <View style={this.state.dWidth ? styles.smButtonView : styles.buttonView}>
                                         <TouchableOpacity onPress={() => this.onCancelModal()}
                                             style={styles.modalCancelButton}>
@@ -677,7 +660,6 @@ class BuySell extends Component<IProps> {
                             <View style={styles.modalContainer}>
                                 <View style={this.state.dWidth <= 700 ? styles.smModalView : styles.modalView}>
                                     <Text style={styles.createBuySellText}>{this.state.bidOnBuyOrSell === "buy" ? "BIDS ON BUY" : "BIDS ON SELL"}</Text>
-
                                     <TextInput
                                         autoFocus={true}
                                         value={this.state.buyOrSellPrice}
@@ -702,11 +684,8 @@ class BuySell extends Component<IProps> {
                                         >
                                             <Text style={styles.buttonText}>Set Bids</Text>
                                         </TouchableOpacity>
-
                                     </View>
-
                                 </View>
-
                             </View> :
                             <Text />
                     }
@@ -731,8 +710,6 @@ class BuySell extends Component<IProps> {
                             </Text>
                         </TouchableOpacity>)
                     })}
-
-
                     <TouchableOpacity
                         onPress={this.onPressPaginateNext}
                         style={styles.paginationButton}>
@@ -740,7 +717,6 @@ class BuySell extends Component<IProps> {
                     </TouchableOpacity>
                 </View>
                 {/* PAGINATION VIEW END */}
-
                 {this.state.message ?
                     <CustomeMessage
                         type={this.state.messageType}
@@ -842,8 +818,8 @@ const styles = StyleSheet.create({
     },
 
 
-    bidNextButton: { paddingLeft: 5, paddingRight: 5 },
-    bidButtonText: { fontSize: 18 },
+
+
     secontRowView: {
         flexDirection: "row", flex: 1,
         justifyContent: "space-around", alignItems: "flex-start", width: "95%", padding: 10
