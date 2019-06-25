@@ -347,7 +347,6 @@ class BuySell extends Component<IProps> {
             dataLimitOnPage: 10,
             selectedPaginatateNumber: 1,
             expandBidView: false,
-            buyOrSellIndex: -1,
             bids: []
         })
         this.props.getAllSellData();
@@ -360,7 +359,6 @@ class BuySell extends Component<IProps> {
             dataLimitOnPage: 10,
             selectedPaginatateNumber: 1,
             expandBidView: false,
-            buyOrSellIndex: -1,
             bids: []
         })
         this.props.getAllBuyData()

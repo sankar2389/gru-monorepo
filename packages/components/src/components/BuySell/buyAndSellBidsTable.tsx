@@ -30,7 +30,7 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
     }
 
     componentWillReceiveProps(newProps: any) {
-        if (newProps.bids.length > 0) {
+        if (newProps.bids) {
             this.setState({ bids: newProps.bids })
         }
     }
@@ -40,7 +40,6 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
         this.setState({
             userId: user._id
         })
-
     }
 
     sortONBuyOrSellBids = (field: string) => {
@@ -81,7 +80,6 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
             })
         }
     }
-
 
     render() {
         const { buyOrSell, bidOn } = this.props
@@ -162,9 +160,6 @@ class BuyAndSellBidsTable extends React.Component<IProps, IState> {
                         <Text />
                 }
             </View> : <Text />
-
-
-
     }
 }
 export default BuyAndSellBidsTable;

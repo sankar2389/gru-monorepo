@@ -10,7 +10,7 @@ interface IProps {
     dWidth: Number,
     onPressExpandedBid: Function,
     onPressSetBidPrice: Function,
-    bidActionButtonFunc: Function
+    bidActionButtonFunc: Function,
 }
 
 interface IState {
@@ -20,7 +20,8 @@ interface IState {
     sortingOrder: string,
     sortingFieldName: string,
     previousSortingOrder: string,
-    buyOrSellIndex: number
+    buyOrSellId: string,
+    bidOn: string
 }
 
 class BuyAndSellTable extends React.Component<IProps, IState> {
@@ -34,12 +35,12 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
         sortingOrder: "asc",
         sortingFieldName: "",
         previousSortingOrder: "",
-        buyOrSellIndex: -1
+        buyOrSellId: "",
+        bidOn: ""
 
     }
 
     componentWillReceiveProps(newProps: any) {
-        console.log("newJProps", newProps)
         this.setState({ buyOrSellData: newProps.data })
     }
 
@@ -147,23 +148,25 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
                 previousSortingOrder: previousSortingOrder
             })
         }
-
     }
 
-    onPressExpandedBids = (buyOrSell: any, index: number) => {
+    onPressExpandedBids = (buyOrSell: any) => {
         if (buyOrSell.bids.length > 0) {
-            this.setState({ buyOrSellIndex: index })
             this.props.onPressExpandedBid(buyOrSell)
+            this.setState({ buyOrSellId: buyOrSell._id })
+
         } else {
             this.props.onPressExpandedBid(buyOrSell)
+            this.setState({ buyOrSellId: "" })
         }
 
 
     }
 
     render() {
-        const { dWidth, bidOn, bids } = this.props
-        const { buyOrSellData, buyOrSellIndex } = this.state
+
+        const { dWidth, bids } = this.props
+        const { buyOrSellData, buyOrSellId, bidOn } = this.state
         return (
             buyOrSellData.length > 0 ?
                 <View>
@@ -206,7 +209,7 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
                     {buyOrSellData.map((buyOrSell: any, index: number) => {
                         return (
                             <View key={index}>
-                                <TouchableOpacity onPress={() => this.onPressExpandedBids(buyOrSell, index)}>
+                                <TouchableOpacity onPress={() => this.onPressExpandedBids(buyOrSell)}>
                                     <View style={dWidth <= 700 ? styles.smNestedGroupListView : styles.nestedGroupListView} key={index}>
                                         <View style={styles.imageAndNameView}>
                                             <Image style={styles.avatarStyle} source={{ uri: "http://i.pravatar.cc/300" }}></Image>
@@ -246,7 +249,7 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
 
                                 {/* EXPANDABLE BID START */}
                                 {
-                                    buyOrSellIndex === index ?
+                                    buyOrSellId === buyOrSell._id ?
                                         <BuyAndSellBidsTable
                                             bids={bids}
                                             bidOn={bidOn}
@@ -255,8 +258,6 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
                                         /> :
                                         <Text />
                                 }
-
-
                                 {/* EXPANDABLE BID END */}
                             </View>
                         )
@@ -264,7 +265,6 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
                 </View>
                 :
                 <Text />
-
         )
     }
 }
