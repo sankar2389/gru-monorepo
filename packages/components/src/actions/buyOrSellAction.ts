@@ -713,3 +713,69 @@ export const getAllBidsByUserId = (userId: string, bidStart: number) => {
             })
     }
 }
+export const getOrderById = (orderId: string, buyOrSellType: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    if (buyOrSellType === "buy") {
+                        client.query({
+                            query: gql`
+                                query($id:JSON){
+                                    buys(where:{_id:$id}){
+                                        _id
+                                        price
+                                        creator
+                                        createdAt
+                                        type
+                                        unit
+                                        quantity
+                                    }
+                                  }
+                                `, variables: {
+                                "id": orderId
+                            }
+                        }).then(buy => {
+                            dispatch({
+                                type: "GET_ORDDER_BY_ID",
+                                payload: buy.data.buys
+                            })
+                        })
+
+                    } if (buyOrSellType === "sell") {
+                        client.query({
+                            query: gql`
+                                query($id:JSON){
+                                    sells(where:{_id:$id}){
+                                        _id
+                                        price
+                                        creator
+                                        createdAt
+                                        type
+                                        unit
+                                        quantity
+                                    }
+                                  }
+                                `, variables: {
+                                "id": orderId
+                            }
+                        }).then(sell => {
+                            dispatch({
+                                type: "GET_ORDDER_BY_ID",
+                                payload: sell.data.sells
+                            })
+                        })
+                    }
+
+                }
+            }).catch(err => {
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
+            })
+    }
+
+}

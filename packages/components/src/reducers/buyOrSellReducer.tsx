@@ -6,7 +6,8 @@ const initState: IBuyOrSell = {
     messageType: "",
     message: "",
     bids: [],
-    myBids: []
+    myBids: [],
+    buyOrSellOrder: []
 }
 export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell => {
     switch (action.type) {
@@ -74,6 +75,11 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 ...state,
                 messageType: action.messageType,
                 message: action.message
+            }
+        case "GET_ORDDER_BY_ID":
+            return {
+                ...state,
+                buyOrSellOrder: action.payload
             }
         default:
             return state;

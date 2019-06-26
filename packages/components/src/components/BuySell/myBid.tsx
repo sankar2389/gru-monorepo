@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Image, ScrollView } from "react-native";
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
-import { getAllBidsByUserId, clearBuyOrSellReducer } from '../../actions';
+import { getAllBidsByUserId, clearBuyOrSellReducer, getOrderById } from '../../actions';
 const CMS_API = process.env.CMS_API;
 import moment from "moment";
 import CustomeMessage from "../common/customMessage";
@@ -11,7 +11,8 @@ import CustomeMessage from "../common/customMessage";
 
 interface IProps extends RouteComponentProps {
     getAllBidsByUserId: (userId: string, bidStart: number) => void,
-    clearBuyOrSellReducer: () => void
+    clearBuyOrSellReducer: () => void,
+    getOrderById: (orderId: string, buyOrSellType: string) => void
 };
 
 interface IState {
@@ -19,7 +20,10 @@ interface IState {
     bidStart: number,
     messageType: string,
     message: string,
-    openCustomMessage: boolean
+    openCustomMessage: boolean,
+    isModalVisible: boolean,
+    buyOrSellOrder: any,
+    buyOrSellType: string
 }
 
 class MyBid extends Component<IProps> {
@@ -31,7 +35,10 @@ class MyBid extends Component<IProps> {
         bidStart: 0,
         messageType: "",
         message: "",
-        openCustomMessage: false
+        openCustomMessage: false,
+        isModalVisible: false,
+        buyOrSellOrder: [],
+        buyOrSellType: ""
     }
 
     async componentDidMount() {
@@ -60,7 +67,7 @@ class MyBid extends Component<IProps> {
             this.props.clearBuyOrSellReducer()
         }
         if (myBids.length > 0) {
-            this.setState({ myBids })
+            this.setState({ myBids, buyOrSellOrder: newProps.buyOrSell.buyOrSellOrder })
         }
     }
 
@@ -90,9 +97,24 @@ class MyBid extends Component<IProps> {
         this.setState({ message: "", openCustomMessage: false })
     }
 
+    onPressGetOrder = (orderId: string, buyOrSellType: string) => {
+        this.props.getOrderById(orderId, buyOrSellType)
+        this.setState({
+            isModalVisible: true,
+            buyOrSellType: buyOrSellType
+        })
+    }
+
+    onPressCancelModal = () => {
+        this.setState({
+            isModalVisible: false,
+            buyOrSellOrder: []
+        })
+    }
+
     render() {
-        const { myBids } = this.state
-        console.log("state", myBids)
+        const { myBids, buyOrSellOrder } = this.state
+        console.log("state", buyOrSellOrder)
         return (
             <View style={{ marginLeft: 80, marginTop: 80 }}>
                 <Text>My Bids</Text>
@@ -100,28 +122,39 @@ class MyBid extends Component<IProps> {
                     <table style={{ width: "99%" }}>
                         <thead>
                             <tr>
-                                <th style={{ border: 1 }}>Bid Price</th>
-                                <th style={{ border: 1 }}>Bid Quantity</th>
-                                <th style={{ border: 1 }}>Total Price</th>
-                                <th style={{ border: 1 }}>Created Date</th>
-                                <th style={{ border: 1 }}>Action</th>
+                                <th>Bid Price</th>
+                                <th>Bid Quantity</th>
+                                <th>Total Price</th>
+                                <th>Created Date</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         {myBids.map((bid: any, index: number) => {
                             return (
                                 <tbody key={index}>
+
                                     <tr style={index % 2 === 0 ? { backgroundColor: "#71848B" } : { backgroundColor: "#D4E1EC" }}>
                                         <td >
-                                            {bid.bidPrice}
+                                            <TouchableOpacity onPress={() => this.onPressGetOrder(bid.buyOrSellId, bid.buyOrSellType)}>
+                                                {bid.bidPrice}
+                                            </TouchableOpacity>
                                         </td>
-                                        <td style={{ border: 1 }}>
-                                            {bid.bidQuantity}
+                                        <td>
+                                            <TouchableOpacity onPress={() => this.onPressGetOrder(bid.buyOrSellId, bid.buyOrSellType)}>
+                                                {bid.bidQuantity}
+                                            </TouchableOpacity>
                                         </td>
-                                        <td style={{ border: 1 }}>
-                                            {bid.totalPrice}
+                                        <td>
+                                            <TouchableOpacity onPress={() => this.onPressGetOrder(bid.buyOrSellId, bid.buyOrSellType)}>
+                                                {bid.totalPrice}
+                                            </TouchableOpacity>
                                         </td>
-                                        <td style={{ border: 1 }}>
-                                            {moment(bid.createdAt).format("ll")}
+                                        <td>
+                                            <TouchableOpacity onPress={() => this.onPressGetOrder(bid.buyOrSellId, bid.buyOrSellType)}>
+                                                <Text>
+                                                    {moment(bid.createdAt).format("ll")}
+                                                </Text>
+                                            </TouchableOpacity>
                                         </td>
                                         <td style={{ border: 1 }}>
                                             <TouchableOpacity>
@@ -161,6 +194,55 @@ class MyBid extends Component<IProps> {
                         <Text style={{ fontSize: 16, fontFamily: "fantasy" }}>Next</Text>
                     </TouchableOpacity>
                 </View>
+
+                {/* BID MODAL START */}
+                {
+                    this.state.isModalVisible && buyOrSellOrder.length > 0 ?
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalView}>
+                                <table style={{ width: "99%" }}>
+                                    <thead>
+                                        <tr>
+                                            <th> Quantity</th>
+                                            <th>Type</th>
+                                            <th>Price</th>
+                                            <th>OrderOn</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody >
+                                        <tr>
+                                            <td >
+                                                {buyOrSellOrder[0].quantity}  {buyOrSellOrder[0].unit}
+                                            </td>
+                                            <td >
+                                                {buyOrSellOrder[0].type}
+                                            </td>
+                                            <td >
+                                                {buyOrSellOrder[0].price}
+                                            </td>
+                                            <td >
+                                                {this.state.buyOrSellType}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                                <View style={{
+                                    width: "98%", flexDirection: "row", justifyContent: "flex-end", position: "absolute", bottom: 0, right: 0,
+                                }}>
+                                    <TouchableOpacity
+                                        onPress={() => this.onPressCancelModal()}
+                                        style={styles.modalCancelButton}>
+                                        <Text style={styles.buttonText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View> :
+                        <Text />
+                }
+                {/* BIDS MODAL END */}
+
             </View>
         );
     }
@@ -171,10 +253,41 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
 
 export default connect<IReduxState>(mapStateToProps, {
     getAllBidsByUserId,
-    clearBuyOrSellReducer
+    clearBuyOrSellReducer,
+    getOrderById
 })(MyBid);
 
 
 const styles = StyleSheet.create({
+    modalContainer: {
+        // backgroundColor: "gray",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: "100vh"
+    },
+    modalView: {
+        backgroundColor: "#8F99AB",
+        width: "90%",
+        height: "20%",
+        position: "relative",
+        marginLeft: "auto",
+        marginRight: "auto",
+        borderRadius: 5,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    modalCancelButton: {
+        backgroundColor: "red",
+        padding: 10,
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: "#ffffff"
+    },
 
 });
