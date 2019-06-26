@@ -5,7 +5,8 @@ const initState: IBuyOrSell = {
     buyOrSellData: [],
     messageType: "",
     message: "",
-    bids: []
+    bids: [],
+    myBids: []
 }
 export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell => {
     switch (action.type) {
@@ -62,6 +63,11 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 buyOrSellData: state.buyOrSellData.map(
                     data => (data._id === updatedBuy._id ? updatedBuy : data)
                 ),
+            }
+        case "GET_BID_BY_USER_SUCCESS":
+            return {
+                ...state,
+                myBids: action.payload
             }
         default:
             return state;

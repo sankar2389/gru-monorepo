@@ -86,7 +86,8 @@ export interface IBuyOrSell {
     buyOrSellData: any[],
     messageType: string,
     message: string,
-    bids: any[]
+    bids: any[],
+    myBids: any[]
 }
 // export interface ICreateSell {
 //     buyOrsell: string,

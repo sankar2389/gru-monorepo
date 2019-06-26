@@ -653,3 +653,45 @@ export const bidAcceptOrReject = (type: string, evt: string, status: string, _id
             })
     }
 }
+
+export const getAllBidsByUserId = (userId: string, bidStart: number) => {
+    console.log("userId", userId)
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                           query($id:String, $start: Int){
+                            bids(start: $start,limit: 20, where:{userId:$id}){
+                                _id
+                                userId
+                                bidPrice
+                                bidQuantity
+                                totalPrice
+                                status
+                                createdAt
+                            }
+                          }
+                        `, variables: {
+                            "id": userId,
+                            "start": bidStart
+                        }
+                    }).then(bid => {
+                        dispatch({
+                            type: "GET_BID_BY_USER_SUCCESS",
+                            payload: bid.data.bids
+                        })
+                    })
+                }
+            }).catch(err => {
+                console.log(err.message)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
+            })
+    }
+}
