@@ -491,7 +491,6 @@ class BuySell extends Component<IProps> {
     }
 
     bidActionButtonFunc = (type: string, evt: string, _id: string, buyOrSellId: string, userId: string) => {
-        console.log("Type", type)
         this.props.bidAcceptOrReject(type, evt, "closed", _id, buyOrSellId, userId)
     }
 

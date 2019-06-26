@@ -243,15 +243,15 @@ class BuyAndSellTable extends React.Component<IProps, IState> {
                                                 </Text>
                                             </View>
                                         </View>
-                                        {userId !== buyOrSell.creator ?
-                                            < TouchableOpacity style={styles.setPriceButton}
-                                                onPress={() => this.props.onPressSetBidPrice(bidOn, buyOrSell._id)}
-                                            >
-                                                <Text>Set Price</Text>
-                                            </TouchableOpacity>
-                                            :
+                                        {/* {userId !== buyOrSell.creator ? */}
+                                        < TouchableOpacity style={styles.setPriceButton}
+                                            onPress={() => this.props.onPressSetBidPrice(bidOn, buyOrSell._id)}
+                                        >
+                                            <Text>Set Price</Text>
+                                        </TouchableOpacity>
+                                        {/* :
                                             <View style={{ width: 70 }} />
-                                        }
+                                        } */}
                                     </View>
                                 </TouchableOpacity>
 

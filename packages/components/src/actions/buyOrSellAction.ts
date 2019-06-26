@@ -221,6 +221,8 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                   bidQuantity
                                   totalPrice
                                   status
+                                  buyOrSellId
+                                  buyOrSellType
                                   createdAt                   
                               }
                             }
@@ -234,6 +236,8 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                     "bidQuantity": bidQuantity,
                                     "totalPrice": totalPrice,
                                     "status": "open",
+                                    "buyOrSellId": buyOrSellId,
+                                    "buyOrSellType": bidOnBuyOrSell,
                                     "createdAt": new Date()
                                 }
                             }
@@ -655,7 +659,6 @@ export const bidAcceptOrReject = (type: string, evt: string, status: string, _id
 }
 
 export const getAllBidsByUserId = (userId: string, bidStart: number) => {
-    console.log("userId", userId)
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -664,13 +667,15 @@ export const getAllBidsByUserId = (userId: string, bidStart: number) => {
                     client.query({
                         query: gql`
                            query($id:String, $start: Int){
-                            bids(start: $start,limit: 20, where:{userId:$id}){
+                            bids(start: $start, limit: 20, where:{userId:$id}){
                                 _id
                                 userId
                                 bidPrice
                                 bidQuantity
                                 totalPrice
                                 status
+                                buyOrSellId
+                                buyOrSellType
                                 createdAt
                             }
                           }
@@ -679,9 +684,23 @@ export const getAllBidsByUserId = (userId: string, bidStart: number) => {
                             "start": bidStart
                         }
                     }).then(bid => {
+                        if (bid.data.bids.length < 1) {
+                            dispatch({
+                                type: "NO_MORE_BIDS_SUCCESS",
+                                messageType: "success",
+                                message: "You are end of the file"
+                            })
+                        } else {
+                            dispatch({
+                                type: "GET_BID_BY_USER_SUCCESS",
+                                payload: bid.data.bids
+                            })
+                        }
+                    }).catch(err => {
                         dispatch({
-                            type: "GET_BID_BY_USER_SUCCESS",
-                            payload: bid.data.bids
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
                         })
                     })
                 }

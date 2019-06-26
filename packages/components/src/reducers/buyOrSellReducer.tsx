@@ -69,6 +69,12 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 ...state,
                 myBids: action.payload
             }
+        case "NO_MORE_BIDS_SUCCESS":
+            return {
+                ...state,
+                messageType: action.messageType,
+                message: action.message
+            }
         default:
             return state;
     }
