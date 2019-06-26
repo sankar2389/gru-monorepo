@@ -502,10 +502,16 @@ class BuySell extends Component<IProps> {
             <View style={dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
                 <ScrollView style={dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     <View style={{ alignItems: "flex-start" }}>
-                        <Text style={styles.headerBuyAndSell}>
-                            Buy / Sell
-                    </Text>
+                        <View style={{ flexDirection: "row", width: "99%", justifyContent: "space-between" }}>
+                            <Text style={styles.headerBuyAndSell}>
+                                Buy / Sell
+                            </Text>
+                            <TouchableOpacity>
+                                <Text>MY BIDS</Text>
+                            </TouchableOpacity>
+                        </View>
                         <Text style={dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>Bullion user gold rates</Text>
+
                     </View>
 
                     <View style={modalVisible ? styles.pageOpacity : styles.pageOpacityNone}>
@@ -530,7 +536,6 @@ class BuySell extends Component<IProps> {
                                         SELL({sellData.length})
                                     </Text>
                                 </TouchableOpacity>
-
                             </View>
                             <View style={dWidth <= 700 ? styles.addButtonOutterView : styles.blankTextStyle}>
                                 <TouchableOpacity disabled={modalVisible ? true : false}
