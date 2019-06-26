@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router";
 import { View, StyleSheet, AsyncStorage, TouchableOpacity, TextInput, Text, Image, ScrollView } from "react-native";
 import { IReduxState } from "../../types";
 import { connect } from "react-redux";
-import { getAllBidsByUserId, clearBuyOrSellReducer, getOrderById } from '../../actions';
+import { getAllBidsByUserId, clearBuyOrSellReducer, getOrderById, onCancelBid } from '../../actions';
 const CMS_API = process.env.CMS_API;
 import moment from "moment";
 import CustomeMessage from "../common/customMessage";
@@ -12,7 +12,8 @@ import CustomeMessage from "../common/customMessage";
 interface IProps extends RouteComponentProps {
     getAllBidsByUserId: (userId: string, bidStart: number) => void,
     clearBuyOrSellReducer: () => void,
-    getOrderById: (orderId: string, buyOrSellType: string) => void
+    getOrderById: (orderId: string, buyOrSellType: string) => void,
+    onCancelBid: (bidId: string, ) => void,
 };
 
 interface IState {
@@ -112,11 +113,16 @@ class MyBid extends Component<IProps> {
         })
     }
 
+    onPressCancelBid = (bidId: string) => {
+        if (bidId) {
+            this.props.onCancelBid(bidId)
+        }
+    }
+
     render() {
         const { myBids, buyOrSellOrder } = this.state
-        console.log("state", buyOrSellOrder)
         return (
-            <View style={{ marginLeft: 80, marginTop: 80 }}>
+            <View style={styles.mainView}>
                 <Text>My Bids</Text>
                 {myBids.length > 0 ?
                     <table style={{ width: "99%" }}>
@@ -132,11 +138,12 @@ class MyBid extends Component<IProps> {
                         {myBids.map((bid: any, index: number) => {
                             return (
                                 <tbody key={index}>
-
                                     <tr style={index % 2 === 0 ? { backgroundColor: "#71848B" } : { backgroundColor: "#D4E1EC" }}>
                                         <td >
                                             <TouchableOpacity onPress={() => this.onPressGetOrder(bid.buyOrSellId, bid.buyOrSellType)}>
-                                                {bid.bidPrice}
+                                                <Text>
+                                                    {bid.bidPrice}
+                                                </Text>
                                             </TouchableOpacity>
                                         </td>
                                         <td>
@@ -156,12 +163,14 @@ class MyBid extends Component<IProps> {
                                                 </Text>
                                             </TouchableOpacity>
                                         </td>
-                                        <td style={{ border: 1 }}>
-                                            <TouchableOpacity>
-                                                <Text>
-                                                    Cancel
+                                        <td>
+                                            {bid.status === "open" ?
+                                                <TouchableOpacity onPress={() => this.onPressCancelBid(bid._id)}>
+                                                    <Text>
+                                                        Cancel
                                                 </Text>
-                                            </TouchableOpacity>
+                                                </TouchableOpacity>
+                                                : <Text />}
                                         </td>
                                     </tr>
                                 </tbody>
@@ -181,17 +190,18 @@ class MyBid extends Component<IProps> {
                     :
                     <Text />
                 }
-                {/* CUSTOME MESSAGE START */}
-                <View style={{ flexDirection: "row", justifyContent: "flex-end", marginTop: 10 }} >
-                    <TouchableOpacity style={{ marginRight: 10, padding: 10 }}
+                {/* CUSTOME MESSAGE END */}
+
+                <View style={styles.nextAndPreviousView}>
+                    <TouchableOpacity style={styles.nextOrPreviousButton}
                         onPress={() => this.onPressBidPrevious()}
                     >
-                        <Text style={{ fontSize: 16, fontFamily: "fantasy" }}>Previous</Text>
+                        <Text style={styles.nextOrPreviousButtonText}>Previous</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ marginRight: 10, padding: 10, }}
+                    <TouchableOpacity style={styles.nextOrPreviousButton}
                         onPress={() => this.onPressBidNext()}
                     >
-                        <Text style={{ fontSize: 16, fontFamily: "fantasy" }}>Next</Text>
+                        <Text style={styles.nextOrPreviousButtonText}>Next</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -254,11 +264,16 @@ const mapStateToProps = ({ auth, buyOrSell }: any): IReduxState => {
 export default connect<IReduxState>(mapStateToProps, {
     getAllBidsByUserId,
     clearBuyOrSellReducer,
-    getOrderById
+    getOrderById,
+    onCancelBid
 })(MyBid);
 
 
 const styles = StyleSheet.create({
+    mainView: { marginLeft: 80, marginTop: 80 },
+    nextAndPreviousView: { flexDirection: "row", justifyContent: "flex-end", marginTop: 10 },
+    nextOrPreviousButton: { marginRight: 10, padding: 10 },
+    nextOrPreviousButtonText: { fontSize: 16, fontFamily: "fantasy" },
     modalContainer: {
         // backgroundColor: "gray",
         alignItems: "center",
@@ -285,6 +300,7 @@ const styles = StyleSheet.create({
         backgroundColor: "red",
         padding: 10,
         borderRadius: 5,
+        margin: 3
     },
     buttonText: {
         color: "#ffffff"

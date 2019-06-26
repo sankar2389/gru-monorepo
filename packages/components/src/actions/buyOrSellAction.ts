@@ -779,3 +779,64 @@ export const getOrderById = (orderId: string, buyOrSellType: string) => {
     }
 
 }
+
+export const onCancelBid = (bidId: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: updateBidInput) {
+                            updateBid(input: $input) {
+                            bid {
+                                _id
+                                userId
+                                bidPrice
+                                bidQuantity
+                                totalPrice
+                                status
+                                buyOrSellId
+                                buyOrSellType
+                                createdAt
+                            }
+                            }
+                        }
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": bidId
+                                },
+                                "data": {
+                                    "status": "cancel"
+                                }
+                            }
+                        }
+                    }).then(bid => {
+                        dispatch({
+                            type: "BID_CANCELED_SUCCESS",
+                            payload: bid.data.updateBid.bid,
+                            messageType: "success",
+                            message: "Bid is successfully cancled"
+                        })
+                    }).catch(err => {
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
+                    })
+                }
+            }).catch(err => {
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
+            })
+    }
+
+}
+

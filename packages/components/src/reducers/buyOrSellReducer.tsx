@@ -81,6 +81,16 @@ export default (state: IBuyOrSell = initState, action: AnyAction): IBuyOrSell =>
                 ...state,
                 buyOrSellOrder: action.payload
             }
+        case "BID_CANCELED_SUCCESS":
+            let cancelBid = action.payload
+            return {
+                ...state,
+                myBids: state.myBids.map(
+                    data => (data._id === cancelBid._id ? cancelBid : data)
+                ),
+                messageType: action.messageType,
+                message: action.message
+            }
         default:
             return state;
     }
