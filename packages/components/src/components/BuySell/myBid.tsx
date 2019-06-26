@@ -24,7 +24,9 @@ interface IState {
     openCustomMessage: boolean,
     isModalVisible: boolean,
     buyOrSellOrder: any,
-    buyOrSellType: string
+    buyOrSellType: string,
+    nextButtonDisable: boolean,
+    previousButtonDisable: boolean
 }
 
 class MyBid extends Component<IProps> {
@@ -39,7 +41,9 @@ class MyBid extends Component<IProps> {
         openCustomMessage: false,
         isModalVisible: false,
         buyOrSellOrder: [],
-        buyOrSellType: ""
+        buyOrSellType: "",
+        nextButtonDisable: false,
+        previousButtonDisable: false
     }
 
     async componentDidMount() {
@@ -67,6 +71,12 @@ class MyBid extends Component<IProps> {
             })
             this.props.clearBuyOrSellReducer()
         }
+        if (newProps.buyOrSell.message === "You are end of the file") {
+            this.setState({
+                nextButtonDisable: true,
+                bidStart: this.state.bidStart - 20
+            })
+        }
         if (myBids.length > 0) {
             this.setState({ myBids, buyOrSellOrder: newProps.buyOrSell.buyOrSellOrder })
         }
@@ -76,7 +86,7 @@ class MyBid extends Component<IProps> {
         let bidStart = this.state.bidStart + 20
         const user = JSON.parse((await AsyncStorage.getItem('user'))!);
         this.props.getAllBidsByUserId(user._id, bidStart)
-        this.setState({ bidStart: bidStart })
+        this.setState({ bidStart: bidStart, previousButtonDisable: false })
     }
 
     onPressBidPrevious = async () => {
@@ -84,12 +94,14 @@ class MyBid extends Component<IProps> {
             let bidStart = this.state.bidStart - 20
             const user = JSON.parse((await AsyncStorage.getItem('user'))!);
             this.props.getAllBidsByUserId(user._id, bidStart)
-            this.setState({ bidStart: bidStart })
+            this.setState({ bidStart: bidStart, nextButtonDisable: false })
         } else {
             this.setState({
                 messageType: "success",
                 message: "You are begning of the file",
-                openCustomMessage: true
+                openCustomMessage: true,
+                previousButtonDisable: true,
+                nextButtonDisable: false
             })
         }
     }
@@ -194,11 +206,13 @@ class MyBid extends Component<IProps> {
 
                 <View style={styles.nextAndPreviousView}>
                     <TouchableOpacity style={styles.nextOrPreviousButton}
+                        disabled={this.state.previousButtonDisable}
                         onPress={() => this.onPressBidPrevious()}
                     >
                         <Text style={styles.nextOrPreviousButtonText}>Previous</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.nextOrPreviousButton}
+                        disabled={this.state.nextButtonDisable}
                         onPress={() => this.onPressBidNext()}
                     >
                         <Text style={styles.nextOrPreviousButtonText}>Next</Text>
