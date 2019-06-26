@@ -227,7 +227,7 @@ class GroupDashboard extends Component<IProps, IState> {
                                 </View>
                                 <View style={styles.tableRowView}>
                                     <Text style={[styles.tableRowText, { color: '#555' }]}>
-                                        {Object.keys(question.comments).length}
+                                        {question.comments.length}
                                     </Text>
                                 </View>
                                 <View style={styles.tableRowView}>

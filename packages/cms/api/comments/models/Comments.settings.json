@@ -1,0 +1,38 @@
+{
+  "connection": "default",
+  "collectionName": "comments",
+  "info": {
+    "name": "comments",
+    "description": ""
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "description": {
+      "default": "",
+      "type": "text",
+      "required": true,
+      "minLength": 10
+    },
+    "groupID": {
+      "default": "",
+      "type": "string",
+      "required": true
+    },
+    "questionID": {
+      "default": "",
+      "type": "string",
+      "required": true
+    },
+    "creator": {
+      "default": "",
+      "type": "json",
+      "required": true
+    },
+    "questions": {
+      "model": "questions",
+      "via": "comments"
+    }
+  }
+}

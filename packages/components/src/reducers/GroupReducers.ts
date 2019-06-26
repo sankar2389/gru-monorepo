@@ -4,7 +4,8 @@ import { IGroup } from '../types'
 const initState: IGroup = {
     groups: [],
     questions: [],
-    error: null
+    error: null,
+    questionDetails: {}
 }
 export default (state: IGroup = initState, action: AnyAction): IGroup => {
     switch (action.type) {
@@ -37,6 +38,11 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
                 ...state,
                 questions: action.payload
             };
+        case 'GET_GRP_QA_DETAILS':
+            return {
+                ...state,
+                questionDetails: action.payload
+            }
 
         default:
             return state;
