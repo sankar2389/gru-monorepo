@@ -228,7 +228,16 @@ class GroupView extends Component<IProps, IState> {
                     }
                 })
         } else {
-            alert("Socket connection is not established")
+            console.log(group);
+            
+            AsyncStorage.getItem('token')
+                .then((authtoken: string | null) => {
+                    this.props.history.push({
+                        pathname: `/secure/groups/${group.groupName}`,
+                        state: { authtoken }
+                    })
+                })
+            // alert("Socket connection is not established")
         }
 
     }
