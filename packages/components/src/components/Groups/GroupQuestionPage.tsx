@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchGroupQA } from '../../actions';
+import { fetchGroupQADetails } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
 import moment from 'moment';
 
 interface IProps {
-    fetchGroupQA: (groupID: string, start?: number) => void;
+    fetchGroupQADetails: (questionID: string) => void;
     location: any;
     group: any;
     match: any;
@@ -17,6 +17,7 @@ interface IProps {
 
 interface IState {
     dWidth: number;
+    questionDetails: any;
     // questionData: any[];
     // dataLimitOnPage: number;
     // selectedPaginatateNumber: number;
@@ -29,11 +30,17 @@ class GroupQuestionPage extends Component<IProps, IState> {
         super(props);
         this.state = {
             dWidth: 0,
+            questionDetails: {},
         };
     }
 
     async componentDidMount() {
+        this.props.fetchGroupQADetails(this.props.match.params.questionID);
         window.addEventListener('resize', this.updateDimension);
+    }
+
+    componentWillReceiveProps(newProps: any) {
+        this.setState({ questionDetails: newProps.group.questionDetails });
     }
 
     async componentWillMount() {
@@ -56,7 +63,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
                 <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     <View style={{ alignItems: 'flex-start' }}>
-                        <Text style={styles.headerGroupDashboard}>Q: </Text>
+                        <Text style={styles.headerGroupDashboard}>Q: {this.state.questionDetails.title}</Text>
                         <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
                             Group Q/A : {this.props.match.params.groupName.toUpperCase()}
                         </Text>
@@ -76,7 +83,7 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchGroupQA },
+    { fetchGroupQADetails },
 )(GroupQuestionPage);
 
 const styles = StyleSheet.create({

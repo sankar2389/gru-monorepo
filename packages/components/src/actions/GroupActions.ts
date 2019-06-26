@@ -21,6 +21,10 @@ const getGrpQA = (dispatch: Function, response: any) => {
     dispatch({ type: 'GET_GRP_QA', payload: response });
 }
 
+const getGrpQADetails = (dispatch: Function, response: any) => {
+    dispatch({ type: 'GET_GRP_QA_DETAILS', payload: response });
+}
+
 const getGrpFail = (dispatch: Function, error: AxiosError) => {
     dispatch({ type: 'GET_GRP_FAIL', payload: error });
 }
@@ -288,7 +292,9 @@ export const fetchGroupQA = (groupID: string, start: number = 0) => {
                                     _id
                                     title
                                     groupID
-                                    comments
+                                    comments{
+                                        _id
+                                    }
                                     creator
                                     updatedAt
                                 }
@@ -300,6 +306,50 @@ export const fetchGroupQA = (groupID: string, start: number = 0) => {
                         }
                     }).then((res: any) => {
                         getGrpQA(dispatch, res.data);
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+}
+
+
+// To fetch all group QA details
+export const fetchGroupQADetails = (questionID: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                            query($questionID: String) {
+                                questions( where: {
+                                    _id: $questionID
+                                }) {
+                                    _id
+                                    title
+                                    groupID
+                                    comments {
+                                        _id
+                                        description
+                                        creator
+                                    }
+                                    creator
+                                    updatedAt
+                                    createdAt
+                                }
+                            }
+                        `,
+                        variables: {
+                            "questionID": questionID
+                        }
+                    }).then((res: any) => {
+                        getGrpQADetails(dispatch, res.data.questions[0]);
                     }).catch(e => {
                         throw e;
                     });
