@@ -686,7 +686,6 @@ export const getAllBidsByUserId = (userId: string, bidStart: number) => {
                     })
                 }
             }).catch(err => {
-                console.log(err.message)
                 dispatch({
                     type: "BUY_OR_SELL_ERROR",
                     messageType: "error",

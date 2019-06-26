@@ -6,7 +6,6 @@ import { connect } from "react-redux";
 import { getAllBidsByUserId } from '../../actions';
 const CMS_API = process.env.CMS_API;
 import moment from "moment";
-
 import CustomeMessage from "../common/customMessage";
 
 
@@ -46,36 +45,36 @@ class MyBid extends Component<IProps> {
         console.log("state", this.state.myBids)
         const { myBids } = this.state
         return (
-            <View style={{ marginLeft: 80, marginTop: 80, alignItems: "flex-start" }}>
+            <View style={{ marginLeft: 80, marginTop: 80 }}>
                 <Text>My Bids</Text>
                 {myBids.length > 0 ?
-                    <table style={{ backgroundColor: "yellow", width: "99%" }}>
-                        <thead style={{ backgroundColor: "red" }}>
+                    <table style={{ width: "99%" }}>
+                        <thead>
                             <tr>
-                                <th>Bid Price</th>
-                                <th>Bid Quantity</th>
-                                <th>Total Price</th>
-                                <th>Created Date</th>
-                                <th>Action</th>
+                                <th style={{ border: 1 }}>Bid Price</th>
+                                <th style={{ border: 1 }}>Bid Quantity</th>
+                                <th style={{ border: 1 }}>Total Price</th>
+                                <th style={{ border: 1 }}>Created Date</th>
+                                <th style={{ border: 1 }}>Action</th>
                             </tr>
                         </thead>
                         {myBids.map((bid: any, index: number) => {
                             return (
                                 <tbody key={index}>
-                                    <tr>
-                                        <td>
+                                    <tr style={index % 2 === 0 ? { backgroundColor: "#71848B" } : { backgroundColor: "#D4E1EC" }}>
+                                        <td >
                                             {bid.bidPrice}
                                         </td>
-                                        <td>
+                                        <td style={{ border: 1 }}>
                                             {bid.bidQuantity}
                                         </td>
-                                        <td>
+                                        <td style={{ border: 1 }}>
                                             {bid.totalPrice}
                                         </td>
-                                        <td>
+                                        <td style={{ border: 1 }}>
                                             {moment(bid.createdAt).format("ll")}
                                         </td>
-                                        <td>
+                                        <td style={{ border: 1 }}>
                                             Button
                                         </td>
 
@@ -83,10 +82,17 @@ class MyBid extends Component<IProps> {
                                 </tbody>
                             )
                         })}
-
                     </table> :
                     <Text />
                 }
+                <View style={{ backgroundColor: "red", flexDirection: "row", justifyContent: "flex-end", marginRight: 18, marginTop: 10 }}>
+                    <TouchableOpacity style={{ marginRight: 10, padding: 10 }}>
+                        <Text>Previous</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Text>Next</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
