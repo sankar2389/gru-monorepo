@@ -457,6 +457,7 @@ export const fetchGroupQADetails = (questionID: string) => {
                                     _id
                                     title
                                     groupID
+                                    description
                                     comments {
                                         _id
                                         description
