@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, AsyncStorage, Image, TouchableOpacity, Platform } from "react-native";
+import { View, Text, StyleSheet, TextInput, AsyncStorage, Image, TouchableOpacity } from "react-native";
 import { IReduxState } from "../../types";
 import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";

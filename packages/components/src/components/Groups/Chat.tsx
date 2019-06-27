@@ -7,6 +7,7 @@ import { getGroupsList, webSocketMiddlewareConnectOrJoin, webSocketDisconnect, w
 import moment from "moment";
 import PeopleChat from "./peopleChat"
 import GroupChat from "./groupChat"
+import CustomeMessage from "../common/customMessage"
 
 interface IProps extends RouteComponentProps {
     group: IGroup,
@@ -100,6 +101,10 @@ class Chat extends Component<IProps, IState> {
                 connectionMessage: true
             })
         }
+    }
+
+    clearMessageState = () => {
+        this.setState({ connectionMessage: false, })
     }
 
     async componentWillMount() {
@@ -351,6 +356,16 @@ class Chat extends Component<IProps, IState> {
                     </View>
                     {/* RIGHT SIDE MESSAGE PART END */}
                 </View>
+                {this.state.connectionMessage ?
+                    <CustomeMessage
+                        type={"success"}
+                        message={"You are connected to socket"}
+                        openMessage={this.state.connectionMessage}
+                        clearMessageState={this.clearMessageState}
+                    />
+                    :
+                    <Text />
+                }
             </View>
         )
     }

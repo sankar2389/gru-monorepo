@@ -8,6 +8,8 @@ type Bid {
   bidQuantity: Float
   totalPrice: Float
   status: String
+  buyOrSellId: String
+  buyOrSellType: String
 }
 
 type BidAggregator {
@@ -59,6 +61,16 @@ type BidConnectionBidQuantity {
   connection: BidConnection
 }
 
+type BidConnectionBuyOrSellId {
+  key: String
+  connection: BidConnection
+}
+
+type BidConnectionBuyOrSellType {
+  key: String
+  connection: BidConnection
+}
+
 type BidConnectionCreatedAt {
   key: DateTime
   connection: BidConnection
@@ -93,6 +105,8 @@ type BidGroupBy {
   bidQuantity: [BidConnectionBidQuantity]
   totalPrice: [BidConnectionTotalPrice]
   status: [BidConnectionStatus]
+  buyOrSellId: [BidConnectionBuyOrSellId]
+  buyOrSellType: [BidConnectionBuyOrSellType]
 }
 
 input BidInput {
@@ -103,6 +117,8 @@ input BidInput {
   bidQuantity: Float
   totalPrice: Float
   status: String
+  buyOrSellId: String
+  buyOrSellType: String
 }
 
 """Buy requests"""
@@ -343,6 +359,8 @@ input editBidInput {
   bidQuantity: Float
   totalPrice: Float
   status: String
+  buyOrSellId: String
+  buyOrSellType: String
 }
 
 input editBuyInput {
@@ -492,7 +510,7 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
-union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Bid | createBidPayload | updateBidPayload | deleteBidPayload | BidConnection | BidAggregator | BidAggregatorSum | BidAggregatorAvg | BidAggregatorMin | BidAggregatorMax | BidGroupBy | BidConnection_id | BidConnectionCreatedAt | BidConnectionUpdatedAt | BidConnectionBidPrice | BidConnectionUserId | BidConnectionBidQuantity | BidConnectionTotalPrice | BidConnectionStatus | Buy | createBuyPayload | updateBuyPayload | deleteBuyPayload | BuyConnection | BuyAggregator | BuyAggregatorSum | BuyAggregatorAvg | BuyAggregatorMin | BuyAggregatorMax | BuyGroupBy | BuyConnection_id | BuyConnectionCreatedAt | BuyConnectionUpdatedAt | BuyConnectionCreator | BuyConnectionUnit | BuyConnectionQuantity | BuyConnectionPrice | BuyConnectionCreatorObject | BuyConnectionType | BuyConnectionBids | BuyConnectionAcceptedBids | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | Sell | createSellPayload | updateSellPayload | deleteSellPayload | SellConnection | SellAggregator | SellAggregatorSum | SellAggregatorAvg | SellAggregatorMin | SellAggregatorMax | SellGroupBy | SellConnection_id | SellConnectionCreatedAt | SellConnectionUpdatedAt | SellConnectionCreator | SellConnectionUnit | SellConnectionQuantity | SellConnectionPrice | SellConnectionCreatorObject | SellConnectionType | SellConnectionBids | SellConnectionAcceptedBids | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole | UsersPermissionsUserConnectionSocketId
+union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Bid | createBidPayload | updateBidPayload | deleteBidPayload | BidConnection | BidAggregator | BidAggregatorSum | BidAggregatorAvg | BidAggregatorMin | BidAggregatorMax | BidGroupBy | BidConnection_id | BidConnectionCreatedAt | BidConnectionUpdatedAt | BidConnectionBidPrice | BidConnectionUserId | BidConnectionBidQuantity | BidConnectionTotalPrice | BidConnectionStatus | BidConnectionBuyOrSellId | BidConnectionBuyOrSellType | Buy | createBuyPayload | updateBuyPayload | deleteBuyPayload | BuyConnection | BuyAggregator | BuyAggregatorSum | BuyAggregatorAvg | BuyAggregatorMin | BuyAggregatorMax | BuyGroupBy | BuyConnection_id | BuyConnectionCreatedAt | BuyConnectionUpdatedAt | BuyConnectionCreator | BuyConnectionUnit | BuyConnectionQuantity | BuyConnectionPrice | BuyConnectionCreatorObject | BuyConnectionType | BuyConnectionBids | BuyConnectionAcceptedBids | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | Sell | createSellPayload | updateSellPayload | deleteSellPayload | SellConnection | SellAggregator | SellAggregatorSum | SellAggregatorAvg | SellAggregatorMin | SellAggregatorMax | SellGroupBy | SellConnection_id | SellConnectionCreatedAt | SellConnectionUpdatedAt | SellConnectionCreator | SellConnectionUnit | SellConnectionQuantity | SellConnectionPrice | SellConnectionCreatorObject | SellConnectionType | SellConnectionBids | SellConnectionAcceptedBids | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole | UsersPermissionsUserConnectionSocketId
 
 type Mutation {
   createBid(input: createBidInput): createBidPayload

@@ -5,6 +5,8 @@ import { StyleSheet, View, Text, Easing, Animated, Image, TouchableOpacity } fro
 interface IProps {
     message: string,
     openMessage: boolean,
+    clearMessageState: () => void
+    type: string
 }
 
 interface IState {
@@ -12,32 +14,39 @@ interface IState {
     animatedValue: any,
     range1: number | null,
     range2: number | null,
+    type: string
 }
 
 class CustomMessage extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
+        super(props);
+    }
     state: IState = {
         connectionMessage: false,
         animatedValue: new Animated.Value(0),
         range1: 100,
         range2: 0,
+        type: ""
+    }
+    componentDidMount() {
+        this.openAndCloseCustomMessage()
     }
 
-    componentDidMount() {
+    openAndCloseCustomMessage = () => {
         if (this.props.openMessage) {
-            this.setState({ connectionMessage: true })
+            this.setState({
+                connectionMessage: true,
+                type: this.props.type
+            })
             this.animate(Easing.out(Easing.quad))
         }
-        setTimeout(() => this.setState({
-            connectionMessage: false
-        }), 4000);
-
-        // setTimeout(() => this.setState({
-        //     range1: 5,
-        //     range2: 250,
-        // }, () => {
-        //     this.animate(Easing.in(Easing.quad))
-        // }), 4000);
-
+        setTimeout(() => {
+            this.props.clearMessageState()
+            this.setState({
+                connectionMessage: false,
+                type: ""
+            })
+        }, 4000);
     }
 
     animate(easing: any) {
@@ -48,26 +57,19 @@ class CustomMessage extends React.Component<IProps, IState> {
                 toValue: 1,
                 duration: 1000,
                 easing,
-                useNativeDriver: true,
             }
         ).start()
     }
 
-    constructor(props: IProps) {
-        super(props);
+    componentWillUnmount() {
+        this.openAndCloseCustomMessage()
     }
+
     onPressCloseCustomMessage = () => {
         this.setState({ connectionMessage: false })
     }
 
-
     render() {
-        // const marginLeft = this.state.animatedValue.interpolate({
-        //     inputRange: [0, 1],
-        //     outputRange: [this.state.range1, this.state.range2],
-        // })
-        // https://cdn.pixabay.com/photo/2013/07/12/12/40/abort-146096_960_720.png
-
         return this.state.connectionMessage ? <Animated.View style={{
             opacity: this.state.animatedValue,
             transform: [{
@@ -77,7 +79,7 @@ class CustomMessage extends React.Component<IProps, IState> {
                 }),
             }],
         }}>
-            <View style={styles.animatedView}>
+            <View style={this.state.type === "error" ? styles.errorMessage : styles.animatedView}>
                 <View style={styles.buttonView}>
                     <TouchableOpacity style={{ alignItems: "flex-end" }} onPress={() => this.onPressCloseCustomMessage()}>
                         <Image
@@ -99,6 +101,7 @@ const styles = StyleSheet.create({
     animatedView: {
         backgroundColor: "#2d2d2d", position: "absolute", bottom: 10, borderRadius: 5, right: 20,
     },
+    errorMessage: { backgroundColor: "red", position: "absolute", bottom: 10, borderRadius: 5, right: 20, },
     buttonView: { backgroundColor: "black", padding: 5, borderTopRightRadius: 5, borderTopLeftRadius: 5 },
     messageText: { color: "#ffffff", padding: 5 }
 })

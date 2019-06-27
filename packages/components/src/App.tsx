@@ -11,6 +11,7 @@ import BuySell from './components/BuySell';
 import GroupView from './components/Groups';
 import Chat from "./components/Groups/Chat";
 import GroupDashboard from './components/Groups/GroupDashboard';
+import MyBid from "./components/BuySell/myBid";
 
 import './App.css';
 import Navigation from './components/Navigation';
@@ -30,6 +31,7 @@ export function App() {
           <PrivateRoute path="/secure/groups/:groupName" component={GroupDashboard} />
           <PrivateRoute path="/secure/groups" component={GroupView} exact/>
           <PrivateRoute path="/secure/chat" component={Chat} />
+          <PrivateRoute path="/secure/my-bids" component={MyBid} />
         </Router>
       </div>
     </Provider>
