@@ -37,6 +37,14 @@
     "status": {
       "default": "",
       "type": "string"
+    },
+    "buyOrSellId": {
+      "default": "",
+      "type": "string"
+    },
+    "buyOrSellType": {
+      "default": "",
+      "type": "string"
     }
   }
 }

@@ -23,6 +23,7 @@ class Sidebar extends Component<IProps, IState> {
         this._gotoBuySell = this._gotoBuySell.bind(this);
         this._gotoGroups = this._gotoGroups.bind(this);
         this._gotoDash = this._gotoDash.bind(this);
+        this._gotoMyBid = this._gotoMyBid.bind(this);
 
 
     }
@@ -68,6 +69,19 @@ class Sidebar extends Component<IProps, IState> {
                 if (authtoken) {
                     this.props.history.push({
                         pathname: '/secure/dashboard',
+                        state: { authtoken }
+                    });
+                }
+            })
+        setTimeout(() => { this.onPressToggleSideBar() }, 100)
+    }
+
+    _gotoMyBid() {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/my-bids',
                         state: { authtoken }
                     });
                 }
@@ -137,6 +151,15 @@ class Sidebar extends Component<IProps, IState> {
                                 style={sidebarButton} />
                         </TouchableOpacity>
                     </View>
+
+                    <View style={this.state.sideBarBackgroundColor === "/secure/my-bids" ? [sidebarButtonCtnr, styles.sideBarNavigationBackgroundColor] : sidebarButtonCtnr}>
+                        <TouchableOpacity onPress={() => this._gotoMyBid()}>
+                            <Image
+                                source={require('../../assets/images/bid.png')}
+                                style={styles.bidButton}
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         )
@@ -185,7 +208,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30
     },
-
+    bidButton: { width: 50, height: 50 },
     sideBarNavigationBackgroundColor: {
         backgroundColor: "#787878",
     }

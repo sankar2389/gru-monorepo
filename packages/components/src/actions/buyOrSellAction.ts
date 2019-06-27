@@ -7,6 +7,14 @@ const getBuyOrSellDataByCreatorSuccess = (dispatch: Function, response: any[]) =
 }
 
 
+export const clearBuyOrSellReducer = () => {
+    return (dispatch: Function) => {
+        dispatch({
+            type: "CLEAR_BUY_OR_SELL_MESSAGE"
+        })
+    }
+}
+
 export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: string, quantity: any, buyOrSellPrice: number, creator: string, creatorObject: any) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
@@ -45,9 +53,17 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                 }
                             }
                         }).then(res => {
-                            console.log("res buy", res)
+                            dispatch({
+                                type: "BUY_OR_SELL_DATA_CREATED_SUCCESS",
+                                messageType: "success",
+                                message: "Buy is created successfully"
+                            })
                         }).catch(err => {
-                            console.log("err buy", err)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
 
                     } else if (buyOrsell === "sell") {
@@ -82,9 +98,17 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
                                 }
                             }
                         }).then(res => {
-                            console.log("res sell", res)
+                            dispatch({
+                                type: "BUY_OR_SELL_DATA_CREATED_SUCCESS",
+                                messageType: "success",
+                                message: "Sell is created successfully"
+                            })
                         }).catch(err => {
-                            console.log("err sell", err)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
 
                     } else {
@@ -93,7 +117,11 @@ export const createBuyOrSell = (buyOrsell: string, buyOrSellType: string, unit: 
 
                 }
             }).catch(err => {
-                console.log("err all", err)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
             })
     }
 }
@@ -125,9 +153,12 @@ export const getAllBuyData = (start: number = 0) => {
                         }
                     }).then((res: any) => {
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
-                    }).catch(e => {
-                        console.log("grapql error", e)
-                        throw e;
+                    }).catch(err => {
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
                     });
                 }
             })
@@ -161,9 +192,12 @@ export const getAllSellData = (start: number = 0) => {
                         }
                     }).then((res: any) => {
                         getBuyOrSellDataByCreatorSuccess(dispatch, res.data);
-                    }).catch(e => {
-                        console.log("grapql error", e)
-                        throw e;
+                    }).catch(err => {
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
                     });
                 }
             })
@@ -187,6 +221,8 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                   bidQuantity
                                   totalPrice
                                   status
+                                  buyOrSellId
+                                  buyOrSellType
                                   createdAt                   
                               }
                             }
@@ -200,6 +236,8 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                     "bidQuantity": bidQuantity,
                                     "totalPrice": totalPrice,
                                     "status": "open",
+                                    "buyOrSellId": buyOrSellId,
+                                    "buyOrSellType": bidOnBuyOrSell,
                                     "createdAt": new Date()
                                 }
                             }
@@ -253,12 +291,24 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                             }
                                         }
                                     }).then(buy => {
-                                        alert("One bid is created on Buy")
+                                        dispatch({
+                                            type: "BUY_OR_SELL_BID_CREATED_SUCCESS",
+                                            messageType: "success",
+                                            message: "Bid is created successfully on buy",
+                                        })
                                     }).catch(err => {
-                                        console.log(err.message)
+                                        dispatch({
+                                            type: "BUY_OR_SELL_ERROR",
+                                            messageType: "error",
+                                            message: err.message
+                                        })
                                     })
                                 }).catch(err => {
-                                    console.log(err.message)
+                                    dispatch({
+                                        type: "BUY_OR_SELL_ERROR",
+                                        messageType: "error",
+                                        message: err.message
+                                    })
                                 })
 
                             }
@@ -301,23 +351,43 @@ export const onCreateBids = (userId: string, bidsPrice: number, buyOrSellId: str
                                                 }
                                             }
                                         }
-                                    }).then(res => {
-                                        alert("One bid is created on Sesll")
-
+                                    }).then(sell => {
+                                        dispatch({
+                                            type: "BUY_OR_SELL_BID_CREATED_SUCCESS",
+                                            messageType: "success",
+                                            message: "Bid is created successfully on sell",
+                                            payload: sell
+                                        })
                                     }).catch(err => {
-                                        console.log(err.message)
+                                        dispatch({
+                                            type: "BUY_OR_SELL_ERROR",
+                                            messageType: "error",
+                                            message: err.message
+                                        })
                                     })
                                 }).catch(err => {
-                                    console.log(err.message)
+                                    dispatch({
+                                        type: "BUY_OR_SELL_ERROR",
+                                        messageType: "error",
+                                        message: err.message
+                                    })
                                 })
                             }
                         }
                     }).catch(err => {
-                        console.log(err.message)
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
                     })
                 }
             }).catch(err => {
-                alert(err.message)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
             })
     }
 }
@@ -374,28 +444,39 @@ export const getBidsByBidId = (bids: any) => {
                                         bid["user"] = user;
                                     }
                                 });
-                                //console.log("bidddddd", bids)
                             }
                             dispatch({
                                 type: "GET_BID_BY_ID_SUCCESS",
                                 payload: bids
                             })
                         }).catch(err => {
-                            console.log(err.message)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
 
                     }).catch(err => {
-                        console.log(err.message)
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
                     })
 
                 }
             }).catch(err => {
-                console.log(err.message)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
             })
     }
 }
 
-export const bidAcceptOrReject = (type: string, status: string, _id: string, buyOrSellId: string) => {
+export const bidAcceptOrReject = (type: string, evt: string, status: string, _id: string, buyOrSellId: string, userId: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -464,14 +545,24 @@ export const bidAcceptOrReject = (type: string, status: string, _id: string, buy
                                     dispatch({
                                         type: "BID_ACCEPTED_OR_REJECTED_SUCCESS",
                                         payload: bid.data.updateBid.bid,
+                                        messageType: "success",
+                                        message: `One bid is ${evt} successfully for buy`
                                     })
                                 })
                             }).catch(err => {
-                                console.log(err.message)
+                                dispatch({
+                                    type: "BUY_OR_SELL_ERROR",
+                                    messageType: "error",
+                                    message: err.message
+                                })
                             })
 
                         }).catch(err => {
-                            console.log(err.message)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
                     }
                     if (type === "sell") {
@@ -536,19 +627,216 @@ export const bidAcceptOrReject = (type: string, status: string, _id: string, buy
                                     dispatch({
                                         type: "BID_ACCEPTED_OR_REJECTED_SUCCESS",
                                         payload: bid.data.updateBid.bid,
+                                        messageType: "success",
+                                        message: `One bid is ${evt} successfully for Sell`
                                     })
                                 })
                             }).catch(err => {
-                                console.log(err.message)
+                                dispatch({
+                                    type: "BUY_OR_SELL_ERROR",
+                                    messageType: "error",
+                                    message: err.message
+                                })
                             })
 
                         }).catch(err => {
-                            console.log(err.message)
+                            dispatch({
+                                type: "BUY_OR_SELL_ERROR",
+                                messageType: "error",
+                                message: err.message
+                            })
                         })
                     }
                 }
             }).catch(err => {
-                console.log(err.message)
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
             })
     }
 }
+
+export const getAllBidsByUserId = (userId: string, bidStart: number) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                           query($id:String, $start: Int){
+                            bids(start: $start, limit: 20, where:{userId:$id}){
+                                _id
+                                userId
+                                bidPrice
+                                bidQuantity
+                                totalPrice
+                                status
+                                buyOrSellId
+                                buyOrSellType
+                                createdAt
+                            }
+                          }
+                        `, variables: {
+                            "id": userId,
+                            "start": bidStart
+                        }
+                    }).then(bid => {
+                        if (bid.data.bids.length < 1) {
+                            dispatch({
+                                type: "NO_MORE_BIDS_SUCCESS",
+                                messageType: "success",
+                                message: "You are end of the file"
+                            })
+                        } else {
+                            dispatch({
+                                type: "GET_BID_BY_USER_SUCCESS",
+                                payload: bid.data.bids
+                            })
+                        }
+                    }).catch(err => {
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
+                    })
+                }
+            }).catch(err => {
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
+            })
+    }
+}
+export const getOrderById = (orderId: string, buyOrSellType: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    if (buyOrSellType === "buy") {
+                        client.query({
+                            query: gql`
+                                query($id:JSON){
+                                    buys(where:{_id:$id}){
+                                        _id
+                                        price
+                                        creator
+                                        createdAt
+                                        type
+                                        unit
+                                        quantity
+                                    }
+                                  }
+                                `, variables: {
+                                "id": orderId
+                            }
+                        }).then(buy => {
+                            dispatch({
+                                type: "GET_ORDDER_BY_ID",
+                                payload: buy.data.buys
+                            })
+                        })
+
+                    } if (buyOrSellType === "sell") {
+                        client.query({
+                            query: gql`
+                                query($id:JSON){
+                                    sells(where:{_id:$id}){
+                                        _id
+                                        price
+                                        creator
+                                        createdAt
+                                        type
+                                        unit
+                                        quantity
+                                    }
+                                  }
+                                `, variables: {
+                                "id": orderId
+                            }
+                        }).then(sell => {
+                            dispatch({
+                                type: "GET_ORDDER_BY_ID",
+                                payload: sell.data.sells
+                            })
+                        })
+                    }
+
+                }
+            }).catch(err => {
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
+            })
+    }
+
+}
+
+export const onCancelBid = (bidId: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation ($input: updateBidInput) {
+                            updateBid(input: $input) {
+                            bid {
+                                _id
+                                userId
+                                bidPrice
+                                bidQuantity
+                                totalPrice
+                                status
+                                buyOrSellId
+                                buyOrSellType
+                                createdAt
+                            }
+                            }
+                        }
+                        `,
+                        variables: {
+                            "input": {
+                                "where": {
+                                    "id": bidId
+                                },
+                                "data": {
+                                    "status": "cancel"
+                                }
+                            }
+                        }
+                    }).then(bid => {
+                        dispatch({
+                            type: "BID_CANCELED_SUCCESS",
+                            payload: bid.data.updateBid.bid,
+                            messageType: "success",
+                            message: "Bid is successfully cancled"
+                        })
+                    }).catch(err => {
+                        dispatch({
+                            type: "BUY_OR_SELL_ERROR",
+                            messageType: "error",
+                            message: err.message
+                        })
+                    })
+                }
+            }).catch(err => {
+                dispatch({
+                    type: "BUY_OR_SELL_ERROR",
+                    messageType: "error",
+                    message: err.message
+                })
+            })
+    }
+
+}
+
