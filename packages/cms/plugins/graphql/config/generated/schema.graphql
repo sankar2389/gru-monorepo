@@ -107,10 +107,10 @@ type Comments {
   _id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
-  description: String
-  groupID: String
-  questionID: String
-  creator: JSON
+  description: String!
+  groupID: String!
+  questionID: String!
+  creator: JSON!
   questions: Questions
 }
 
@@ -176,10 +176,10 @@ type CommentsGroupBy {
 }
 
 input CommentsInput {
-  description: String
-  groupID: String
-  questionID: String
-  creator: JSON
+  description: String!
+  groupID: String!
+  questionID: String!
+  creator: JSON!
   questions: ID
 }
 

@@ -41,6 +41,18 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
     componentWillReceiveProps(newProps: any) {
         this.setState({ questionDetails: newProps.group.questionDetails });
+        if (newProps.group.questionDetails.creator) {
+            const creator = JSON.parse(newProps.group.questionDetails.creator);
+            this.setState(prevState => {
+                return {
+                    ...prevState,
+                    questionDetails: {
+                        ...prevState.questionDetails,
+                        creator,
+                    },
+                };
+            });
+        }
     }
 
     async componentWillMount() {
@@ -59,6 +71,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
     render() {
         const { innerContainer } = styles;
+        const { questionDetails } = this.state;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
                 <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
@@ -68,6 +81,22 @@ class GroupQuestionPage extends Component<IProps, IState> {
                             Group Q/A : {this.props.match.params.groupName.toUpperCase()}
                         </Text>
                     </View>
+
+                    {/*  Question Description Text */}
+
+                    {questionDetails.creator && (
+                        <View style={styles.questionDescriptionView}>
+                            <View>
+                                <Text style={[styles.questionDescriptionText, { color: '#999' }]}>
+                                    {questionDetails.description}
+                                </Text>
+                            </View>
+                            <View style={styles.questionAuthorView}>
+                                <Text style={styles.questionAuthorText}>By {questionDetails.creator.username}</Text>
+                                <Text style={styles.questionAuthorText}>By {questionDetails.creator.username}</Text>
+                            </View>
+                        </View>
+                    )}
                 </ScrollView>
             </View>
         );
@@ -120,4 +149,36 @@ const styles = StyleSheet.create({
     },
     headerSmallText: { marginBottom: 50, color: '#686662', fontSize: 18 },
     smHeaderSmallText: { marginBottom: 20, color: '#686662', fontSize: 18 },
+    questionDescriptionView: {
+        // display: 'flex',
+        // alignItems: 'center',
+        // justifyContent: 'space-between',
+        width: '90vw',
+        // flexDirection: 'column',
+        // flexWrap: 'nowrap',
+        backgroundColor: 'transparent',
+        marginLeft: 70,
+        borderBottomWidth: 1,
+        // borderLeftWidth: 1,
+        // borderRightWidth: 1,
+        // borderTopWidth: 1,
+        borderBottomColor: '#aaa',
+        padding: 40,
+    },
+    tableColumnView: {
+        flex: 1,
+    },
+    questionDescriptionText: {
+        fontSize: 25,
+        textAlign: 'justify',
+    },
+    questionAuthorView: {
+        margin: 50,
+        padding: 20,
+    },
+    questionAuthorText: {
+        textAlign: 'right',
+        fontSize: 20,
+        color: '#000',
+    },
 });
