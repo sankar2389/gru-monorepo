@@ -41,17 +41,21 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
     componentWillReceiveProps(newProps: any) {
         this.setState({ questionDetails: newProps.group.questionDetails });
-        if (newProps.group.questionDetails.creator) {
-            const creator = JSON.parse(newProps.group.questionDetails.creator);
-            this.setState(prevState => {
-                return {
-                    ...prevState,
-                    questionDetails: {
-                        ...prevState.questionDetails,
-                        creator,
-                    },
-                };
-            });
+        try {
+            if (newProps.group.questionDetails.creator) {
+                const creator = JSON.parse(newProps.group.questionDetails.creator);
+                this.setState(prevState => {
+                    return {
+                        ...prevState,
+                        questionDetails: {
+                            ...prevState.questionDetails,
+                            creator,
+                        },
+                    };
+                });
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -91,12 +95,81 @@ class GroupQuestionPage extends Component<IProps, IState> {
                                     {questionDetails.description}
                                 </Text>
                             </View>
-                            <View style={styles.questionAuthorView}>
-                                <Text style={styles.questionAuthorText}>By {questionDetails.creator.username}</Text>
-                                <Text style={styles.questionAuthorText}>By {questionDetails.creator.username}</Text>
+                            <View style={styles.questionBottomView}>
+                                <View style={styles.questionButtonsView}>
+                                    <View style={styles.buttonView}>
+                                        <TouchableOpacity>
+                                            <Text style={styles.editButton}>Edit</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.buttonView}>
+                                        <TouchableOpacity>
+                                            <Text style={styles.editButton}>Delete</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <View style={styles.questionDetailsView}>
+                                    <View style={styles.questionAuthorView}>
+                                        <Text style={styles.questionAuthorText}>last Activity</Text>
+                                        <Text style={styles.questionAuthorText}>
+                                            {moment(questionDetails.createdAt).fromNow()}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.questionAuthorView}>
+                                        <Text style={styles.questionAuthorText}>
+                                            By {questionDetails.creator.username}
+                                        </Text>
+                                        <Text style={styles.questionAuthorText}>Posted on</Text>
+                                        <Text style={styles.questionAuthorText}>
+                                            {moment(questionDetails.createdAt).format('MMM Do YY \\at h:mm a')}
+                                        </Text>
+                                    </View>
+                                </View>
                             </View>
                         </View>
                     )}
+
+                    {/* Comments View */}
+                    {questionDetails.comments &&
+                        questionDetails.comments.length > 0 &&
+                        questionDetails.comments.map((comment: any) => (
+                            <View style={styles.questionCommentView}>
+                                <View>
+                                    <Text style={[styles.questionDescriptionText, { color: '#999' }]}>
+                                        {comment.description}
+                                    </Text>
+                                </View>
+                                <View style={styles.questionBottomView}>
+                                    <View style={styles.questionButtonsView}>
+                                        <View style={styles.buttonView}>
+                                            <TouchableOpacity>
+                                                <Text style={styles.editButton}>Edit</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View style={styles.buttonView}>
+                                            <TouchableOpacity>
+                                                <Text style={styles.editButton}>Delete</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                    <View style={styles.questionDetailsView}>
+                                        <View style={styles.questionAuthorView}>
+                                            <Text style={styles.questionAuthorText}>last Activity</Text>
+                                            <Text style={styles.questionAuthorText}>
+                                                {moment(comment.createdAt).fromNow()}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.questionAuthorView}>
+                                            <Text style={styles.questionAuthorText}>By {comment.creator.username}</Text>
+                                            <Text style={styles.questionAuthorText}>Posted on</Text>
+                                            <Text style={styles.questionAuthorText}>
+                                                {moment(comment.createdAt).format('MMM Do YY \\at h:mm a')}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
+                        ))}
                 </ScrollView>
             </View>
         );
@@ -116,7 +189,7 @@ export default connect<IReduxState>(
 )(GroupQuestionPage);
 
 const styles = StyleSheet.create({
-    mainViewContainer: { marginLeft: 55, height: 810, marginTop: 70 },
+    mainViewContainer: { marginLeft: 55, height: '90vh', marginTop: 70 },
     smMainViewContainer: { marginLeft: 5, height: 503, zIndex: -1 },
     innerContainer: {
         marginTop: 10,
@@ -150,35 +223,72 @@ const styles = StyleSheet.create({
     headerSmallText: { marginBottom: 50, color: '#686662', fontSize: 18 },
     smHeaderSmallText: { marginBottom: 20, color: '#686662', fontSize: 18 },
     questionDescriptionView: {
-        // display: 'flex',
-        // alignItems: 'center',
-        // justifyContent: 'space-between',
         width: '90vw',
-        // flexDirection: 'column',
-        // flexWrap: 'nowrap',
         backgroundColor: 'transparent',
-        marginLeft: 70,
+        marginLeft: 50,
         borderBottomWidth: 1,
         // borderLeftWidth: 1,
         // borderRightWidth: 1,
         // borderTopWidth: 1,
         borderBottomColor: '#aaa',
-        padding: 40,
+        padding: 30,
     },
     tableColumnView: {
         flex: 1,
     },
+    questionBottomView: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        width: '85vw',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        alignItems: 'flex-end',
+    },
+    questionDetailsView: {
+        display: 'flex',
+        alignItems: 'baseline',
+        justifyContent: 'flex-end',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        // width: '85vw',
+    },
     questionDescriptionText: {
-        fontSize: 25,
+        fontSize: 20,
         textAlign: 'justify',
     },
     questionAuthorView: {
-        margin: 50,
-        padding: 20,
+        margin: 10,
+        padding: 10,
     },
     questionAuthorText: {
         textAlign: 'right',
-        fontSize: 20,
+        fontSize: 15,
         color: '#000',
+    },
+    questionButtonsView: {
+        margin: 10,
+        padding: 10,
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    buttonView: {
+        margin: 10,
+    },
+    editButton: {
+        fontSize: 20,
+    },
+
+    questionCommentView: {
+        width: '90vw',
+        backgroundColor: 'transparent',
+        marginLeft: 50,
+        marginTop: 60,
+        // borderBottomWidth: 1,
+        // borderLeftWidth: 1,
+        // borderRightWidth: 1,
+        borderTopWidth: 1,
+        borderBottomColor: '#aaa',
+        borderTopColor: '#aaa',
+        padding: 30,
     },
 });

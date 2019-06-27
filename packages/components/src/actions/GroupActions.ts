@@ -339,6 +339,8 @@ export const fetchGroupQADetails = (questionID: string) => {
                                         _id
                                         description
                                         creator
+                                        createdAt
+                                        updatedAt
                                     }
                                     creator
                                     updatedAt
