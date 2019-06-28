@@ -25,6 +25,10 @@ const getGrpQADetails = (dispatch: Function, response: any) => {
     dispatch({ type: 'GET_GRP_QA_DETAILS', payload: response });
 }
 
+const getCommentDetails = (dispatch: Function, response: any) => {
+    dispatch({ type: 'GET_COMMENT_DETAILS', payload: response });
+}
+
 const getGrpFail = (dispatch: Function, error: AxiosError) => {
     dispatch({ type: 'GET_GRP_FAIL', payload: error });
 }
@@ -353,6 +357,44 @@ export const fetchGroupQADetails = (questionID: string) => {
                         }
                     }).then((res: any) => {
                         getGrpQADetails(dispatch, res.data.questions[0]);
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+}
+
+
+// To fetch  group comment details
+export const fetchCommentDetails = (commentID: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.query({
+                        query: gql`
+                            query($commentID: String) {
+                                comments(where: {
+                                    _id: $commentID
+                                }) {
+                                    _id
+                                    description
+                                    creator
+                                    createdAt
+                                    updatedAt
+                                }
+                            }
+                        `,
+                        variables: {
+                            "commentID": commentID
+                        }
+                    }).then((res: any) => {
+                        getCommentDetails(dispatch, res.data);
                     }).catch(e => {
                         throw e;
                     });

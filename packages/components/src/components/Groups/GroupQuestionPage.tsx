@@ -68,13 +68,27 @@ class GroupQuestionPage extends Component<IProps, IState> {
         });
     };
 
+    editComment = (comment: any) => {
+        AsyncStorage.getItem('token').then((authtoken: string | null) => {
+            if (authtoken) {
+                this.props.history.push({
+                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
+                        this.props.match.params.questionID
+                    }/${comment._id}/edit`,
+                    state: { authtoken },
+                });
+            }
+        });
+    };
+
     render() {
         const { innerContainer } = styles;
         const { questionDetails } = this.state;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
-                <View style={this.state.dWidth <= 700 ? styles.questionHeaderContainerSM : styles.questionHeaderContainer}>
-
+                <View
+                    style={this.state.dWidth <= 700 ? styles.questionHeaderContainerSM : styles.questionHeaderContainer}
+                >
                     <View style={{ alignItems: 'flex-start' }}>
                         <Text style={styles.headerGroupDashboard}>Q: {this.state.questionDetails.title}</Text>
                         <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
@@ -83,7 +97,6 @@ class GroupQuestionPage extends Component<IProps, IState> {
                     </View>
                 </View>
                 <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
-
                     {/*  Question Description Text */}
 
                     {questionDetails.creator && (
@@ -131,7 +144,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
                     {questionDetails.comments &&
                         questionDetails.comments.length > 0 &&
                         questionDetails.comments.map((comment: any) => (
-                            <View style={styles.questionCommentView}>
+                            <View style={styles.questionCommentView} key={comment._id}>
                                 <View>
                                     <Text style={[styles.questionDescriptionText, { color: '#999' }]}>
                                         {comment.description}
@@ -140,7 +153,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
                                 <View style={styles.questionBottomView}>
                                     <View style={styles.questionButtonsView}>
                                         <View style={styles.buttonView}>
-                                            <TouchableOpacity>
+                                            <TouchableOpacity onPress={() => this.editComment(comment)}>
                                                 <Text style={styles.editButton}>Edit</Text>
                                             </TouchableOpacity>
                                         </View>

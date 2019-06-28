@@ -15,6 +15,7 @@ import GroupQuestionPage from './components/Groups/GroupQuestionPage';
 
 import './App.css';
 import Navigation from './components/Navigation';
+import GroupCommentsActionPage from './components/Groups/GroupCommentsActionPage';
 export function App() {
     const store = configureStore();
     return (
@@ -29,7 +30,11 @@ export function App() {
                     <PrivateRoute path="/secure/dashboard" component={Dashboard} />
                     <PrivateRoute path="/secure/buysell" component={BuySell} />
                     <PrivateRoute path="/secure/groups/:groupName" component={GroupDashboard} exact />
-                    <PrivateRoute path="/secure/groups/:groupName/:questionID" component={GroupQuestionPage} />
+                    <PrivateRoute
+                        path="/secure/groups/:groupName/:questionID/:commentID/:action"
+                        component={GroupCommentsActionPage}
+                    />
+                    <PrivateRoute path="/secure/groups/:groupName/:questionID" component={GroupQuestionPage} exact />
                     <PrivateRoute path="/secure/groups" component={GroupView} exact />
                     <PrivateRoute path="/secure/chat" component={Chat} />
                 </Router>
