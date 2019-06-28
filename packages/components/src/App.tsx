@@ -11,36 +11,38 @@ import BuySell from './components/BuySell';
 import GroupView from './components/Groups';
 import Chat from './components/Groups/Chat';
 import GroupDashboard from './components/Groups/GroupDashboard';
-<<<<<<< HEAD
-import MyBid from "./components/BuySell/myBid";
-=======
+import MyBid from './components/BuySell/myBid';
 import GroupQuestionPage from './components/Groups/GroupQuestionPage';
->>>>>>> adding groupQuestionPage with title
 
 import './App.css';
 import Navigation from './components/Navigation';
+import GroupCommentsActionPage from './components/Groups/GroupCommentsActionPage';
 export function App() {
-  const store = configureStore();
-  return (
-    <Provider store={store}>
-      <div className="App">
-        <Router>
-          <Route path="/" component={HomeScreen} exact />
-          <Route path="/login" component={LoginScreen} />
-          <Route path="/newuser" component={UserRegScreen} />
-          <Route path="/admin" component={LoginScreen} />
-          <PrivateRoute path="/secure" component={Dashboard} exact />
-          <PrivateRoute path="/secure/dashboard" component={Dashboard} />
-          <PrivateRoute path="/secure/buysell" component={BuySell} />
-          <PrivateRoute path="/secure/groups/:groupName/:questionID"  component={GroupQuestionPage} />
-          <PrivateRoute path="/secure/groups/:groupName" component={GroupDashboard} exact/>
-          <PrivateRoute path="/secure/groups" component={GroupView} exact/>
-          <PrivateRoute path="/secure/chat" component={Chat} />
-          <PrivateRoute path="/secure/my-bids" component={MyBid} />
-        </Router>
-      </div>
-    </Provider>
-  )
+    const store = configureStore();
+    return (
+        <Provider store={store}>
+            <div className="App">
+                <Router>
+                    <Route path="/" component={HomeScreen} exact />
+                    <Route path="/login" component={LoginScreen} />
+                    <Route path="/newuser" component={UserRegScreen} />
+                    <Route path="/admin" component={LoginScreen} />
+                    <PrivateRoute path="/secure" component={Dashboard} exact />
+                    <PrivateRoute path="/secure/dashboard" component={Dashboard} />
+                    <PrivateRoute path="/secure/buysell" component={BuySell} />
+                    <PrivateRoute path="/secure/groups/:groupName" component={GroupDashboard} exact />
+                    <PrivateRoute
+                        path="/secure/groups/:groupName/:questionID/:commentID/:action"
+                        component={GroupCommentsActionPage}
+                    />
+                    <PrivateRoute path="/secure/groups/:groupName/:questionID" component={GroupQuestionPage} exact />
+                    <PrivateRoute path="/secure/groups" component={GroupView} exact />
+                    <PrivateRoute path="/secure/chat" component={Chat} />
+                    <PrivateRoute path="/secure/my-bids" component={MyBid} />
+                </Router>
+            </div>
+        </Provider>
+    );
 }
 
 const PrivateRoute: any = ({ component: PrivateComponent, auth, ...rest }: { component: ComponentType; auth: any }) => (

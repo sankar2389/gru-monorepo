@@ -5,7 +5,8 @@ const initState: IGroup = {
     groups: [],
     questions: [],
     error: null,
-    questionDetails: {}
+    questionDetails: {},
+    commentDetail: {}
 }
 export default (state: IGroup = initState, action: AnyAction): IGroup => {
     switch (action.type) {
@@ -42,6 +43,11 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
             return {
                 ...state,
                 questionDetails: action.payload
+            }
+        case 'GET_COMMENT_DETAILS':
+            return {
+                ...state,
+                commentDetail: action.payload
             }
 
         default:

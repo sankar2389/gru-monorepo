@@ -41,7 +41,8 @@ export interface IGroup {
     groups: IGroupsInfo[],
     questions: any[],
     questionDetails: any,
-    error: Error | null
+    error: Error | null,
+    commentDetail: any
 }
 
 export interface IWebrtc {
