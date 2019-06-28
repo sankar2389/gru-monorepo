@@ -18,11 +18,6 @@ interface IProps {
 interface IState {
     dWidth: number;
     questionDetails: any;
-    // questionData: any[];
-    // dataLimitOnPage: number;
-    // selectedPaginatateNumber: number;
-    // totalPages: number[];
-    // visiblePages: number[];
 }
 
 class GroupQuestionPage extends Component<IProps, IState> {
@@ -78,13 +73,16 @@ class GroupQuestionPage extends Component<IProps, IState> {
         const { questionDetails } = this.state;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
-                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
+                <View style={this.state.dWidth <= 700 ? styles.questionHeaderContainerSM : styles.questionHeaderContainer}>
+
                     <View style={{ alignItems: 'flex-start' }}>
                         <Text style={styles.headerGroupDashboard}>Q: {this.state.questionDetails.title}</Text>
                         <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
                             Group Q/A : {this.props.match.params.groupName.toUpperCase()}
                         </Text>
                     </View>
+                </View>
+                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
 
                     {/*  Question Description Text */}
 
@@ -191,6 +189,8 @@ export default connect<IReduxState>(
 const styles = StyleSheet.create({
     mainViewContainer: { marginLeft: 55, height: '90vh', marginTop: 70 },
     smMainViewContainer: { marginLeft: 5, height: 503, zIndex: -1 },
+    questionHeaderContainer: { marginLeft: 55, marginTop: 70 },
+    questionHeaderContainerSM: { marginLeft: 5, zIndex: -1 },
     innerContainer: {
         marginTop: 10,
         marginLeft: 30,
