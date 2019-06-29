@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchCommentDetails, updateComment, newComment } from '../../actions';
+import { fetchCommentDetails, updateComment } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
@@ -10,7 +10,6 @@ import moment from 'moment';
 interface IProps {
     fetchCommentDetails: (commentID: string) => void;
     updateComment: (commentID: string, description: string) => void;
-    newComment: (creator: any, description: string, groupID: string, questionID: string) => void;
     location: any;
     group: any;
     match: any;
@@ -90,23 +89,18 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
     };
 
     newComment = async () => {
-        const { description } = this.state;
-        if (description.length > 0) {
-            const creator = await AsyncStorage.getItem('user');
-            const groupID = this.props.location.state.groupID;
-            const questionID = this.props.match.params.questionID;
-            this.props.newComment(creator, description, groupID, questionID);
-            AsyncStorage.getItem('token').then((authtoken: string | null) => {
-                if (authtoken) {
-                    this.props.history.push({
-                        pathname: `/secure/groups/${this.props.match.params.groupName}/${
-                            this.props.match.params.questionID
-                        }`,
-                        state: { authtoken },
-                    });
-                }
-            });
-        }
+        const { commentID, description } = this.state;
+        // this.props.newComment(commentID, description);
+        AsyncStorage.getItem('token').then((authtoken: string | null) => {
+            if (authtoken) {
+                this.props.history.push({
+                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
+                        this.props.match.params.questionID
+                    }`,
+                    state: { authtoken },
+                });
+            }
+        });
     };
 
     render() {
@@ -135,14 +129,9 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                             </Text>
                         </View>
                         <View>
-                            <TouchableOpacity
-                                style={styles.editButton}
-                                onPress={
-                                    this.props.match.params.action === 'edit' ? this.updateComment : this.newComment
-                                }
-                            >
+                            <TouchableOpacity style={styles.editButton} onPress={this.updateComment}>
                                 <Text style={{ color: '#fff' }}>
-                                    {this.props.match.params.action === 'edit' ? 'Edit Comment' : 'Add New Comment'}
+                                    {this.props.match.params.action === 'edit' ? 'Edit' : 'New'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -177,7 +166,7 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchCommentDetails, updateComment, newComment },
+    { fetchCommentDetails, updateComment },
 )(GroupCommentsActionPage);
 
 const styles = StyleSheet.create({
@@ -220,10 +209,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         marginLeft: 50,
         borderBottomWidth: 1,
-        borderLeftWidth: 1,
-        borderRightWidth: 1,
-        borderTopWidth: 1,
+        // borderLeftWidth: 1,
+        // borderRightWidth: 1,
+        // borderTopWidth: 1,
         borderBottomColor: '#aaa',
+        padding: 30,
     },
     commentTextField: {
         fontSize: 20,
@@ -238,7 +228,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ff4d4d',
         padding: 10,
         borderRadius: 5,
-        width: 150,
+        width: 80,
         marginRight: 50,
     },
 });

@@ -68,7 +68,7 @@ class GroupDashboard extends Component<IProps, IState> {
             if (authtoken) {
                 this.props.history.push({
                     pathname: `/secure/groups/${this.props.match.params.groupName}/${question._id}`,
-                    state: { authtoken, question },
+                    state: { authtoken, question, groupID: this.props.location.state.groupID },
                 });
             }
         });

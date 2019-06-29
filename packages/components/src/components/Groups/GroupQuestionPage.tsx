@@ -75,7 +75,20 @@ class GroupQuestionPage extends Component<IProps, IState> {
                     pathname: `/secure/groups/${this.props.match.params.groupName}/${
                         this.props.match.params.questionID
                     }/${comment._id}/edit`,
-                    state: { authtoken },
+                    state: { authtoken, groupID: this.props.location.state.groupID },
+                });
+            }
+        });
+    };
+
+    newComment = () => {
+        AsyncStorage.getItem('token').then((authtoken: string | null) => {
+            if (authtoken) {
+                this.props.history.push({
+                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
+                        this.props.match.params.questionID
+                    }/new_comment/new`,
+                    state: { authtoken, groupID: this.props.location.state.groupID },
                 });
             }
         });
@@ -89,11 +102,26 @@ class GroupQuestionPage extends Component<IProps, IState> {
                 <View
                     style={this.state.dWidth <= 700 ? styles.questionHeaderContainerSM : styles.questionHeaderContainer}
                 >
-                    <View style={{ alignItems: 'flex-start' }}>
-                        <Text style={styles.headerGroupDashboard}>Q: {this.state.questionDetails.title}</Text>
-                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
-                            Group Q/A : {this.props.match.params.groupName.toUpperCase()}
-                        </Text>
+                    <View
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            width: '100%',
+                        }}
+                    >
+                        <View style={{ alignItems: 'flex-start' }}>
+                            <Text style={styles.headerGroupDashboard}>Q: {this.state.questionDetails.title}</Text>
+                            <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
+                                Group Q/A : {this.props.match.params.groupName.toUpperCase()}
+                            </Text>
+                        </View>
+                        <View>
+                            <TouchableOpacity style={styles.newCommentButton} onPress={this.newComment}>
+                                <Text style={{ color: '#fff' }}>New Comment</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
                 <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
@@ -303,5 +331,12 @@ const styles = StyleSheet.create({
         borderBottomColor: '#aaa',
         borderTopColor: '#aaa',
         padding: 30,
+    },
+    newCommentButton: {
+        backgroundColor: '#ff4d4d',
+        padding: 10,
+        borderRadius: 5,
+        width: 150,
+        marginRight: 50,
     },
 });
