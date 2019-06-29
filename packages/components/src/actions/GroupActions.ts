@@ -492,6 +492,53 @@ export const fetchGroupQADetails = (questionID: string) => {
 }
 
 
+// To update  group comment details
+export const updateQuestion = (commentID: string, description: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation($commentID: ID!, $description: String){
+                            updateComments(input: {
+                              where: {
+                                id: $commentID
+                              },
+                              data: {
+                                description: $description
+                              }
+                            }) {
+                              comment {
+                                description
+                              }
+                            }
+                          }
+                          
+                        `,
+                        variables: {
+                            "commentID": commentID,
+                            "description": description
+                        }
+                    }).then((res: any) => {
+                        console.log(res);
+
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+}
+
+
+// **===== COMMENTS =======
+
+
 
 // To fetch  group comment details
 export const fetchCommentDetails = (commentID: string) => {

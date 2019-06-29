@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchCommentDetails, updateComment } from '../../actions';
+import { fetchCommentDetails, updateQuestion } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
@@ -9,7 +9,7 @@ import moment from 'moment';
 
 interface IProps {
     fetchCommentDetails: (commentID: string) => void;
-    updateComment: (commentID: string, description: string) => void;
+    updateQuestion: (commentID: string, description: string) => void;
     location: any;
     group: any;
     match: any;
@@ -73,9 +73,9 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
         });
     };
 
-    updateComment = async () => {
+    updateQuestion = async () => {
         const { commentID, description } = this.state;
-        this.props.updateComment(commentID, description);
+        this.props.updateQuestion(commentID, description);
         AsyncStorage.getItem('token').then((authtoken: string | null) => {
             if (authtoken) {
                 this.props.history.push({
@@ -88,9 +88,9 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
         });
     };
 
-    newComment = async () => {
+    newQuestion = async () => {
         const { commentID, description } = this.state;
-        // this.props.newComment(commentID, description);
+        // this.props.newQuestion(commentID, description);
         AsyncStorage.getItem('token').then((authtoken: string | null) => {
             if (authtoken) {
                 this.props.history.push({
@@ -129,7 +129,7 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                             </Text>
                         </View>
                         <View>
-                            <TouchableOpacity style={styles.editButton} onPress={this.updateComment}>
+                            <TouchableOpacity style={styles.editButton} onPress={this.updateQuestion}>
                                 <Text style={{ color: '#fff' }}>
                                     {this.props.match.params.action === 'edit' ? 'Edit' : 'New'}
                                 </Text>
@@ -166,7 +166,7 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchCommentDetails, updateComment },
+    { fetchCommentDetails, updateQuestion },
 )(GroupCommentsActionPage);
 
 const styles = StyleSheet.create({
