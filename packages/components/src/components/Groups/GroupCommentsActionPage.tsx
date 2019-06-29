@@ -65,9 +65,19 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
         });
     };
 
-    updateComment = () => {
+    updateComment = async () => {
         const { commentID, description } = this.state;
         this.props.updateComment(commentID, description);
+        AsyncStorage.getItem('token').then((authtoken: string | null) => {
+            if (authtoken) {
+                this.props.history.push({
+                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
+                        this.props.match.params.questionID
+                    }`,
+                    state: { authtoken },
+                });
+            }
+        });
     };
 
     render() {
