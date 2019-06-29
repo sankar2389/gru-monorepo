@@ -540,7 +540,7 @@ export const updateComment = (commentID: string, description: string) => {
                     const client = createApolloClient(authtoken);
                     client.mutate({
                         mutation: gql`
-                        mutation($commentID: String, $description: String){
+                        mutation($commentID: ID!, $description: String){
                             updateComments(input: {
                               where: {
                                 id: $commentID
