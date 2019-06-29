@@ -179,18 +179,48 @@ class GroupDashboard extends Component<IProps, IState> {
         });
     }
 
+    newQuestion = () => {
+        AsyncStorage.getItem('token').then((authtoken: string | null) => {
+            if (authtoken) {
+                this.props.history.push({
+                    pathname: `/secure/groups/${this.props.match.params.groupName}/new_question/new`,
+                    state: { authtoken, groupID: this.props.location.state.groupID },
+                });
+            }
+        });
+    };
+
     render() {
         const { innerContainer } = styles;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
-                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
-                    <View style={{ alignItems: 'flex-start' }}>
-                        <Text style={styles.headerGroupDashboard}>Group Dashboard</Text>
-                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
-                            Group Q/A : {this.props.match.params.groupName.toUpperCase()}
-                        </Text>
+                <View
+                    style={this.state.dWidth <= 700 ? styles.questionHeaderContainerSM : styles.questionHeaderContainer}
+                >
+                    <View
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            width: '100%',
+                        }}
+                    >
+                        <View style={{ alignItems: 'flex-start' }}>
+                            <Text style={styles.headerGroupDashboard}>Group Dashboard</Text>
+                            <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
+                                Group Q/A : {this.props.match.params.groupName.toUpperCase()}
+                            </Text>
+                        </View>
+                        <View>
+                            <TouchableOpacity style={styles.newQuestionButton} onPress={this.newQuestion}>
+                                <Text style={{ color: '#fff' }}>New Question</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
+                </View>
 
+                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     {/*  Table header */}
 
                     <View style={styles.tableHeaderStyles}>
@@ -302,6 +332,8 @@ export default connect<IReduxState>(
 const styles = StyleSheet.create({
     mainViewContainer: { marginLeft: 55, height: 810, marginTop: 70 },
     smMainViewContainer: { marginLeft: 5, height: 503, zIndex: -1 },
+    questionHeaderContainer: { marginLeft: 55, marginTop: 70 },
+    questionHeaderContainerSM: { marginLeft: 5, zIndex: -1 },
     innerContainer: {
         marginTop: 10,
         marginLeft: 30,
@@ -439,5 +471,12 @@ const styles = StyleSheet.create({
     },
     pageCountTextStyle: {
         color: '#ffffff',
+    },
+    newQuestionButton: {
+        backgroundColor: '#ff4d4d',
+        padding: 10,
+        borderRadius: 5,
+        width: 150,
+        marginRight: 50,
     },
 });
