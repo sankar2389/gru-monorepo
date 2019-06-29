@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchCommentDetails } from '../../actions';
+import { fetchCommentDetails, updateComment } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
@@ -9,6 +9,7 @@ import moment from 'moment';
 
 interface IProps {
     fetchCommentDetails: (commentID: string) => void;
+    updateComment: (commentID: string, description: string) => void;
     location: any;
     group: any;
     match: any;
@@ -18,6 +19,8 @@ interface IProps {
 interface IState {
     dWidth: number;
     commentDetails: any;
+    description: string;
+    commentID: string;
 }
 
 class GroupCommentsActionPage extends Component<IProps, IState> {
@@ -26,6 +29,8 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
         this.state = {
             dWidth: 0,
             commentDetails: {},
+            description: '',
+            commentID: '',
         };
     }
 
@@ -38,7 +43,11 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
 
     componentWillReceiveProps(newProps: any) {
         if (newProps.group.commentDetail.comments) {
-            this.setState({ commentDetails: newProps.group.commentDetail.comments[0] });
+            this.setState({
+                commentDetails: newProps.group.commentDetail.comments[0],
+                description: newProps.group.commentDetail.comments[0].description,
+                commentID: newProps.match.params.commentID,
+            });
         }
     }
 
@@ -56,6 +65,11 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
         });
     };
 
+    updateComment = () => {
+        const { commentID, description } = this.state;
+        this.props.updateComment(commentID, description);
+    };
+
     render() {
         const { innerContainer } = styles;
         const { commentDetails } = this.state;
@@ -64,11 +78,26 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                 <View
                     style={this.state.dWidth <= 700 ? styles.questionHeaderContainerSM : styles.questionHeaderContainer}
                 >
-                    <View style={{ alignItems: 'flex-start' }}>
-                        <Text style={styles.headerGroupDashboard}>Edit Comment</Text>
-                        <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
-                            Group Q/A : {this.props.match.params.groupName.toUpperCase()}
-                        </Text>
+                    <View
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            width: '100%',
+                        }}
+                    >
+                        <View style={{ alignItems: 'flex-start' }}>
+                            <Text style={styles.headerGroupDashboard}>Edit Comment</Text>
+                            <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
+                                Group Q/A : {this.props.match.params.groupName.toUpperCase()}
+                            </Text>
+                        </View>
+                        <View>
+                            <TouchableOpacity style={styles.editButton} onPress={this.updateComment}>
+                                <Text style={{ color: '#fff' }}>Edit</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
                 <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
@@ -78,18 +107,8 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                         <View>
                             <TextInput
                                 style={[styles.commentTextField, { color: '#999' }]}
-                                value={commentDetails.description}
-                                onChangeText={text =>
-                                    this.setState(prevState => {
-                                        return {
-                                            ...prevState,
-                                            commentDetails: {
-                                                ...prevState.commentDetails,
-                                                description: text,
-                                            },
-                                        };
-                                    })
-                                }
+                                value={this.state.description}
+                                onChangeText={text => this.setState({ description: text })}
                                 multiline={true}
                             />
                         </View>
@@ -109,7 +128,7 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchCommentDetails },
+    { fetchCommentDetails, updateComment },
 )(GroupCommentsActionPage);
 
 const styles = StyleSheet.create({
@@ -166,5 +185,12 @@ const styles = StyleSheet.create({
     questionAuthorView: {
         margin: 10,
         padding: 10,
+    },
+    editButton: {
+        backgroundColor: '#ff4d4d',
+        padding: 10,
+        borderRadius: 5,
+        width: 80,
+        marginRight: 50,
     },
 });
