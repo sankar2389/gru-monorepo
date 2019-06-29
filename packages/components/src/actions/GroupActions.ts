@@ -369,6 +369,7 @@ export const fetchGroupQADetails = (questionID: string) => {
 }
 
 
+
 // To fetch  group comment details
 export const fetchCommentDetails = (commentID: string) => {
     return (dispatch: Function) => {
@@ -436,6 +437,56 @@ export const updateComment = (commentID: string, description: string) => {
                         variables: {
                             "commentID": commentID,
                             "description": description
+                        }
+                    }).then((res: any) => {
+                        console.log(res);
+
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+}
+
+
+// To Add New group comment 
+export const newComment = (creator: any, description: string, groupID: string, questionID: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation($input: createCommentsInput){
+                            createComments(input: $input) {
+                              comment {
+                                description
+                                creator
+                                groupID
+                                questionID
+                                questions {
+                                    _id
+                                }
+                              }
+                            }
+                          }
+                          
+                        `,
+                        variables: {
+                            "input": {
+                                "data": {
+                                    "description": description,
+                                    "creator": JSON.parse(creator),
+                                    "groupID": groupID,
+                                    "questionID": questionID,
+                                    "questions": questionID
+                                }
+                            }
                         }
                     }).then((res: any) => {
                         console.log(res);

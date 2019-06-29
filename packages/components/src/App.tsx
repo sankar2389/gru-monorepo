@@ -12,10 +12,11 @@ import GroupView from './components/Groups';
 import Chat from './components/Groups/Chat';
 import GroupDashboard from './components/Groups/GroupDashboard';
 import GroupQuestionPage from './components/Groups/GroupQuestionPage';
+import GroupCommentsActionPage from './components/Groups/GroupCommentsActionPage';
+import GroupQuestionActionPage from './components/Groups/GroupQuestionActionPage';
 
 import './App.css';
 import Navigation from './components/Navigation';
-import GroupCommentsActionPage from './components/Groups/GroupCommentsActionPage';
 export function App() {
     const store = configureStore();
     return (
@@ -33,6 +34,11 @@ export function App() {
                     <PrivateRoute
                         path="/secure/groups/:groupName/:questionID/:commentID/:action"
                         component={GroupCommentsActionPage}
+                    />
+                    <PrivateRoute
+                        path="/secure/groups/:groupName/:questionID/:action"
+                        component={GroupQuestionActionPage}
+                        exact
                     />
                     <PrivateRoute path="/secure/groups/:groupName/:questionID" component={GroupQuestionPage} exact />
                     <PrivateRoute path="/secure/groups" component={GroupView} exact />
