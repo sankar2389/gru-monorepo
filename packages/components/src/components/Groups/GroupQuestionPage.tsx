@@ -68,6 +68,19 @@ class GroupQuestionPage extends Component<IProps, IState> {
         });
     };
 
+    editQuestion = () => {
+        AsyncStorage.getItem('token').then((authtoken: string | null) => {
+            if (authtoken) {
+                this.props.history.push({
+                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
+                        this.props.match.params.questionID
+                    }/edit`,
+                    state: { authtoken, groupID: this.props.location.state.groupID },
+                });
+            }
+        });
+    };
+
     editComment = (comment: any) => {
         AsyncStorage.getItem('token').then((authtoken: string | null) => {
             if (authtoken) {
@@ -137,7 +150,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
                             <View style={styles.questionBottomView}>
                                 <View style={styles.questionButtonsView}>
                                     <View style={styles.buttonView}>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={this.editQuestion}>
                                             <Text style={styles.editButton}>Edit</Text>
                                         </TouchableOpacity>
                                     </View>
