@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchCommentDetails, updateQuestion } from '../../actions';
+import { fetchGroupQADetails, updateQuestion, newQuestion } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
 import moment from 'moment';
 
 interface IProps {
-    fetchCommentDetails: (commentID: string) => void;
-    updateQuestion: (commentID: string, description: string) => void;
+    fetchGroupQADetails: (questionID: string) => void;
+    updateQuestion: (questionID: string, title: string, description: string) => void;
+    newQuestion: (creator: any, title: string, description: string, groupID: string) => void;
     location: any;
     group: any;
     match: any;
@@ -18,9 +19,10 @@ interface IProps {
 
 interface IState {
     dWidth: number;
-    commentDetails: any;
+    questionDetails: any;
+    title: string;
     description: string;
-    commentID: string;
+    questionID: string;
 }
 
 class GroupCommentsActionPage extends Component<IProps, IState> {
@@ -28,34 +30,36 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
         super(props);
         this.state = {
             dWidth: 0,
-            commentDetails: {},
+            questionDetails: {},
             description: '',
-            commentID: '',
+            title: '',
+            questionID: '',
         };
     }
 
     async componentDidMount() {
         if (this.props.match.params.action === 'edit') {
-            await this.props.fetchCommentDetails(this.props.match.params.commentID);
+            await this.props.fetchGroupQADetails(this.props.match.params.questionID);
         }
         if (this.props.match.params.action === 'new') {
-            this.setState({ commentDetails: {}, description: '', commentID: '' });
+            this.setState({ questionDetails: {}, description: '', questionID: '' });
         }
         window.addEventListener('resize', this.updateDimension);
     }
 
     componentWillReceiveProps(newProps: any) {
         if (this.props.match.params.action === 'edit') {
-            if (newProps.group.commentDetail.comments) {
+            if (newProps.group.questionDetails) {
                 this.setState({
-                    commentDetails: newProps.group.commentDetail.comments[0],
-                    description: newProps.group.commentDetail.comments[0].description,
-                    commentID: newProps.match.params.commentID,
+                    questionDetails: newProps.group.questionDetails,
+                    title: newProps.group.questionDetails.title,
+                    description: newProps.group.questionDetails.description,
+                    questionID: newProps.match.params.questionID,
                 });
             }
         }
         if (this.props.match.params.action === 'new') {
-            this.setState({ commentDetails: {}, description: '', commentID: '' });
+            this.setState({ questionDetails: {}, description: '', questionID: '' });
         }
     }
 
@@ -74,8 +78,8 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
     };
 
     updateQuestion = async () => {
-        const { commentID, description } = this.state;
-        this.props.updateQuestion(commentID, description);
+        const { questionID, title, description } = this.state;
+        this.props.updateQuestion(questionID, title, description);
         AsyncStorage.getItem('token').then((authtoken: string | null) => {
             if (authtoken) {
                 this.props.history.push({
@@ -89,8 +93,10 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
     };
 
     newQuestion = async () => {
-        const { commentID, description } = this.state;
-        // this.props.newQuestion(commentID, description);
+        const { title, description } = this.state;
+        const creator = await AsyncStorage.getItem('user');
+        const groupID = this.props.match.params.groupID;
+        this.props.newQuestion(creator, title, description, groupID);
         AsyncStorage.getItem('token').then((authtoken: string | null) => {
             if (authtoken) {
                 this.props.history.push({
@@ -105,7 +111,7 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
 
     render() {
         const { innerContainer } = styles;
-        const { commentDetails } = this.state;
+        const { questionDetails } = this.state;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
                 <View
@@ -122,7 +128,7 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                     >
                         <View style={{ alignItems: 'flex-start' }}>
                             <Text style={styles.headerGroupDashboard}>
-                                {this.props.match.params.action === 'edit' ? 'Edit Comment' : 'New Comment'}
+                                {this.props.match.params.action === 'edit' ? 'Edit Question' : 'New Question'}
                             </Text>
                             <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
                                 Group Q/A : {this.props.match.params.groupName.toUpperCase()}
@@ -131,7 +137,7 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                         <View>
                             <TouchableOpacity style={styles.editButton} onPress={this.updateQuestion}>
                                 <Text style={{ color: '#fff' }}>
-                                    {this.props.match.params.action === 'edit' ? 'Edit' : 'New'}
+                                    {this.props.match.params.action === 'edit' ? 'Edit Question' : 'Add New Question'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -140,10 +146,21 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                 <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     {/*  Question Description Text */}
 
+                    <View style={styles.questionTitleView}>
+                        <View>
+                            <TextInput
+                                style={[styles.questionTitleTextField, { color: '#999' }]}
+                                value={this.state.title}
+                                onChangeText={text => this.setState({ title: text })}
+                                multiline={true}
+                                autoFocus={true}
+                            />
+                        </View>
+                    </View>
                     <View style={styles.questionDescriptionView}>
                         <View>
                             <TextInput
-                                style={[styles.commentTextField, { color: '#999' }]}
+                                style={[styles.questionDescTextField, { color: '#999' }]}
                                 value={this.state.description}
                                 onChangeText={text => this.setState({ description: text })}
                                 multiline={true}
@@ -166,7 +183,7 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchCommentDetails, updateQuestion },
+    { fetchGroupQADetails, updateQuestion, newQuestion },
 )(GroupCommentsActionPage);
 
 const styles = StyleSheet.create({
@@ -204,20 +221,38 @@ const styles = StyleSheet.create({
     },
     headerSmallText: { marginBottom: 50, color: '#686662', fontSize: 18 },
     smHeaderSmallText: { marginBottom: 20, color: '#686662', fontSize: 18 },
+    questionTitleView: {
+        width: '90vw',
+        backgroundColor: 'transparent',
+        marginLeft: 50,
+        marginBottom: 50,
+        borderBottomWidth: 1,
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderTopWidth: 1,
+        borderBottomColor: '#aaa',
+    },
     questionDescriptionView: {
         width: '90vw',
         backgroundColor: 'transparent',
         marginLeft: 50,
         borderBottomWidth: 1,
-        // borderLeftWidth: 1,
-        // borderRightWidth: 1,
-        // borderTopWidth: 1,
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderTopWidth: 1,
         borderBottomColor: '#aaa',
-        padding: 30,
     },
-    commentTextField: {
+    questionDescTextField: {
         fontSize: 20,
         height: 380,
+        padding: 30,
+        textAlign: 'justify',
+    },
+
+    questionTitleTextField: {
+        fontSize: 20,
+        // height: 380,
+        padding: 20,
         textAlign: 'justify',
     },
     questionAuthorView: {
@@ -228,7 +263,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ff4d4d',
         padding: 10,
         borderRadius: 5,
-        width: 80,
+        width: 150,
         marginRight: 50,
     },
 });

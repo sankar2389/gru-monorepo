@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
     commentTextField: {
         fontSize: 20,
         height: 380,
+        padding: 30,
         textAlign: 'justify',
     },
     questionAuthorView: {

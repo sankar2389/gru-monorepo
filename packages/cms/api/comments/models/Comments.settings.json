@@ -13,7 +13,7 @@
       "default": "",
       "type": "text",
       "required": true,
-      "minLength": 10
+      "minLength": 1
     },
     "groupID": {
       "default": "",

@@ -445,7 +445,7 @@ export const fetchGroupQA = (groupID: string, start: number = 0) => {
 }
 
 
-// To fetch all group QA details
+// To fetch QA details
 export const fetchGroupQADetails = (questionID: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
@@ -492,8 +492,8 @@ export const fetchGroupQADetails = (questionID: string) => {
 }
 
 
-// To update  group comment details
-export const updateQuestion = (commentID: string, description: string) => {
+// To update  group question details
+export const updateQuestion = (questionID: string, title: string, description: string) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -501,16 +501,18 @@ export const updateQuestion = (commentID: string, description: string) => {
                     const client = createApolloClient(authtoken);
                     client.mutate({
                         mutation: gql`
-                        mutation($commentID: ID!, $description: String){
-                            updateComments(input: {
+                        mutation($questionID: ID!, $title: String, $description: String){
+                            updateQuestions(input: {
                               where: {
-                                id: $commentID
+                                id: $questionID
                               },
                               data: {
+                                title: $title
                                 description: $description
                               }
                             }) {
-                              comment {
+                              question {
+                                title
                                 description
                               }
                             }
@@ -518,7 +520,8 @@ export const updateQuestion = (commentID: string, description: string) => {
                           
                         `,
                         variables: {
-                            "commentID": commentID,
+                            "questionID": questionID,
+                            "title": title,
                             "description": description
                         }
                     }).then((res: any) => {
@@ -534,6 +537,54 @@ export const updateQuestion = (commentID: string, description: string) => {
             })
     }
 }
+
+
+// To Add New group comment 
+export const newQuestion = (creator: any, title: any, description: string, groupID: string) => {
+    return (dispatch: Function) => {
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation($input: createCommentsInput){
+                            createQuestions(input: $input) {
+                              question {
+                                title
+                                description
+                                creator
+                                groupID
+                              }
+                            }
+                          }
+                          
+                        `,
+                        variables: {
+                            "input": {
+                                "data": {
+                                    "title": title,
+                                    "description": description,
+                                    "creator": JSON.parse(creator),
+                                    "groupID": groupID,
+                                }
+                            }
+                        }
+                    }).then((res: any) => {
+                        console.log(res);
+
+                    }).catch(e => {
+                        throw e;
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+}
+
+
 
 
 // **===== COMMENTS =======
