@@ -525,10 +525,10 @@ export const updateQuestion = (questionID: string, title: string, description: s
                             "description": description
                         }
                     }).then((res: any) => {
-                        console.log(res);
+                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: true })
 
                     }).catch(e => {
-                        throw e;
+                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: false })
                     });
                 }
             })
@@ -571,10 +571,10 @@ export const newQuestion = (creator: any, title: any, description: string, group
                             }
                         }
                     }).then((res: any) => {
-                        console.log(res);
+                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: true })
 
                     }).catch(e => {
-                        throw e;
+                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: false })
                     });
                 }
             })
@@ -660,10 +660,9 @@ export const updateComment = (commentID: string, description: string) => {
                             "description": description
                         }
                     }).then((res: any) => {
-                        console.log(res);
-
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: true })
                     }).catch(e => {
-                        throw e;
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: false })
                     });
                 }
             })
@@ -710,15 +709,22 @@ export const newComment = (creator: any, description: string, groupID: string, q
                             }
                         }
                     }).then((res: any) => {
-                        console.log(res);
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: true })
 
                     }).catch(e => {
-                        throw e;
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: false })
                     });
                 }
             })
             .catch(e => {
                 throw e;
             })
+    }
+}
+
+
+export const resetUpdateStatus = () => {
+    return (dispatch: any) => {
+        dispatch({ type: 'RESET_UPDATE_STATUS' })
     }
 }

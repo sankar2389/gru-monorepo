@@ -6,7 +6,9 @@ const initState: IGroup = {
     questions: [],
     error: null,
     questionDetails: {},
-    commentDetail: {}
+    commentDetail: {},
+    commentUpdateStatus: false,
+    questionUpdateStatus: false
 }
 export default (state: IGroup = initState, action: AnyAction): IGroup => {
     switch (action.type) {
@@ -49,7 +51,22 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
                 ...state,
                 commentDetail: action.payload
             }
-
+        case 'COMMENT_UPDATE_STATUS':
+            return {
+                ...state,
+                commentUpdateStatus: action.payload
+            }
+        case 'QUESTION_UPDATE_STATUS':
+            return {
+                ...state,
+                questionUpdateStatus: action.payload
+            }
+        case 'RESET_UPDATE_STATUS':
+            return {
+                ...state,
+                questionUpdateStatus: false,
+                commentUpdateStatus: false
+            }
         default:
             return state;
     }
