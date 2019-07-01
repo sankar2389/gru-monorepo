@@ -373,6 +373,7 @@ export const fetchGroupQADetails = (questionID: string) => {
 // To update  group question details
 export const updateQuestion = (questionID: string, title: string, description: string) => {
     return (dispatch: Function) => {
+        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: 2 })
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {
@@ -403,10 +404,10 @@ export const updateQuestion = (questionID: string, title: string, description: s
                             "description": description
                         }
                     }).then((res: any) => {
-                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: true })
+                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: 0 })
 
                     }).catch(e => {
-                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: false })
+                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: 1 })
                     });
                 }
             })
@@ -420,6 +421,7 @@ export const updateQuestion = (questionID: string, title: string, description: s
 // To Add New group comment 
 export const newQuestion = (creator: any, title: any, description: string, groupID: string) => {
     return (dispatch: Function) => {
+        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: 2 })
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {
@@ -449,10 +451,10 @@ export const newQuestion = (creator: any, title: any, description: string, group
                             }
                         }
                     }).then((res: any) => {
-                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: true })
+                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: 0 })
 
                     }).catch(e => {
-                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: false })
+                        dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: 1 })
                     });
                 }
             })
@@ -511,6 +513,7 @@ export const fetchCommentDetails = (commentID: string) => {
 // To update  group comment details
 export const updateComment = (commentID: string, description: string) => {
     return (dispatch: Function) => {
+        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 2 })
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {
@@ -538,9 +541,9 @@ export const updateComment = (commentID: string, description: string) => {
                             "description": description
                         }
                     }).then((res: any) => {
-                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: true })
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 0 })
                     }).catch(e => {
-                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: false })
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 1 })
                     });
                 }
             })
@@ -554,6 +557,7 @@ export const updateComment = (commentID: string, description: string) => {
 // To Add New group comment 
 export const newComment = (creator: any, description: string, groupID: string, questionID: string) => {
     return (dispatch: Function) => {
+        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 2 })
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
                 if (authtoken) {
@@ -573,7 +577,6 @@ export const newComment = (creator: any, description: string, groupID: string, q
                               }
                             }
                           }
-                          
                         `,
                         variables: {
                             "input": {
@@ -587,10 +590,10 @@ export const newComment = (creator: any, description: string, groupID: string, q
                             }
                         }
                     }).then((res: any) => {
-                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: true })
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 0 })
 
                     }).catch(e => {
-                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: false })
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 1 })
                     });
                 }
             })

@@ -63,6 +63,24 @@ class GroupQuestionPage extends Component<IProps, IState> {
         } catch (error) {
             console.error(error);
         }
+        this.props.fetchGroupQADetails(this.props.match.params.questionID);
+    }
+
+    componentDidUpdate(prevProps: IProps, prevState: IState) {
+        if (
+            prevProps.group.commentUpdateStatus !== this.props.group.commentUpdateStatus &&
+            this.state.modalState === prevState.modalState
+        ) {
+            if (this.props.group.commentUpdateStatus === 0) {
+                this.props.resetUpdateStatus();
+                this.setState({ modalState: false });
+                this.props.fetchGroupQADetails(this.props.match.params.questionID);
+            }
+            if (this.props.group.commentUpdateStatus === 1) {
+                alert('Something Wrong with comment sending');
+                this.props.resetUpdateStatus();
+            }
+        }
     }
 
     async componentWillMount() {
@@ -108,14 +126,6 @@ class GroupQuestionPage extends Component<IProps, IState> {
     onCommentSendEdit = async () => {
         const { commentID, commentDescription } = this.state;
         await this.props.updateComment(commentID, commentDescription);
-        if (this.props.group.commentUpdateStatus) {
-            this.props.resetUpdateStatus();
-            this.setState({ modalState: false });
-            await this.props.fetchGroupQADetails(this.props.match.params.questionID);
-        } else {
-            this.props.resetUpdateStatus();
-            alert('Something Wrong');
-        }
     };
 
     onCommentSendNew = async () => {
@@ -125,14 +135,6 @@ class GroupQuestionPage extends Component<IProps, IState> {
             const groupID = this.props.location.state.groupID;
             const questionID = this.props.match.params.questionID;
             await this.props.newComment(creator, commentDescription, groupID, questionID);
-            if (this.props.group.commentUpdateStatus) {
-                this.props.resetUpdateStatus();
-                this.setState({ modalState: false });
-                await this.props.fetchGroupQADetails(this.props.match.params.questionID);
-            } else {
-                this.props.resetUpdateStatus();
-                alert('Something Wrong');
-            }
         }
     };
 
@@ -177,7 +179,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
                 <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     {/*  Question Description Text */}
 
-                    {questionDetails.creator && (
+                    {Object.keys(questionDetails).length > 0 && questionDetails.creator && (
                         <View style={styles.questionDescriptionView}>
                             <View>
                                 <Text style={[styles.questionDescriptionText, { color: '#999' }]}>

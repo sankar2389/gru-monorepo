@@ -1,7 +1,7 @@
 import React, { ComponentType } from 'react';
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { View, StyleSheet } from 'react-native';
 import LoginScreen from './components/Login';
 import HomeScreen from './components/Home/HomeScreen';

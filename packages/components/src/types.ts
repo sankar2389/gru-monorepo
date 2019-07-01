@@ -42,8 +42,8 @@ export interface IGroup {
     questionDetails: any,
     error: Error | null,
     commentDetail: any,
-    commentUpdateStatus: boolean,
-    questionUpdateStatus: boolean
+    commentUpdateStatus: number,
+    questionUpdateStatus: number
 }
 
 export interface IWebrtc {
