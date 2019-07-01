@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchGroupQADetails } from '../../actions';
+import { fetchGroupQADetails, updateComment, newComment, resetUpdateStatus } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
@@ -9,6 +9,9 @@ import moment from 'moment';
 
 interface IProps {
     fetchGroupQADetails: (questionID: string) => void;
+    updateComment: (commentID: string, description: string) => void;
+    newComment: (creator: any, description: string, groupID: string, questionID: string) => void;
+    resetUpdateStatus: () => void;
     location: any;
     group: any;
     match: any;
@@ -18,6 +21,10 @@ interface IProps {
 interface IState {
     dWidth: number;
     questionDetails: any;
+    commentDescription: string;
+    commentID: string;
+    modalState: boolean;
+    modalType: string;
 }
 
 class GroupQuestionPage extends Component<IProps, IState> {
@@ -26,6 +33,10 @@ class GroupQuestionPage extends Component<IProps, IState> {
         this.state = {
             dWidth: 0,
             questionDetails: {},
+            commentDescription: '',
+            modalState: false,
+            modalType: '',
+            commentID: '',
         };
     }
 
@@ -82,29 +93,51 @@ class GroupQuestionPage extends Component<IProps, IState> {
     };
 
     editComment = (comment: any) => {
-        AsyncStorage.getItem('token').then((authtoken: string | null) => {
-            if (authtoken) {
-                this.props.history.push({
-                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
-                        this.props.match.params.questionID
-                    }/${comment._id}/edit`,
-                    state: { authtoken, groupID: this.props.location.state.groupID },
-                });
-            }
+        this.setState({
+            commentDescription: comment.description,
+            commentID: comment._id,
+            modalState: true,
+            modalType: 'edit',
         });
     };
 
     newComment = () => {
-        AsyncStorage.getItem('token').then((authtoken: string | null) => {
-            if (authtoken) {
-                this.props.history.push({
-                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
-                        this.props.match.params.questionID
-                    }/new_comment/new`,
-                    state: { authtoken, groupID: this.props.location.state.groupID },
-                });
+        this.setState({ commentDescription: '', modalState: true, modalType: 'new' });
+    };
+
+    onCommentSendEdit = async () => {
+        const { commentID, commentDescription } = this.state;
+        await this.props.updateComment(commentID, commentDescription);
+        if (this.props.group.commentUpdateStatus) {
+            this.props.resetUpdateStatus();
+            this.setState({ modalState: false });
+            await this.props.fetchGroupQADetails(this.props.match.params.questionID);
+        } else {
+            this.props.resetUpdateStatus();
+            alert('Something Wrong');
+        }
+    };
+
+    onCommentSendNew = async () => {
+        const { commentDescription } = this.state;
+        if (commentDescription.length > 0) {
+            const creator = await AsyncStorage.getItem('user');
+            const groupID = this.props.location.state.groupID;
+            const questionID = this.props.match.params.questionID;
+            await this.props.newComment(creator, commentDescription, groupID, questionID);
+            if (this.props.group.commentUpdateStatus) {
+                this.props.resetUpdateStatus();
+                this.setState({ modalState: false });
+                await this.props.fetchGroupQADetails(this.props.match.params.questionID);
+            } else {
+                this.props.resetUpdateStatus();
+                alert('Something Wrong');
             }
-        });
+        }
+    };
+
+    onCommentModalClose = () => {
+        this.setState({ modalState: false, commentDescription: '' });
     };
 
     render() {
@@ -227,6 +260,40 @@ class GroupQuestionPage extends Component<IProps, IState> {
                             </View>
                         ))}
                 </ScrollView>
+
+                {/* Comment Text Field Modal */}
+                {this.state.modalState && (
+                    <View>
+                        <View style={styles.commentModalView}>
+                            <View style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                                <TouchableOpacity
+                                    style={styles.commentSubmitButton}
+                                    onPress={
+                                        this.state.modalType == 'edit' ? this.onCommentSendEdit : this.onCommentSendNew
+                                    }
+                                >
+                                    <Text style={{ color: '#fff' }}>
+                                        {this.state.modalType == 'edit' ? 'Edit Comment' : 'New Comment'}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.commentSubmitButton} onPress={this.onCommentModalClose}>
+                                    <Text style={{ color: '#fff' }}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.commentViewStyle}>
+                                <TextInput
+                                    style={[styles.commentTextField, { color: '#999' }]}
+                                    value={this.state.commentDescription}
+                                    onChangeText={text => this.setState({ commentDescription: text })}
+                                    multiline={true}
+                                    autoFocus={true}
+                                    placeholder="Enter new Comment"
+                                />
+                            </View>
+                        </View>
+                        <View />
+                    </View>
+                )}
             </View>
         );
     }
@@ -241,11 +308,11 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchGroupQADetails },
+    { fetchGroupQADetails, newComment, updateComment, resetUpdateStatus },
 )(GroupQuestionPage);
 
 const styles = StyleSheet.create({
-    mainViewContainer: { marginLeft: 55, height: '90vh', marginTop: 70 },
+    mainViewContainer: { marginLeft: 55, height: '92vh', marginTop: 70 },
     smMainViewContainer: { marginLeft: 5, height: 503, zIndex: -1 },
     questionHeaderContainer: { marginLeft: 55, marginTop: 70 },
     questionHeaderContainerSM: { marginLeft: 5, zIndex: -1 },
@@ -355,5 +422,40 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         width: 150,
         marginRight: 50,
+    },
+    commentModalView: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexDirection: 'row-reverse',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        width: '100%',
+        padding: 30,
+        marginLeft: 20,
+        backgroundColor: '#fff',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+    },
+    commentViewStyle: {
+        width: '70vw',
+        borderBottomWidth: 1,
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderTopWidth: 1,
+        borderBottomColor: '#aaa',
+    },
+    commentTextField: {
+        fontSize: 20,
+        height: 180,
+        padding: 30,
+        textAlign: 'justify',
+    },
+    commentSubmitButton: {
+        backgroundColor: '#ff4d4d',
+        padding: 10,
+        borderRadius: 5,
+        width: 150,
+        marginRight: 20,
     },
 });

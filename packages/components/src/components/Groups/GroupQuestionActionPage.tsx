@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchGroupQADetails, updateQuestion, newQuestion } from '../../actions';
+import { fetchGroupQADetails, updateQuestion, newQuestion, resetUpdateStatus } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
@@ -11,6 +11,7 @@ interface IProps {
     fetchGroupQADetails: (questionID: string) => void;
     updateQuestion: (questionID: string, title: string, description: string) => void;
     newQuestion: (creator: any, title: string, description: string, groupID: string) => void;
+    resetUpdateStatus: () => void;
     location: any;
     group: any;
     match: any;
@@ -84,17 +85,23 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
 
     updateQuestion = async () => {
         const { questionID, title, description } = this.state;
-        this.props.updateQuestion(questionID, title, description);
-        AsyncStorage.getItem('token').then((authtoken: string | null) => {
-            if (authtoken) {
-                this.props.history.push({
-                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
-                        this.props.match.params.questionID
-                    }`,
-                    state: { authtoken },
-                });
-            }
-        });
+        await this.props.updateQuestion(questionID, title, description);
+        if (this.props.group.commentUpdateStatus) {
+            AsyncStorage.getItem('token').then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.resetUpdateStatus();
+                    this.props.history.push({
+                        pathname: `/secure/groups/${this.props.match.params.groupName}/${
+                            this.props.match.params.questionID
+                        }`,
+                        state: { authtoken },
+                    });
+                }
+            });
+        } else {
+            this.props.resetUpdateStatus();
+            alert('Something Wrong');
+        }
     };
 
     newQuestion = async () => {
@@ -103,14 +110,20 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
             const creator = await AsyncStorage.getItem('user');
             const groupID = this.props.location.state.groupID;
             await this.props.newQuestion(creator, title, description, groupID);
-            AsyncStorage.getItem('token').then((authtoken: string | null) => {
-                if (authtoken) {
-                    this.props.history.push({
-                        pathname: `/secure/groups/${this.props.match.params.groupName}/`,
-                        state: { authtoken, groupID },
-                    });
-                }
-            });
+            if (this.props.group.commentUpdateStatus) {
+                AsyncStorage.getItem('token').then((authtoken: string | null) => {
+                    if (authtoken) {
+                        this.props.resetUpdateStatus();
+                        this.props.history.push({
+                            pathname: `/secure/groups/${this.props.match.params.groupName}/`,
+                            state: { authtoken, groupID },
+                        });
+                    }
+                });
+            } else {
+                this.props.resetUpdateStatus();
+                alert('Something Wrong');
+            }
         }
     };
 
@@ -194,7 +207,7 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchGroupQADetails, updateQuestion, newQuestion },
+    { fetchGroupQADetails, updateQuestion, newQuestion, resetUpdateStatus },
 )(GroupCommentsActionPage);
 
 const styles = StyleSheet.create({
