@@ -30,7 +30,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
     }
 
     async componentDidMount() {
-        this.props.fetchGroupQADetails(this.props.match.params.questionID);
+        await this.props.fetchGroupQADetails(this.props.match.params.questionID);
         window.addEventListener('resize', this.updateDimension);
     }
 
@@ -124,12 +124,16 @@ class GroupQuestionPage extends Component<IProps, IState> {
                             width: '100%',
                         }}
                     >
-                        <View style={{ alignItems: 'flex-start' }}>
-                            <Text style={styles.headerGroupDashboard}>Q: {this.state.questionDetails.title}</Text>
-                            <Text style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}>
-                                Group Q/A : {this.props.match.params.groupName.toUpperCase()}
-                            </Text>
-                        </View>
+                        {this.state.questionDetails && (
+                            <View style={{ alignItems: 'flex-start' }}>
+                                <Text style={styles.headerGroupDashboard}>Q: {this.state.questionDetails.title}</Text>
+                                <Text
+                                    style={this.state.dWidth <= 700 ? styles.smHeaderSmallText : styles.headerSmallText}
+                                >
+                                    Group Q/A : {this.props.match.params.groupName.toUpperCase()}
+                                </Text>
+                            </View>
+                        )}
                         <View>
                             <TouchableOpacity style={styles.newCommentButton} onPress={this.newComment}>
                                 <Text style={{ color: '#fff' }}>New Comment</Text>

@@ -38,16 +38,21 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
     }
 
     async componentDidMount() {
+        this.getData();
+        window.addEventListener('resize', this.updateDimension);
+    }
+
+    getData = async () => {
         if (this.props.match.params.action === 'edit') {
             await this.props.fetchGroupQADetails(this.props.match.params.questionID);
         }
         if (this.props.match.params.action === 'new') {
             this.setState({ questionDetails: {}, description: '', questionID: '' });
         }
-        window.addEventListener('resize', this.updateDimension);
-    }
+    };
 
     componentWillReceiveProps(newProps: any) {
+        this.getData();
         if (this.props.match.params.action === 'edit') {
             if (newProps.group.questionDetails) {
                 this.setState({
@@ -94,19 +99,19 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
 
     newQuestion = async () => {
         const { title, description } = this.state;
-        const creator = await AsyncStorage.getItem('user');
-        const groupID = this.props.match.params.groupID;
-        this.props.newQuestion(creator, title, description, groupID);
-        AsyncStorage.getItem('token').then((authtoken: string | null) => {
-            if (authtoken) {
-                this.props.history.push({
-                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
-                        this.props.match.params.questionID
-                    }`,
-                    state: { authtoken },
-                });
-            }
-        });
+        if (title.length > 0 && description.length > 0) {
+            const creator = await AsyncStorage.getItem('user');
+            const groupID = this.props.location.state.groupID;
+            await this.props.newQuestion(creator, title, description, groupID);
+            AsyncStorage.getItem('token').then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: `/secure/groups/${this.props.match.params.groupName}/`,
+                        state: { authtoken, groupID },
+                    });
+                }
+            });
+        }
     };
 
     render() {
@@ -135,7 +140,12 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                             </Text>
                         </View>
                         <View>
-                            <TouchableOpacity style={styles.editButton} onPress={this.updateQuestion}>
+                            <TouchableOpacity
+                                style={styles.editButton}
+                                onPress={
+                                    this.props.match.params.action === 'edit' ? this.updateQuestion : this.newQuestion
+                                }
+                            >
                                 <Text style={{ color: '#fff' }}>
                                     {this.props.match.params.action === 'edit' ? 'Edit Question' : 'Add New Question'}
                                 </Text>
@@ -154,6 +164,7 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                                 onChangeText={text => this.setState({ title: text })}
                                 multiline={true}
                                 autoFocus={true}
+                                placeholder="Enter Title"
                             />
                         </View>
                     </View>
@@ -164,7 +175,7 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                                 value={this.state.description}
                                 onChangeText={text => this.setState({ description: text })}
                                 multiline={true}
-                                autoFocus={true}
+                                placeholder="Enter Question Description"
                             />
                         </View>
                     </View>
