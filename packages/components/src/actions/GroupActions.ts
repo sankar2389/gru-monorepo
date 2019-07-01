@@ -426,7 +426,7 @@ export const newQuestion = (creator: any, title: any, description: string, group
                     const client = createApolloClient(authtoken);
                     client.mutate({
                         mutation: gql`
-                        mutation($input: createCommentsInput){
+                        mutation($input: createQuestionsInput){
                             createQuestions(input: $input) {
                               question {
                                 title

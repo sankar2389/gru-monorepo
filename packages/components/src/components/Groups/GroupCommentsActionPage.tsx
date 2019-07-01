@@ -159,6 +159,7 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                                 onChangeText={text => this.setState({ description: text })}
                                 multiline={true}
                                 autoFocus={true}
+                                placeholder="Enter new Comment"
                             />
                         </View>
                     </View>
