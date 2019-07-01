@@ -69,6 +69,26 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
         }
     }
 
+    componentDidUpdate(prevProps: IProps, prevState: IState) {
+        if (prevProps.group.questionUpdateStatus !== this.props.group.questionUpdateStatus) {
+            if (this.props.group.questionUpdateStatus === 0) {
+                AsyncStorage.getItem('token').then((authtoken: string | null) => {
+                    if (authtoken) {
+                        this.props.history.push({
+                            pathname: `/secure/groups/${this.props.match.params.groupName}/`,
+                            state: { authtoken },
+                        });
+                        this.props.resetUpdateStatus();
+                    }
+                });
+            }
+            if (this.props.group.questionUpdateStatus === 1) {
+                this.props.resetUpdateStatus();
+                alert('Something Wrong with question sending');
+            }
+        }
+    }
+
     async componentWillMount() {
         this.updateDimension();
     }
@@ -86,22 +106,6 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
     updateQuestion = async () => {
         const { questionID, title, description } = this.state;
         await this.props.updateQuestion(questionID, title, description);
-        if (this.props.group.commentUpdateStatus) {
-            AsyncStorage.getItem('token').then((authtoken: string | null) => {
-                if (authtoken) {
-                    this.props.resetUpdateStatus();
-                    this.props.history.push({
-                        pathname: `/secure/groups/${this.props.match.params.groupName}/${
-                            this.props.match.params.questionID
-                        }`,
-                        state: { authtoken },
-                    });
-                }
-            });
-        } else {
-            this.props.resetUpdateStatus();
-            alert('Something Wrong');
-        }
     };
 
     newQuestion = async () => {
@@ -110,20 +114,6 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
             const creator = await AsyncStorage.getItem('user');
             const groupID = this.props.location.state.groupID;
             await this.props.newQuestion(creator, title, description, groupID);
-            if (this.props.group.commentUpdateStatus) {
-                AsyncStorage.getItem('token').then((authtoken: string | null) => {
-                    if (authtoken) {
-                        this.props.resetUpdateStatus();
-                        this.props.history.push({
-                            pathname: `/secure/groups/${this.props.match.params.groupName}/`,
-                            state: { authtoken, groupID },
-                        });
-                    }
-                });
-            } else {
-                this.props.resetUpdateStatus();
-                alert('Something Wrong');
-            }
         }
     };
 

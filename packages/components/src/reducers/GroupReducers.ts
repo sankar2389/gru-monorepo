@@ -7,8 +7,8 @@ const initState: IGroup = {
     error: null,
     questionDetails: {},
     commentDetail: {},
-    commentUpdateStatus: false,
-    questionUpdateStatus: false
+    commentUpdateStatus: 1,
+    questionUpdateStatus: 1
 }
 export default (state: IGroup = initState, action: AnyAction): IGroup => {
     switch (action.type) {
@@ -64,8 +64,8 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
         case 'RESET_UPDATE_STATUS':
             return {
                 ...state,
-                questionUpdateStatus: false,
-                commentUpdateStatus: false
+                questionUpdateStatus: 1,
+                commentUpdateStatus: 1
             }
         default:
             return state;
