@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchGroupQADetails, updateComment, newComment, resetUpdateStatus } from '../../actions';
+import { fetchGroupQADetails, updateComment, newComment, resetUpdateStatus, deleteComment } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
@@ -12,6 +12,7 @@ import './GroupQuestionActionPage.css';
 interface IProps {
     fetchGroupQADetails: (questionID: string) => void;
     updateComment: (commentID: string, description: string) => void;
+    deleteComment: (commentID: string) => void;
     newComment: (creator: any, description: string, groupID: string, questionID: string) => void;
     resetUpdateStatus: () => void;
     location: any;
@@ -28,6 +29,7 @@ interface IState {
     modalState: boolean;
     modalType: string;
     currentUser: any;
+    deleteModal: boolean;
 }
 
 class GroupQuestionPage extends Component<IProps, IState> {
@@ -41,6 +43,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
             modalType: '',
             commentID: '',
             currentUser: {},
+            deleteModal: false,
         };
     }
 
@@ -83,7 +86,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
                 this.props.fetchGroupQADetails(this.props.match.params.questionID);
             }
             if (this.props.group.commentUpdateStatus === 1) {
-                alert('Something Wrong with comment sending');
+                alert('Something Wrong');
                 this.props.resetUpdateStatus();
             }
         }
@@ -142,6 +145,20 @@ class GroupQuestionPage extends Component<IProps, IState> {
             const questionID = this.props.match.params.questionID;
             await this.props.newComment(creator, commentDescription, groupID, questionID);
         }
+    };
+
+    onPressDeleteComment = (comment: any) => {
+        if (this.state.deleteModal) {
+            const { commentID } = this.state;
+            this.props.deleteComment(commentID);
+            this.setState({ deleteModal: false, commentID: '' });
+        } else {
+            this.setState({ deleteModal: true, commentID: comment._id });
+        }
+    };
+
+    onCancelDeleteModal = () => {
+        this.setState({ deleteModal: false });
     };
 
     onCommentModalClose = () => {
@@ -241,14 +258,18 @@ class GroupQuestionPage extends Component<IProps, IState> {
                                 <View style={styles.questionBottomView}>
                                     <View style={styles.questionButtonsView}>
                                         <View style={styles.buttonView}>
-                                            <TouchableOpacity onPress={() => this.editComment(comment)}>
-                                                <Text style={styles.editButton}>Edit</Text>
-                                            </TouchableOpacity>
+                                            {this.state.currentUser._id === comment.creator._id && (
+                                                <TouchableOpacity onPress={() => this.editComment(comment)}>
+                                                    <Text style={styles.editButton}>Edit</Text>
+                                                </TouchableOpacity>
+                                            )}
                                         </View>
                                         <View style={styles.buttonView}>
-                                            <TouchableOpacity>
-                                                <Text style={styles.editButton}>Delete</Text>
-                                            </TouchableOpacity>
+                                            {this.state.currentUser._id === comment.creator._id && (
+                                                <TouchableOpacity onPress={() => this.onPressDeleteComment(comment)}>
+                                                    <Text style={styles.editButton}>Delete</Text>
+                                                </TouchableOpacity>
+                                            )}
                                         </View>
                                     </View>
                                     <View style={styles.questionDetailsView}>
@@ -312,6 +333,26 @@ class GroupQuestionPage extends Component<IProps, IState> {
                         </View>
                     </TransitionGroup>
                 )}
+
+                {/* Delete Modal */}
+                {this.state.deleteModal && (
+                    <View style={styles.deleteModalViewContainer}>
+                        <View style={styles.deleteModalView}>
+                            <View style={styles.deleteModalText}>
+                                <Text>Are You Sure?</Text>
+                                <Text>This action cannot be Undone</Text>
+                            </View>
+                            <View style={styles.deleteModalDeleteContainer}>
+                                <TouchableOpacity style={styles.deleteModalButtons} onPress={this.onCancelDeleteModal}>
+                                    <Text>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.deleteModalButtons} onPress={this.onPressDeleteComment}>
+                                    <Text>Delete</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                )}
             </View>
         );
     }
@@ -326,11 +367,11 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchGroupQADetails, newComment, updateComment, resetUpdateStatus },
+    { fetchGroupQADetails, newComment, updateComment, resetUpdateStatus, deleteComment },
 )(GroupQuestionPage);
 
 const styles = StyleSheet.create({
-    mainViewContainer: { marginLeft: 55, height: '92vh', marginTop: 70 },
+    mainViewContainer: { marginLeft: 55, height: '92vh', marginTop: 70, position: 'relative' },
     smMainViewContainer: { marginLeft: 5, height: 503, zIndex: -1 },
     questionHeaderContainer: { marginLeft: 55, marginTop: 70 },
     questionHeaderContainerSM: { marginLeft: 5, zIndex: -1 },
@@ -472,5 +513,47 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         width: 150,
         marginRight: 10,
+    },
+    deleteModalViewContainer: {
+        position: 'absolute',
+        top: '40%',
+        left: '35%',
+        // right: '50%',
+        transform: [{ translateX: -50 }, { translateY: -50 }],
+        backgroundColor: '#000',
+        boxShadow: '0px 0px 90px rgb(0,0,0)',
+    },
+    deleteModalView: {
+        width: '30vw',
+        height: '20vh',
+        padding: 30,
+        display: 'flex',
+        flexDirection: 'column',
+        flexWrap: 'wrap',
+        backgroundColor: '#fff',
+        zIndex: 9,
+    },
+
+    deleteModalText: {
+        flex: 4,
+        padding: 7,
+        width: '100%',
+        fontSize: 21,
+    },
+    deleteModalButtons: {
+        backgroundColor: '#ff4d4d',
+        padding: 10,
+        borderRadius: 5,
+        width: 150,
+        marginRight: 10,
+        marginLeft: 10,
+    },
+    deleteModalDeleteContainer: {
+        // flexBasis: 1,
+        width: '100%',
+        color: '#fff',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
     },
 });

@@ -726,6 +726,49 @@ export const newComment = (creator: any, description: string, groupID: string, q
 }
 
 
+// To delete  group comment details
+export const deleteComment = (commentID: string) => {
+    return (dispatch: Function) => {
+        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 2 })
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                if (authtoken) {
+                    const client = createApolloClient(authtoken);
+                    client.mutate({
+                        mutation: gql`
+                        mutation($commentID: ID!) {
+                            deleteComments(input: {
+                              where: {
+                                id: $commentID
+                              }
+                            }) {
+                              comment {
+                                description
+                                creator
+                                groupID
+                                questionID
+                              }
+                            }
+                          }
+                        `,
+                        variables: {
+                            "commentID": commentID,
+                        }
+                    }).then((res: any) => {
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 0 })
+                    }).catch(e => {
+                        dispatch({ type: 'COMMENT_UPDATE_STATUS', payload: 1 })
+                    });
+                }
+            })
+            .catch(e => {
+                throw e;
+            })
+    }
+}
+
+
+
 export const resetUpdateStatus = () => {
     return (dispatch: any) => {
         dispatch({ type: 'RESET_UPDATE_STATUS' })
