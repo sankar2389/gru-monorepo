@@ -50,14 +50,6 @@ class GroupDashboard extends Component<IProps, IState> {
         this.getTotalPages();
     }
 
-    componentDidUpdate(prevProps: IProps, prevState: IState) {
-        if (
-            prevProps.group.questions.questions !== this.props.group.questions.questions &&
-            this.state.questionData !== prevState.questionData
-        ) {
-        }
-    }
-
     async componentWillMount() {
         this.updateDimension();
     }

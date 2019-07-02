@@ -63,7 +63,6 @@ class GroupQuestionPage extends Component<IProps, IState> {
         } catch (error) {
             console.error(error);
         }
-        this.props.fetchGroupQADetails(this.props.match.params.questionID);
     }
 
     componentDidUpdate(prevProps: IProps, prevState: IState) {
