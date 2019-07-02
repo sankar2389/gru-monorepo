@@ -2,6 +2,7 @@ import { AnyAction } from "redux";
 import { incommingMessage, datachannelOpened } from './actions';
 
 const webrtcMiddleware = (() => {
+    // @ts-ignore
     const RTCPeerConnection = window.RTCPeerConnection;
     let socketId: string;
     const configuration = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }] };
@@ -9,10 +10,10 @@ const webrtcMiddleware = (() => {
     let dataChannel: RTCDataChannel
 
 
-    peerconn.onnegotiationneeded = function (event) {
+    peerconn.onnegotiationneeded = function (event: any) {
         console.log('onnegotiationneeded');
     };
-    peerconn.oniceconnectionstatechange = function (event) {
+    peerconn.oniceconnectionstatechange = function (event: any) {
         console.log('oniceconnectionstatechange');
     };
     peerconn.onsignalingstatechange = function () {
@@ -29,7 +30,7 @@ const webrtcMiddleware = (() => {
 
         /** Create local offer */
         peerconn.createOffer({ voiceActivityDetection: false })
-            .then(offer => {
+            .then((offer: any) => {
                 peerconn.setLocalDescription(new RTCSessionDescription(offer));
             })
             .then(() => {
@@ -37,7 +38,7 @@ const webrtcMiddleware = (() => {
             })
             .catch(logError)
 
-        dataChannel.onopen = function (event) {
+        dataChannel.onopen = function (event: any) {
             console.log('%c dataChannel.onopen      ', 'background: #62BD96; color: #000');
             store.dispatch(datachannelOpened());
         };
@@ -45,7 +46,7 @@ const webrtcMiddleware = (() => {
             console.log('%c dataChannel.onclose     ', 'background: #62BD96; color: #000');
         };
 
-        dataChannel.onmessage = (event) => {
+        dataChannel.onmessage = (event: any) => {
             console.log('%c dataChannel.onmessage:  ', 'background: #62BD96; color: #000', event.data);
             store.dispatch(incommingMessage(socketId, event.data));
         };
@@ -62,7 +63,7 @@ const webrtcMiddleware = (() => {
         if (data.sdp) {
             peerconn.setRemoteDescription(new RTCSessionDescription(data.sdp), () => {
                 if (peerconn.remoteDescription)
-                    peerconn.createAnswer((desc) => {
+                    peerconn.createAnswer((desc: any) => {
                         peerconn.setLocalDescription(desc, () => {
                             store.dispatch({ type: "EXCHANGE", payload: { 'to': data.from, 'sdp': peerconn.localDescription } });
 
@@ -78,15 +79,15 @@ const webrtcMiddleware = (() => {
         }
     }
     return (store: any) => (next: any) => (action: any) => {
-        peerconn.onicecandidate = function (event) {
+        peerconn.onicecandidate = function (event: any) {
             console.log('%c onicecandidate      ', 'background: #62BD96; color: #000');
             if (event.candidate && socketId && socketId !== null) {
                 store.dispatch({ type: "EXCHANGE", payload: { 'to': socketId, 'candidate': event.candidate } })
             }
         };
-        peerconn.ondatachannel = function (event) {
+        peerconn.ondatachannel = function (event: any) {
             const receiveChannel = event.channel;
-            receiveChannel.onmessage = function (event) {
+            receiveChannel.onmessage = function (event: any) {
                 store.dispatch(incommingMessage(socketId, event.data));
             };
         }
