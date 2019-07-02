@@ -105,6 +105,23 @@ class GroupQuestionPage extends Component<IProps, IState> {
                 });
             }
         }
+        if (prevProps.group.questionUpdateStatus !== this.props.group.questionUpdateStatus) {
+            if (this.props.group.questionUpdateStatus === 0) {
+                AsyncStorage.getItem('token').then((authtoken: string | null) => {
+                    if (authtoken) {
+                        this.props.resetUpdateStatus();
+                        this.props.history.push({
+                            pathname: `/secure/groups/${this.props.match.params.groupName}/`,
+                            state: { authtoken, groupID: this.props.location.state.groupID },
+                        });
+                    }
+                });
+            }
+            if (this.props.group.questionUpdateStatus === 1) {
+                alert('Something Wrong');
+                this.props.resetUpdateStatus();
+            }
+        }
     }
 
     async componentWillMount() {
@@ -171,11 +188,12 @@ class GroupQuestionPage extends Component<IProps, IState> {
         if (this.state.deleteModal) {
             const { commentID } = this.state;
             if (commentID) {
-                const { commentID } = this.state;
                 this.props.deleteComment(commentID);
                 this.setState({ deleteModal: false, commentID: '' });
             } else {
                 const { questionDetails } = this.state;
+                console.log(questionDetails._id);
+
                 this.props.deleteQuestion(questionDetails._id);
             }
         }
