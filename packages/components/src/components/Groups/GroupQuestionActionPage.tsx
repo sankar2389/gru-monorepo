@@ -53,7 +53,6 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
     };
 
     componentWillReceiveProps(newProps: any) {
-        this.getData();
         if (this.props.match.params.action === 'edit') {
             if (newProps.group.questionDetails) {
                 this.setState({
@@ -76,7 +75,7 @@ class GroupCommentsActionPage extends Component<IProps, IState> {
                     if (authtoken) {
                         this.props.history.push({
                             pathname: `/secure/groups/${this.props.match.params.groupName}/`,
-                            state: { authtoken },
+                            state: { authtoken, groupID: this.props.location.state.groupID },
                         });
                         this.props.resetUpdateStatus();
                     }
