@@ -6,6 +6,8 @@ import { IReduxState } from '../../types';
 import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
 import moment from 'moment';
+import { TransitionGroup } from 'react-transition-group';
+import './GroupQuestionActionPage.css';
 
 interface IProps {
     fetchGroupQADetails: (questionID: string) => void;
@@ -25,6 +27,7 @@ interface IState {
     commentID: string;
     modalState: boolean;
     modalType: string;
+    currentUser: any;
 }
 
 class GroupQuestionPage extends Component<IProps, IState> {
@@ -37,11 +40,15 @@ class GroupQuestionPage extends Component<IProps, IState> {
             modalState: false,
             modalType: '',
             commentID: '',
+            currentUser: {},
         };
     }
 
     async componentDidMount() {
         await this.props.fetchGroupQADetails(this.props.match.params.questionID);
+        const user = await AsyncStorage.getItem('user');
+        // @ts-ignore
+        this.setState({ currentUser: JSON.parse(user) });
         window.addEventListener('resize', this.updateDimension);
     }
 
@@ -186,18 +193,20 @@ class GroupQuestionPage extends Component<IProps, IState> {
                                 </Text>
                             </View>
                             <View style={styles.questionBottomView}>
-                                <View style={styles.questionButtonsView}>
-                                    <View style={styles.buttonView}>
-                                        <TouchableOpacity onPress={this.editQuestion}>
-                                            <Text style={styles.editButton}>Edit</Text>
-                                        </TouchableOpacity>
+                                {this.state.currentUser && this.state.currentUser._id === questionDetails.creator._id && (
+                                    <View style={styles.questionButtonsView}>
+                                        <View style={styles.buttonView}>
+                                            <TouchableOpacity onPress={this.editQuestion}>
+                                                <Text style={styles.editButton}>Edit</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View style={styles.buttonView}>
+                                            <TouchableOpacity>
+                                                <Text style={styles.editButton}>Delete</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
-                                    <View style={styles.buttonView}>
-                                        <TouchableOpacity>
-                                            <Text style={styles.editButton}>Delete</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
+                                )}
                                 <View style={styles.questionDetailsView}>
                                     <View style={styles.questionAuthorView}>
                                         <Text style={styles.questionAuthorText}>last Activity</Text>
@@ -264,36 +273,44 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
                 {/* Comment Text Field Modal */}
                 {this.state.modalState && (
-                    <View>
-                        <View style={styles.commentModalView}>
-                            <View style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                                <TouchableOpacity
-                                    style={styles.commentSubmitButton}
-                                    onPress={
-                                        this.state.modalType == 'edit' ? this.onCommentSendEdit : this.onCommentSendNew
-                                    }
-                                >
-                                    <Text style={{ color: '#fff' }}>
-                                        {this.state.modalType == 'edit' ? 'Edit Comment' : 'New Comment'}
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.commentSubmitButton} onPress={this.onCommentModalClose}>
-                                    <Text style={{ color: '#fff' }}>Cancel</Text>
-                                </TouchableOpacity>
+                    <TransitionGroup transition="slide">
+                        >
+                        <View key="1">
+                            <View style={styles.commentModalView}>
+                                <View style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                                    <TouchableOpacity
+                                        style={styles.commentSubmitButton}
+                                        onPress={
+                                            this.state.modalType == 'edit'
+                                                ? this.onCommentSendEdit
+                                                : this.onCommentSendNew
+                                        }
+                                    >
+                                        <Text style={{ color: '#fff' }}>
+                                            {this.state.modalType == 'edit' ? 'Edit Comment' : 'New Comment'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.commentSubmitButton}
+                                        onPress={this.onCommentModalClose}
+                                    >
+                                        <Text style={{ color: '#fff' }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.commentViewStyle}>
+                                    <TextInput
+                                        style={[styles.commentTextField, { color: '#999' }]}
+                                        value={this.state.commentDescription}
+                                        onChangeText={text => this.setState({ commentDescription: text })}
+                                        multiline={true}
+                                        autoFocus={true}
+                                        placeholder="Enter new Comment"
+                                    />
+                                </View>
                             </View>
-                            <View style={styles.commentViewStyle}>
-                                <TextInput
-                                    style={[styles.commentTextField, { color: '#999' }]}
-                                    value={this.state.commentDescription}
-                                    onChangeText={text => this.setState({ commentDescription: text })}
-                                    multiline={true}
-                                    autoFocus={true}
-                                    placeholder="Enter new Comment"
-                                />
-                            </View>
+                            <View />
                         </View>
-                        <View />
-                    </View>
+                    </TransitionGroup>
                 )}
             </View>
         );
@@ -408,10 +425,7 @@ const styles = StyleSheet.create({
         width: '90vw',
         backgroundColor: 'transparent',
         marginLeft: 50,
-        marginTop: 60,
-        // borderBottomWidth: 1,
-        // borderLeftWidth: 1,
-        // borderRightWidth: 1,
+        marginTop: 30,
         borderTopWidth: 1,
         borderBottomColor: '#aaa',
         borderTopColor: '#aaa',
@@ -422,13 +436,13 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         width: 150,
-        marginRight: 50,
+        marginRight: 10,
     },
     commentModalView: {
         display: 'flex',
         justifyContent: 'space-between',
         flexDirection: 'row-reverse',
-        flexWrap: 'wrap',
+        flexWrap: 'nowrap',
         alignItems: 'center',
         width: '100%',
         padding: 30,
@@ -457,6 +471,6 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         width: 150,
-        marginRight: 20,
+        marginRight: 10,
     },
 });
