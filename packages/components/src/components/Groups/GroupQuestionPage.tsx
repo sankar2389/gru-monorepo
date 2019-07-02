@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchGroupQADetails, updateComment, newComment, resetUpdateStatus, deleteComment } from '../../actions';
+import {
+    fetchGroupQADetails,
+    updateComment,
+    newComment,
+    resetUpdateStatus,
+    deleteComment,
+    deleteQuestion,
+} from '../../actions';
 import { IReduxState } from '../../types';
-import axios from 'axios';
 // ** Used in render function. DONOT REMOVE
 import moment from 'moment';
-import { TransitionGroup } from 'react-transition-group';
-import './GroupQuestionActionPage.css';
-
 interface IProps {
     fetchGroupQADetails: (questionID: string) => void;
     updateComment: (commentID: string, description: string) => void;
     deleteComment: (commentID: string) => void;
+    deleteQuestion: (questionID: string) => void;
     newComment: (creator: any, description: string, groupID: string, questionID: string) => void;
     resetUpdateStatus: () => void;
     location: any;
@@ -89,6 +93,17 @@ class GroupQuestionPage extends Component<IProps, IState> {
                 alert('Something Wrong');
                 this.props.resetUpdateStatus();
             }
+
+            if (this.props.group.questionUpdateStatus === 1) {
+                AsyncStorage.getItem('token').then((authtoken: string | null) => {
+                    if (authtoken) {
+                        this.props.history.push({
+                            pathname: `/secure/groups/${this.props.match.params.groupName}/`,
+                            state: { authtoken, groupID: this.props.location.state.groupID },
+                        });
+                    }
+                });
+            }
         }
     }
 
@@ -110,9 +125,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
         AsyncStorage.getItem('token').then((authtoken: string | null) => {
             if (authtoken) {
                 this.props.history.push({
-                    pathname: `/secure/groups/${this.props.match.params.groupName}/${
-                        this.props.match.params.questionID
-                    }/edit`,
+                    pathname: `/secure/groups/${this.props.match.params.groupName}/${this.props.match.params.questionID}/edit`,
                     state: { authtoken, groupID: this.props.location.state.groupID },
                 });
             }
@@ -147,13 +160,24 @@ class GroupQuestionPage extends Component<IProps, IState> {
         }
     };
 
-    onPressDeleteComment = (comment: any) => {
+    deleteQuestion = () => {
+        this.setState({ deleteModal: true });
+    };
+    deleteComments = (comment: any) => {
+        this.setState({ deleteModal: true, commentID: comment._id });
+    };
+
+    onPressDelete = () => {
         if (this.state.deleteModal) {
             const { commentID } = this.state;
-            this.props.deleteComment(commentID);
-            this.setState({ deleteModal: false, commentID: '' });
-        } else {
-            this.setState({ deleteModal: true, commentID: comment._id });
+            if (commentID) {
+                const { commentID } = this.state;
+                this.props.deleteComment(commentID);
+                this.setState({ deleteModal: false, commentID: '' });
+            } else {
+                const { questionDetails } = this.state;
+                this.props.deleteQuestion(questionDetails._id);
+            }
         }
     };
 
@@ -218,7 +242,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
                                             </TouchableOpacity>
                                         </View>
                                         <View style={styles.buttonView}>
-                                            <TouchableOpacity>
+                                            <TouchableOpacity onPress={() => this.deleteQuestion()}>
                                                 <Text style={styles.editButton}>Delete</Text>
                                             </TouchableOpacity>
                                         </View>
@@ -266,7 +290,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
                                         </View>
                                         <View style={styles.buttonView}>
                                             {this.state.currentUser._id === comment.creator._id && (
-                                                <TouchableOpacity onPress={() => this.onPressDeleteComment(comment)}>
+                                                <TouchableOpacity onPress={() => this.deleteComments(comment)}>
                                                     <Text style={styles.editButton}>Delete</Text>
                                                 </TouchableOpacity>
                                             )}
@@ -294,44 +318,36 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
                 {/* Comment Text Field Modal */}
                 {this.state.modalState && (
-                    <TransitionGroup transition="slide">
-                        >
-                        <View key="1">
-                            <View style={styles.commentModalView}>
-                                <View style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                                    <TouchableOpacity
-                                        style={styles.commentSubmitButton}
-                                        onPress={
-                                            this.state.modalType == 'edit'
-                                                ? this.onCommentSendEdit
-                                                : this.onCommentSendNew
-                                        }
-                                    >
-                                        <Text style={{ color: '#fff' }}>
-                                            {this.state.modalType == 'edit' ? 'Edit Comment' : 'New Comment'}
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={styles.commentSubmitButton}
-                                        onPress={this.onCommentModalClose}
-                                    >
-                                        <Text style={{ color: '#fff' }}>Cancel</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={styles.commentViewStyle}>
-                                    <TextInput
-                                        style={[styles.commentTextField, { color: '#999' }]}
-                                        value={this.state.commentDescription}
-                                        onChangeText={text => this.setState({ commentDescription: text })}
-                                        multiline={true}
-                                        autoFocus={true}
-                                        placeholder="Enter new Comment"
-                                    />
-                                </View>
+                    <View>
+                        <View style={styles.commentModalView}>
+                            <View style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                                <TouchableOpacity
+                                    style={styles.commentSubmitButton}
+                                    onPress={
+                                        this.state.modalType == 'edit' ? this.onCommentSendEdit : this.onCommentSendNew
+                                    }
+                                >
+                                    <Text style={{ color: '#fff' }}>
+                                        {this.state.modalType == 'edit' ? 'Edit Comment' : 'New Comment'}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.commentSubmitButton} onPress={this.onCommentModalClose}>
+                                    <Text style={{ color: '#fff' }}>Cancel</Text>
+                                </TouchableOpacity>
                             </View>
-                            <View />
+                            <View style={styles.commentViewStyle}>
+                                <TextInput
+                                    style={[styles.commentTextField, { color: '#999' }]}
+                                    value={this.state.commentDescription}
+                                    onChangeText={text => this.setState({ commentDescription: text })}
+                                    multiline={true}
+                                    autoFocus={true}
+                                    placeholder="Enter new Comment"
+                                />
+                            </View>
                         </View>
-                    </TransitionGroup>
+                        <View />
+                    </View>
                 )}
 
                 {/* Delete Modal */}
@@ -339,15 +355,18 @@ class GroupQuestionPage extends Component<IProps, IState> {
                     <View style={styles.deleteModalViewContainer}>
                         <View style={styles.deleteModalView}>
                             <View style={styles.deleteModalText}>
-                                <Text>Are You Sure?</Text>
-                                <Text>This action cannot be Undone</Text>
+                                <Text style={{ fontSize: 18 }}>Are You Sure?</Text>
+                                <Text style={{ fontSize: 18 }}>This action cannot be Undone</Text>
                             </View>
                             <View style={styles.deleteModalDeleteContainer}>
                                 <TouchableOpacity style={styles.deleteModalButtons} onPress={this.onCancelDeleteModal}>
-                                    <Text>Cancel</Text>
+                                    <Text style={{ color: '#fff' }}>Cancel</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.deleteModalButtons} onPress={this.onPressDeleteComment}>
-                                    <Text>Delete</Text>
+                                <TouchableOpacity
+                                    style={styles.deleteModalButtons}
+                                    onPress={() => this.onPressDelete()}
+                                >
+                                    <Text style={{ color: '#fff' }}>Delete</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -367,7 +386,7 @@ function mapStateToProps({ auth, group }: any): IReduxState {
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchGroupQADetails, newComment, updateComment, resetUpdateStatus, deleteComment },
+    { fetchGroupQADetails, newComment, updateComment, resetUpdateStatus, deleteComment, deleteQuestion },
 )(GroupQuestionPage);
 
 const styles = StyleSheet.create({
@@ -538,7 +557,6 @@ const styles = StyleSheet.create({
         flex: 4,
         padding: 7,
         width: '100%',
-        fontSize: 21,
     },
     deleteModalButtons: {
         backgroundColor: '#ff4d4d',
@@ -551,7 +569,6 @@ const styles = StyleSheet.create({
     deleteModalDeleteContainer: {
         // flexBasis: 1,
         width: '100%',
-        color: '#fff',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
