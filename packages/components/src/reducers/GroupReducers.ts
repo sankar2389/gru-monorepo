@@ -56,8 +56,8 @@ export default (state: IGroup = initState, action: AnyAction): IGroup => {
         case 'RESET_UPDATE_STATUS':
             return {
                 ...state,
-                questionUpdateStatus: 1,
-                commentUpdateStatus: 1
+                questionUpdateStatus: 2,
+                commentUpdateStatus: 2
             }
         default:
             return state;
