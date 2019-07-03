@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, ScrollView, AsyncStorage, Text, TouchableOpacity, TextInput } from 'react-native';
-import { fetchGroupQA } from '../../actions';
+import { fetchGroupQA, webSocketMiddlewareConnectOrJoin } from '../../actions';
 import { IReduxState } from '../../types';
 import axios from 'axios';
 
@@ -10,6 +10,7 @@ import moment from 'moment';
 
 interface IProps {
     fetchGroupQA: (groupID: string, start?: number) => void;
+    webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void;
     location: any;
     group: any;
     match: any;
@@ -23,6 +24,7 @@ interface IState {
     selectedPaginatateNumber: number;
     totalPages: number[];
     visiblePages: number[];
+    socketConnection: boolean;
 }
 
 class GroupDashboard extends Component<IProps, IState> {
@@ -36,18 +38,26 @@ class GroupDashboard extends Component<IProps, IState> {
             selectedPaginatateNumber: 1,
             totalPages: [],
             visiblePages: [],
+            socketConnection: false,
         };
     }
 
     async componentDidMount() {
         await this.props.fetchGroupQA(this.props.location.state.groupID);
         this.getTotalPages();
+        this.props.webSocketMiddlewareConnectOrJoin('CONNECT', '');
         window.addEventListener('resize', this.updateDimension);
     }
 
-    componentWillReceiveProps(newProps: IProps) {
+    componentWillReceiveProps(newProps: any) {
         this.setState({ questionData: newProps.group.questions.questions });
         this.getTotalPages();
+
+        if (newProps.webrtc.connected) {
+            this.setState({
+                socketConnection: true,
+            });
+        }
     }
 
     async componentWillMount() {
@@ -68,7 +78,12 @@ class GroupDashboard extends Component<IProps, IState> {
             if (authtoken) {
                 this.props.history.push({
                     pathname: `/secure/groups/${this.props.match.params.groupName}/${question._id}`,
-                    state: { authtoken, question, groupID: this.props.location.state.groupID },
+                    state: {
+                        authtoken,
+                        question,
+                        groupID: this.props.location.state.groupID,
+                        group: this.props.location.state.group,
+                    },
                 });
             }
         });
@@ -190,6 +205,22 @@ class GroupDashboard extends Component<IProps, IState> {
         });
     };
 
+    // GO TO CHAT
+    goToChat = () => {
+        if (this.state.socketConnection) {
+            AsyncStorage.getItem('token').then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/chat',
+                        state: { authtoken, group: this.props.location.state.group },
+                    });
+                }
+            });
+        } else {
+            alert('Socket Connection is Not available');
+        }
+    };
+
     render() {
         const { innerContainer } = styles;
         return (
@@ -212,10 +243,17 @@ class GroupDashboard extends Component<IProps, IState> {
                                 Group Q/A : {this.props.match.params.groupName.toUpperCase()}
                             </Text>
                         </View>
-                        <View>
-                            <TouchableOpacity style={styles.newQuestionButton} onPress={this.newQuestion}>
-                                <Text style={{ color: '#fff' }}>New Question</Text>
-                            </TouchableOpacity>
+                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                            <View>
+                                <TouchableOpacity style={styles.newQuestionButton} onPress={this.newQuestion}>
+                                    <Text style={{ color: '#fff' }}>New Question</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View>
+                                <TouchableOpacity style={styles.newQuestionButton} onPress={this.goToChat}>
+                                    <Text style={{ color: '#fff' }}>Go To Chat</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -317,16 +355,17 @@ class GroupDashboard extends Component<IProps, IState> {
     }
 }
 
-function mapStateToProps({ auth, group }: any): IReduxState {
+function mapStateToProps({ auth, group, webrtc }: any): IReduxState {
     return {
         auth,
         group,
+        webrtc,
     };
 }
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchGroupQA },
+    { fetchGroupQA, webSocketMiddlewareConnectOrJoin },
 )(GroupDashboard);
 
 const styles = StyleSheet.create({
