@@ -324,7 +324,7 @@ export const fetchGroupQA = (groupID: string, start: number = 0) => {
 
 
 // To fetch QA details
-export const fetchGroupQADetails = (questionID: string) => {
+export const fetchGroupQADetails = (questionID: string, start: number = 0) => {
     return (dispatch: Function) => {
         AsyncStorage.getItem('token')
             .then((authtoken: string | null) => {
@@ -332,7 +332,7 @@ export const fetchGroupQADetails = (questionID: string) => {
                     const client = createApolloClient(authtoken);
                     client.query({
                         query: gql`
-                            query($questionID: String) {
+                            query($questionID: String, $start: Int) {
                                 questions( where: {
                                     _id: $questionID
                                 }) {
@@ -340,7 +340,7 @@ export const fetchGroupQADetails = (questionID: string) => {
                                     title
                                     groupID
                                     description
-                                    comments {
+                                    comments (limit: 10, start: $start) {
                                         _id
                                         description
                                         creator
@@ -354,7 +354,8 @@ export const fetchGroupQADetails = (questionID: string) => {
                             }
                         `,
                         variables: {
-                            "questionID": questionID
+                            "questionID": questionID,
+                            "start": start
                         }
                     }).then((res: any) => {
                         getGrpQADetails(dispatch, res.data.questions[0]);
@@ -418,7 +419,7 @@ export const updateQuestion = (questionID: string, title: string, description: s
 }
 
 
-// To Add New group comment 
+// To Add New group question 
 export const newQuestion = (creator: any, title: any, description: string, groupID: string) => {
     return (dispatch: Function) => {
         dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: 2 })
@@ -465,7 +466,7 @@ export const newQuestion = (creator: any, title: any, description: string, group
 }
 
 
-// To delete  group comment details
+// To delete  group question
 export const deleteQuestion = (questionID: string) => {
     return (dispatch: Function) => {
         dispatch({ type: 'QUESTION_UPDATE_STATUS', payload: 2 })

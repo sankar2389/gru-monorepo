@@ -2,7 +2,6 @@ import { AnyAction } from "redux";
 import { incommingMessage, datachannelOpened } from './actions';
 
 const webrtcMiddleware = (() => {
-    // @ts-ignore
     const RTCPeerConnection = window.RTCPeerConnection;
     let socketId: string;
     const configuration = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }] };
