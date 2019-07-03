@@ -8,6 +8,7 @@ import {
     resetUpdateStatus,
     deleteComment,
     deleteQuestion,
+    webSocketMiddlewareConnectOrJoin,
 } from '../../actions';
 import { IReduxState } from '../../types';
 // ** Used in render function. DONOT REMOVE
@@ -21,6 +22,7 @@ interface IProps {
     deleteQuestion: (questionID: string) => void;
     newComment: (creator: any, description: string, groupID: string, questionID: string) => void;
     resetUpdateStatus: () => void;
+    webSocketMiddlewareConnectOrJoin: (type: string, groupName: string) => void;
     location: any;
     group: any;
     match: any;
@@ -41,6 +43,7 @@ interface IState {
     selectedPaginatateNumber: number;
     totalPages: number[];
     visiblePages: number[];
+    socketConnection: boolean;
 }
 
 class GroupQuestionPage extends Component<IProps, IState> {
@@ -60,6 +63,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
             selectedPaginatateNumber: 1,
             totalPages: [],
             visiblePages: [],
+            socketConnection: false,
         };
     }
 
@@ -69,6 +73,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
         // @ts-ignore
         this.setState({ currentUser: JSON.parse(user) });
         this.getTotalPages();
+        this.props.webSocketMiddlewareConnectOrJoin('CONNECT', '');
         window.addEventListener('resize', this.updateDimension);
     }
 
@@ -95,6 +100,12 @@ class GroupQuestionPage extends Component<IProps, IState> {
             }
         } catch (error) {
             console.error(error);
+        }
+
+        if (newProps.webrtc.connected) {
+            this.setState({
+                socketConnection: true,
+            });
         }
     }
 
@@ -325,6 +336,22 @@ class GroupQuestionPage extends Component<IProps, IState> {
         });
     }
 
+    // GO TO CHAT
+    goToChat = () => {
+        if (this.state.socketConnection) {
+            AsyncStorage.getItem('token').then((authtoken: string | null) => {
+                if (authtoken) {
+                    this.props.history.push({
+                        pathname: '/secure/chat',
+                        state: { authtoken, group: this.props.location.state.group },
+                    });
+                }
+            });
+        } else {
+            alert('Socket Connection is Not available');
+        }
+    };
+
     render() {
         const { innerContainer } = styles;
         const { questionDetails, comments } = this.state;
@@ -352,10 +379,17 @@ class GroupQuestionPage extends Component<IProps, IState> {
                                 </Text>
                             </View>
                         )}
-                        <View>
-                            <TouchableOpacity style={styles.newCommentButton} onPress={this.newComment}>
-                                <Text style={{ color: '#fff' }}>New Comment</Text>
-                            </TouchableOpacity>
+                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                            <View>
+                                <TouchableOpacity style={styles.newCommentButton} onPress={this.newComment}>
+                                    <Text style={{ color: '#fff' }}>New Comment</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View>
+                                <TouchableOpacity style={styles.newCommentButton} onPress={this.goToChat}>
+                                    <Text style={{ color: '#fff' }}>Go To Chat</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -549,16 +583,25 @@ class GroupQuestionPage extends Component<IProps, IState> {
     }
 }
 
-function mapStateToProps({ auth, group }: any): IReduxState {
+function mapStateToProps({ auth, group, webrtc }: any): IReduxState {
     return {
         auth,
         group,
+        webrtc,
     };
 }
 
 export default connect<IReduxState>(
     mapStateToProps,
-    { fetchGroupQADetails, newComment, updateComment, resetUpdateStatus, deleteComment, deleteQuestion },
+    {
+        fetchGroupQADetails,
+        newComment,
+        updateComment,
+        resetUpdateStatus,
+        deleteComment,
+        deleteQuestion,
+        webSocketMiddlewareConnectOrJoin,
+    },
 )(GroupQuestionPage);
 
 const styles = StyleSheet.create({

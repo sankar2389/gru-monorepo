@@ -12,7 +12,6 @@ import GroupView from './components/Groups';
 import Chat from './components/Groups/Chat';
 import GroupDashboard from './components/Groups/GroupDashboard';
 import GroupQuestionPage from './components/Groups/GroupQuestionPage';
-import GroupCommentsActionPage from './components/Groups/GroupCommentsActionPage';
 import GroupQuestionActionPage from './components/Groups/GroupQuestionActionPage';
 
 import './App.css';
@@ -31,10 +30,6 @@ export function App() {
                     <PrivateRoute path="/secure/dashboard" component={Dashboard} />
                     <PrivateRoute path="/secure/buysell" component={BuySell} />
                     <PrivateRoute path="/secure/groups/:groupName" component={GroupDashboard} exact />
-                    <PrivateRoute
-                        path="/secure/groups/:groupName/:questionID/:commentID/:action"
-                        component={GroupCommentsActionPage}
-                    />
                     <PrivateRoute
                         path="/secure/groups/:groupName/:questionID/:action"
                         component={GroupQuestionActionPage}

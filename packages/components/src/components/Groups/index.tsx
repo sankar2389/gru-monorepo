@@ -217,29 +217,13 @@ class GroupView extends Component<IProps, IState> {
     }
 
     onPressGoToGroupChat = (group: any) => {
-        if (this.state.socketConnection) {
-            AsyncStorage.getItem('token')
-                .then((authtoken: string | null) => {
-                    if (authtoken) {
-                        this.props.history.push({
-                            pathname: '/secure/chat',
-                            state: { authtoken, group }
-                        });
-                    }
+        AsyncStorage.getItem('token')
+            .then((authtoken: string | null) => {
+                this.props.history.push({
+                    pathname: `/secure/groups/${group.groupName}`,
+                    state: { authtoken, groupID: group._id , group}
                 })
-        } else {
-            console.log(group);
-
-            AsyncStorage.getItem('token')
-                .then((authtoken: string | null) => {
-                    this.props.history.push({
-                        pathname: `/secure/groups/${group.groupName}`,
-                        state: { authtoken, groupID: group._id }
-                    })
-                })
-            // alert("Socket connection is not established")
-        }
-
+            })
     }
 
 
