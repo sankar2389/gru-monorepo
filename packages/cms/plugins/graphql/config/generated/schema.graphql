@@ -250,172 +250,92 @@ input BuyInput {
   acceptedBids: JSON
 }
 
+type Comments {
+  _id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  description: String!
+  groupID: String!
+  questionID: String!
+  creator: JSON!
+  questions: Questions
+}
+
+type CommentsAggregator {
+  count: Int
+}
+
+type CommentsConnection {
+  values: [Comments]
+  groupBy: CommentsGroupBy
+  aggregate: CommentsAggregator
+}
+
+type CommentsConnection_id {
+  key: ID
+  connection: CommentsConnection
+}
+
+type CommentsConnectionCreatedAt {
+  key: DateTime
+  connection: CommentsConnection
+}
+
+type CommentsConnectionCreator {
+  key: JSON
+  connection: CommentsConnection
+}
+
+type CommentsConnectionDescription {
+  key: String
+  connection: CommentsConnection
+}
+
+type CommentsConnectionGroupID {
+  key: String
+  connection: CommentsConnection
+}
+
+type CommentsConnectionQuestionID {
+  key: String
+  connection: CommentsConnection
+}
+
+type CommentsConnectionQuestions {
+  key: ID
+  connection: CommentsConnection
+}
+
+type CommentsConnectionUpdatedAt {
+  key: DateTime
+  connection: CommentsConnection
+}
+
+type CommentsGroupBy {
+  _id: [CommentsConnection_id]
+  createdAt: [CommentsConnectionCreatedAt]
+  updatedAt: [CommentsConnectionUpdatedAt]
+  description: [CommentsConnectionDescription]
+  groupID: [CommentsConnectionGroupID]
+  questionID: [CommentsConnectionQuestionID]
+  creator: [CommentsConnectionCreator]
+  questions: [CommentsConnectionQuestions]
+}
+
+input CommentsInput {
+  description: String!
+  groupID: String!
+  questionID: String!
+  creator: JSON!
+  questions: ID
+}
+
 input createBidInput {
   data: BidInput
 }
 
 type createBidPayload {
   bid: Bid
-}
-
-type Comments {
-  _id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  description: String!
-  groupID: String!
-  questionID: String!
-  creator: JSON!
-  questions: Questions
-}
-
-type CommentsAggregator {
-  count: Int
-}
-
-type CommentsConnection {
-  values: [Comments]
-  groupBy: CommentsGroupBy
-  aggregate: CommentsAggregator
-}
-
-type CommentsConnection_id {
-  key: ID
-  connection: CommentsConnection
-}
-
-type CommentsConnectionCreatedAt {
-  key: DateTime
-  connection: CommentsConnection
-}
-
-type CommentsConnectionCreator {
-  key: JSON
-  connection: CommentsConnection
-}
-
-type CommentsConnectionDescription {
-  key: String
-  connection: CommentsConnection
-}
-
-type CommentsConnectionGroupID {
-  key: String
-  connection: CommentsConnection
-}
-
-type CommentsConnectionQuestionID {
-  key: String
-  connection: CommentsConnection
-}
-
-type CommentsConnectionQuestions {
-  key: ID
-  connection: CommentsConnection
-}
-
-type CommentsConnectionUpdatedAt {
-  key: DateTime
-  connection: CommentsConnection
-}
-
-type CommentsGroupBy {
-  _id: [CommentsConnection_id]
-  createdAt: [CommentsConnectionCreatedAt]
-  updatedAt: [CommentsConnectionUpdatedAt]
-  description: [CommentsConnectionDescription]
-  groupID: [CommentsConnectionGroupID]
-  questionID: [CommentsConnectionQuestionID]
-  creator: [CommentsConnectionCreator]
-  questions: [CommentsConnectionQuestions]
-}
-
-input CommentsInput {
-  description: String!
-  groupID: String!
-  questionID: String!
-  creator: JSON!
-  questions: ID
-}
-
-type Comments {
-  _id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  description: String!
-  groupID: String!
-  questionID: String!
-  creator: JSON!
-  questions: Questions
-}
-
-type CommentsAggregator {
-  count: Int
-}
-
-type CommentsConnection {
-  values: [Comments]
-  groupBy: CommentsGroupBy
-  aggregate: CommentsAggregator
-}
-
-type CommentsConnection_id {
-  key: ID
-  connection: CommentsConnection
-}
-
-type CommentsConnectionCreatedAt {
-  key: DateTime
-  connection: CommentsConnection
-}
-
-type CommentsConnectionCreator {
-  key: JSON
-  connection: CommentsConnection
-}
-
-type CommentsConnectionDescription {
-  key: String
-  connection: CommentsConnection
-}
-
-type CommentsConnectionGroupID {
-  key: String
-  connection: CommentsConnection
-}
-
-type CommentsConnectionQuestionID {
-  key: String
-  connection: CommentsConnection
-}
-
-type CommentsConnectionQuestions {
-  key: ID
-  connection: CommentsConnection
-}
-
-type CommentsConnectionUpdatedAt {
-  key: DateTime
-  connection: CommentsConnection
-}
-
-type CommentsGroupBy {
-  _id: [CommentsConnection_id]
-  createdAt: [CommentsConnectionCreatedAt]
-  updatedAt: [CommentsConnectionUpdatedAt]
-  description: [CommentsConnectionDescription]
-  groupID: [CommentsConnectionGroupID]
-  questionID: [CommentsConnectionQuestionID]
-  creator: [CommentsConnectionCreator]
-  questions: [CommentsConnectionQuestions]
-}
-
-input CommentsInput {
-  description: String!
-  groupID: String!
-  questionID: String!
-  creator: JSON!
-  questions: ID
 }
 
 input createBuyInput {
@@ -574,14 +494,6 @@ input editCommentsInput {
   questions: ID
 }
 
-input editCommentsInput {
-  description: String
-  groupID: String
-  questionID: String
-  creator: JSON
-  questions: ID
-}
-
 input editFileInput {
   name: String
   hash: String
@@ -726,9 +638,7 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
-union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Bid | createBidPayload | updateBidPayload | deleteBidPayload | BidConnection | BidAggregator | BidAggregatorSum | BidAggregatorAvg | BidAggregatorMin | BidAggregatorMax | BidGroupBy | BidConnection_id | BidConnectionCreatedAt | BidConnectionUpdatedAt | BidConnectionBidPrice | BidConnectionUserId | BidConnectionBidQuantity | BidConnectionTotalPrice | BidConnectionStatus | BidConnectionBuyOrSellId | BidConnectionBuyOrSellType | Buy | createBuyPayload | updateBuyPayload | deleteBuyPayload | BuyConnection | BuyAggregator | BuyAggregatorSum | BuyAggregatorAvg | BuyAggregatorMin | BuyAggregatorMax | BuyGroupBy | BuyConnection_id | BuyConnectionCreatedAt | BuyConnectionUpdatedAt | BuyConnectionCreator | BuyConnectionUnit | BuyConnectionQuantity | BuyConnectionPrice | BuyConnectionCreatorObject | BuyConnectionType | BuyConnectionBids | BuyConnectionAcceptedBids | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | Sell | createSellPayload | updateSellPayload | deleteSellPayload | SellConnection | SellAggregator | SellAggregatorSum | SellAggregatorAvg | SellAggregatorMin | SellAggregatorMax | SellGroupBy | SellConnection_id | SellConnectionCreatedAt | SellConnectionUpdatedAt | SellConnectionCreator | SellConnectionUnit | SellConnectionQuantity | SellConnectionPrice | SellConnectionCreatorObject | SellConnectionType | SellConnectionBids | SellConnectionAcceptedBids | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole | UsersPermissionsUserConnectionSocketId
-union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Buy | createBuyPayload | updateBuyPayload | deleteBuyPayload | BuyConnection | BuyAggregator | BuyAggregatorSum | BuyAggregatorAvg | BuyAggregatorMin | BuyAggregatorMax | BuyGroupBy | BuyConnection_id | BuyConnectionCreatedAt | BuyConnectionUpdatedAt | BuyConnectionCreator | BuyConnectionUnit | BuyConnectionQuantity | BuyConnectionPrice | BuyConnectionCreatorObject | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | Questions | createQuestionsPayload | updateQuestionsPayload | deleteQuestionsPayload | QuestionsConnection | QuestionsAggregator | QuestionsGroupBy | QuestionsConnection_id | QuestionsConnectionCreatedAt | QuestionsConnectionUpdatedAt | QuestionsConnectionTitle | QuestionsConnectionDescription | QuestionsConnectionCreator | QuestionsConnectionComments | QuestionsConnectionGroupID | Sell | createSellPayload | updateSellPayload | deleteSellPayload | SellConnection | SellAggregator | SellAggregatorSum | SellAggregatorAvg | SellAggregatorMin | SellAggregatorMax | SellGroupBy | SellConnection_id | SellConnectionCreatedAt | SellConnectionUpdatedAt | SellConnectionCreator | SellConnectionUnit | SellConnectionQuantity | SellConnectionPrice | SellConnectionCreatorObject | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole | UsersPermissionsUserConnectionSocketId
-union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Buy | createBuyPayload | updateBuyPayload | deleteBuyPayload | BuyConnection | BuyAggregator | BuyAggregatorSum | BuyAggregatorAvg | BuyAggregatorMin | BuyAggregatorMax | BuyGroupBy | BuyConnection_id | BuyConnectionCreatedAt | BuyConnectionUpdatedAt | BuyConnectionCreator | BuyConnectionUnit | BuyConnectionQuantity | BuyConnectionPrice | BuyConnectionCreatorObject | Comments | createCommentsPayload | updateCommentsPayload | deleteCommentsPayload | CommentsConnection | CommentsAggregator | CommentsGroupBy | CommentsConnection_id | CommentsConnectionCreatedAt | CommentsConnectionUpdatedAt | CommentsConnectionDescription | CommentsConnectionGroupID | CommentsConnectionQuestionID | CommentsConnectionCreator | CommentsConnectionQuestions | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | Questions | createQuestionsPayload | updateQuestionsPayload | deleteQuestionsPayload | QuestionsConnection | QuestionsAggregator | QuestionsGroupBy | QuestionsConnection_id | QuestionsConnectionCreatedAt | QuestionsConnectionUpdatedAt | QuestionsConnectionTitle | QuestionsConnectionDescription | QuestionsConnectionCreator | QuestionsConnectionGroupID | Sell | createSellPayload | updateSellPayload | deleteSellPayload | SellConnection | SellAggregator | SellAggregatorSum | SellAggregatorAvg | SellAggregatorMin | SellAggregatorMax | SellGroupBy | SellConnection_id | SellConnectionCreatedAt | SellConnectionUpdatedAt | SellConnectionCreator | SellConnectionUnit | SellConnectionQuantity | SellConnectionPrice | SellConnectionCreatorObject | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole | UsersPermissionsUserConnectionSocketId
+union Morph = UsersPermissionsMe | UsersPermissionsMeRole | Bid | createBidPayload | updateBidPayload | deleteBidPayload | BidConnection | BidAggregator | BidAggregatorSum | BidAggregatorAvg | BidAggregatorMin | BidAggregatorMax | BidGroupBy | BidConnection_id | BidConnectionCreatedAt | BidConnectionUpdatedAt | BidConnectionBidPrice | BidConnectionUserId | BidConnectionBidQuantity | BidConnectionTotalPrice | BidConnectionStatus | BidConnectionBuyOrSellId | BidConnectionBuyOrSellType | Buy | createBuyPayload | updateBuyPayload | deleteBuyPayload | BuyConnection | BuyAggregator | BuyAggregatorSum | BuyAggregatorAvg | BuyAggregatorMin | BuyAggregatorMax | BuyGroupBy | BuyConnection_id | BuyConnectionCreatedAt | BuyConnectionUpdatedAt | BuyConnectionCreator | BuyConnectionUnit | BuyConnectionQuantity | BuyConnectionPrice | BuyConnectionCreatorObject | BuyConnectionType | BuyConnectionBids | BuyConnectionAcceptedBids | Comments | createCommentsPayload | updateCommentsPayload | deleteCommentsPayload | CommentsConnection | CommentsAggregator | CommentsGroupBy | CommentsConnection_id | CommentsConnectionCreatedAt | CommentsConnectionUpdatedAt | CommentsConnectionDescription | CommentsConnectionGroupID | CommentsConnectionQuestionID | CommentsConnectionCreator | CommentsConnectionQuestions | Group | createGroupPayload | updateGroupPayload | deleteGroupPayload | GroupConnection | GroupAggregator | GroupGroupBy | GroupConnection_id | GroupConnectionCreatedAt | GroupConnectionUpdatedAt | GroupConnectionGroupName | GroupConnectionCreator | GroupConnectionMembers | Questions | createQuestionsPayload | updateQuestionsPayload | deleteQuestionsPayload | QuestionsConnection | QuestionsAggregator | QuestionsGroupBy | QuestionsConnection_id | QuestionsConnectionCreatedAt | QuestionsConnectionUpdatedAt | QuestionsConnectionTitle | QuestionsConnectionDescription | QuestionsConnectionCreator | QuestionsConnectionGroupID | Sell | createSellPayload | updateSellPayload | deleteSellPayload | SellConnection | SellAggregator | SellAggregatorSum | SellAggregatorAvg | SellAggregatorMin | SellAggregatorMax | SellGroupBy | SellConnection_id | SellConnectionCreatedAt | SellConnectionUpdatedAt | SellConnectionCreator | SellConnectionUnit | SellConnectionQuantity | SellConnectionPrice | SellConnectionCreatorObject | SellConnectionType | SellConnectionBids | SellConnectionAcceptedBids | UploadFile | UploadFileConnection | UploadFileAggregator | UploadFileGroupBy | UploadFileConnection_id | UploadFileConnectionCreatedAt | UploadFileConnectionUpdatedAt | UploadFileConnectionName | UploadFileConnectionHash | UploadFileConnectionSha256 | UploadFileConnectionExt | UploadFileConnectionMime | UploadFileConnectionSize | UploadFileConnectionUrl | UploadFileConnectionProvider | UploadFileConnectionPublic_id | UsersPermissionsPermission | UsersPermissionsRole | createRolePayload | updateRolePayload | deleteRolePayload | UsersPermissionsRoleConnection | UsersPermissionsRoleAggregator | UsersPermissionsRoleGroupBy | UsersPermissionsRoleConnection_id | UsersPermissionsRoleConnectionName | UsersPermissionsRoleConnectionDescription | UsersPermissionsRoleConnectionType | UsersPermissionsUser | createUserPayload | updateUserPayload | deleteUserPayload | UsersPermissionsUserConnection | UsersPermissionsUserAggregator | UsersPermissionsUserGroupBy | UsersPermissionsUserConnection_id | UsersPermissionsUserConnectionUsername | UsersPermissionsUserConnectionEmail | UsersPermissionsUserConnectionProvider | UsersPermissionsUserConnectionConfirmed | UsersPermissionsUserConnectionBlocked | UsersPermissionsUserConnectionRole | UsersPermissionsUserConnectionSocketId
 
 type Mutation {
   createBid(input: createBidInput): createBidPayload
