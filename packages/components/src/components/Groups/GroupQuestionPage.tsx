@@ -13,7 +13,7 @@ import { IReduxState } from '../../types';
 // ** Used in render function. DONOT REMOVE
 import moment from 'moment';
 interface IProps {
-    fetchGroupQADetails: (questionID: string) => void;
+    fetchGroupQADetails: (questionID: string, commentsStart?: number) => void;
     updateComment: (commentID: string, description: string) => void;
     deleteComment: (commentID: string) => void;
     deleteQuestion: (questionID: string) => void;
@@ -34,6 +34,8 @@ interface IState {
     modalType: string;
     currentUser: any;
     deleteModal: boolean;
+    comments: any[];
+    commentsStart: number;
 }
 
 class GroupQuestionPage extends Component<IProps, IState> {
@@ -48,6 +50,8 @@ class GroupQuestionPage extends Component<IProps, IState> {
             commentID: '',
             currentUser: {},
             deleteModal: false,
+            comments: [],
+            commentsStart: 0,
         };
     }
 
@@ -57,10 +61,17 @@ class GroupQuestionPage extends Component<IProps, IState> {
         // @ts-ignore
         this.setState({ currentUser: JSON.parse(user) });
         window.addEventListener('resize', this.updateDimension);
+        window.addEventListener('scroll', this.getNewComments);
     }
 
     componentWillReceiveProps(newProps: any) {
-        this.setState({ questionDetails: newProps.group.questionDetails });
+        if (newProps.group.questionDetails.comments) {
+            const comments = [...new Set(this.state.comments.concat(newProps.group.questionDetails.comments))];
+            this.setState({
+                questionDetails: newProps.group.questionDetails,
+                comments,
+            });
+        }
         try {
             if (newProps.group.questionDetails.creator) {
                 const creator = JSON.parse(newProps.group.questionDetails.creator);
@@ -93,17 +104,6 @@ class GroupQuestionPage extends Component<IProps, IState> {
                 alert('Something Wrong');
                 this.props.resetUpdateStatus();
             }
-
-            if (this.props.group.questionUpdateStatus === 1) {
-                AsyncStorage.getItem('token').then((authtoken: string | null) => {
-                    if (authtoken) {
-                        this.props.history.push({
-                            pathname: `/secure/groups/${this.props.match.params.groupName}/`,
-                            state: { authtoken, groupID: this.props.location.state.groupID },
-                        });
-                    }
-                });
-            }
         }
         if (prevProps.group.questionUpdateStatus !== this.props.group.questionUpdateStatus) {
             if (this.props.group.questionUpdateStatus === 0) {
@@ -130,7 +130,21 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.updateDimension);
+        window.removeEventListener('scroll', this.getNewComments);
     }
+
+    isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: any) => {
+        const paddingToBottom = 20;
+        return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+    };
+
+    getNewComments = () => {
+        console.log('BOTTOM');
+
+        const { commentsStart } = this.state;
+        this.setState({ commentsStart: commentsStart + 10 });
+        this.props.fetchGroupQADetails(this.props.match.params.questionID, commentsStart);
+    };
 
     updateDimension = () => {
         this.setState({
@@ -209,7 +223,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
     render() {
         const { innerContainer } = styles;
-        const { questionDetails } = this.state;
+        const { questionDetails, comments } = this.state;
         return (
             <View style={this.state.dWidth <= 700 ? styles.smMainViewContainer : styles.mainViewContainer}>
                 <View
@@ -241,7 +255,15 @@ class GroupQuestionPage extends Component<IProps, IState> {
                         </View>
                     </View>
                 </View>
-                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
+                <ScrollView
+                    style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}
+                    onScroll={({ nativeEvent }) => {
+                        if (this.isCloseToBottom(nativeEvent)) {
+                            this.getNewComments();
+                        }
+                    }}
+                    scrollEventThrottle={400}
+                >
                     {/*  Question Description Text */}
 
                     {Object.keys(questionDetails).length > 0 && questionDetails.creator && (
@@ -289,8 +311,8 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
                     {/* Comments View */}
                     {questionDetails.comments &&
-                        questionDetails.comments.length > 0 &&
-                        questionDetails.comments.map((comment: any) => (
+                        comments.length > 0 &&
+                        comments.map((comment: any) => (
                             <View style={styles.questionCommentView} key={comment._id}>
                                 <View>
                                     <Text style={[styles.questionDescriptionText, { color: '#999' }]}>
