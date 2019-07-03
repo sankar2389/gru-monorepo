@@ -12,6 +12,8 @@ import {
 import { IReduxState } from '../../types';
 // ** Used in render function. DONOT REMOVE
 import moment from 'moment';
+import axios from 'axios';
+
 interface IProps {
     fetchGroupQADetails: (questionID: string, commentsStart?: number) => void;
     updateComment: (commentID: string, description: string) => void;
@@ -35,7 +37,10 @@ interface IState {
     currentUser: any;
     deleteModal: boolean;
     comments: any[];
-    commentsStart: number;
+    dataLimitOnPage: number;
+    selectedPaginatateNumber: number;
+    totalPages: number[];
+    visiblePages: number[];
 }
 
 class GroupQuestionPage extends Component<IProps, IState> {
@@ -51,7 +56,10 @@ class GroupQuestionPage extends Component<IProps, IState> {
             currentUser: {},
             deleteModal: false,
             comments: [],
-            commentsStart: 0,
+            dataLimitOnPage: 10,
+            selectedPaginatateNumber: 1,
+            totalPages: [],
+            visiblePages: [],
         };
     }
 
@@ -60,18 +68,18 @@ class GroupQuestionPage extends Component<IProps, IState> {
         const user = await AsyncStorage.getItem('user');
         // @ts-ignore
         this.setState({ currentUser: JSON.parse(user) });
+        this.getTotalPages();
         window.addEventListener('resize', this.updateDimension);
-        window.addEventListener('scroll', this.getNewComments);
     }
 
     componentWillReceiveProps(newProps: any) {
         if (newProps.group.questionDetails.comments) {
-            const comments = [...new Set(this.state.comments.concat(newProps.group.questionDetails.comments))];
             this.setState({
                 questionDetails: newProps.group.questionDetails,
-                comments,
+                comments: newProps.group.questionDetails.comments,
             });
         }
+        this.getTotalPages();
         try {
             if (newProps.group.questionDetails.creator) {
                 const creator = JSON.parse(newProps.group.questionDetails.creator);
@@ -130,20 +138,11 @@ class GroupQuestionPage extends Component<IProps, IState> {
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.updateDimension);
-        window.removeEventListener('scroll', this.getNewComments);
     }
 
     isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: any) => {
         const paddingToBottom = 20;
         return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
-    };
-
-    getNewComments = () => {
-        console.log('BOTTOM');
-
-        const { commentsStart } = this.state;
-        this.setState({ commentsStart: commentsStart + 10 });
-        this.props.fetchGroupQADetails(this.props.match.params.questionID, commentsStart);
     };
 
     updateDimension = () => {
@@ -221,6 +220,111 @@ class GroupQuestionPage extends Component<IProps, IState> {
         this.setState({ modalState: false, commentDescription: '' });
     };
 
+    // Function to get Total pages
+
+    getTotalPages = () => {
+        AsyncStorage.getItem('token').then(async (authtoken: string | null) => {
+            if (authtoken) {
+                const res = await this.getCount('comments', authtoken, this.props.match.params.questionID);
+
+                this.setState(
+                    {
+                        totalPages: res,
+                    },
+                    () => {
+                        this.updateVisiblePages();
+                    },
+                );
+            }
+        });
+    };
+
+    // Function to get all records in the DB by datatype as BUY/SELL
+
+    getCount = async (dataType: string, authtoken: string, questionID: number) => {
+        const res = await axios.get(process.env.CMS_API + `${dataType}/count?questionID=${questionID}`, {
+            headers: {
+                Authorization: 'Bearer ' + authtoken,
+            },
+        });
+        const { dataLimitOnPage } = this.state;
+
+        const { data } = res;
+        let totalPages = Math.floor(data / dataLimitOnPage);
+
+        if (data % dataLimitOnPage) {
+            totalPages += 1;
+        }
+        const pagesArray: number[] = [];
+
+        for (let i = 1; i <= totalPages; i++) {
+            pagesArray.push(i);
+        }
+
+        return pagesArray;
+    };
+
+    // function to update visible pages to show 3 pages only
+    updateVisiblePages = () => {
+        const { totalPages, selectedPaginatateNumber } = this.state;
+        if (selectedPaginatateNumber !== 1 && selectedPaginatateNumber !== totalPages.length) {
+            const visiblePages = totalPages.slice(selectedPaginatateNumber - 2, selectedPaginatateNumber + 1);
+            this.setState({ visiblePages });
+        } else if (selectedPaginatateNumber === 1) {
+            const visiblePages = totalPages.slice(0, 3);
+            this.setState({ visiblePages });
+        } else {
+            const visiblePages = totalPages.slice(-3);
+            this.setState({ visiblePages });
+        }
+    };
+
+    onPressPaginateNext = () => {
+        const { selectedPaginatateNumber, totalPages } = this.state;
+
+        if (selectedPaginatateNumber !== totalPages.length) {
+            this.setState(
+                (prevState: any) => {
+                    return {
+                        selectedPaginatateNumber: prevState.selectedPaginatateNumber + 1,
+                    };
+                },
+                () => {
+                    const { selectedPaginatateNumber, dataLimitOnPage } = this.state;
+                    const start = (selectedPaginatateNumber - 1) * dataLimitOnPage;
+                    this.props.fetchGroupQADetails(this.props.match.params.questionID, start);
+                },
+            );
+        }
+    };
+
+    // pagination Previous
+    onPressPaginatePrevious = () => {
+        const { selectedPaginatateNumber } = this.state;
+        if (selectedPaginatateNumber !== 1) {
+            this.setState(
+                (prevState: any) => {
+                    return {
+                        selectedPaginatateNumber: prevState.selectedPaginatateNumber - 1,
+                    };
+                },
+                () => {
+                    const { selectedPaginatateNumber, dataLimitOnPage } = this.state;
+                    const start = (selectedPaginatateNumber - 1) * dataLimitOnPage;
+                    this.props.fetchGroupQADetails(this.props.match.params.questionID, start);
+                },
+            );
+        }
+    };
+
+    async onPressPaginate(pageCount: number) {
+        const { dataLimitOnPage } = this.state;
+        this.setState({ selectedPaginatateNumber: pageCount }, () => {
+            const start = (pageCount - 1) * dataLimitOnPage;
+            this.props.fetchGroupQADetails(this.props.match.params.questionID, start);
+        });
+    }
+
     render() {
         const { innerContainer } = styles;
         const { questionDetails, comments } = this.state;
@@ -255,15 +359,7 @@ class GroupQuestionPage extends Component<IProps, IState> {
                         </View>
                     </View>
                 </View>
-                <ScrollView
-                    style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}
-                    onScroll={({ nativeEvent }) => {
-                        if (this.isCloseToBottom(nativeEvent)) {
-                            this.getNewComments();
-                        }
-                    }}
-                    scrollEventThrottle={400}
-                >
+                <ScrollView style={this.state.dWidth <= 700 ? styles.smInnerContainer : innerContainer}>
                     {/*  Question Description Text */}
 
                     {Object.keys(questionDetails).length > 0 && questionDetails.creator && (
@@ -356,6 +452,42 @@ class GroupQuestionPage extends Component<IProps, IState> {
                         ))}
                 </ScrollView>
 
+                {/* PAGINATION VIEW START */}
+                <View style={this.state.dWidth <= 700 ? styles.smPaginationView : styles.paginationView}>
+                    <TouchableOpacity onPress={this.onPressPaginatePrevious} style={styles.paginationButton}>
+                        <Text>{'<'}</Text>
+                    </TouchableOpacity>
+
+                    {this.state.visiblePages.map((pageCount: number) => {
+                        return (
+                            <TouchableOpacity
+                                key={pageCount}
+                                onPress={this.onPressPaginate.bind(this, pageCount)}
+                                style={
+                                    this.state.selectedPaginatateNumber === pageCount
+                                        ? styles.pageCountStyle
+                                        : styles.paginationButton
+                                }
+                            >
+                                <Text
+                                    style={
+                                        this.state.selectedPaginatateNumber === pageCount
+                                            ? styles.pageCountTextStyle
+                                            : null
+                                    }
+                                >
+                                    {pageCount}
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    })}
+
+                    <TouchableOpacity onPress={this.onPressPaginateNext} style={styles.paginationButton}>
+                        <Text>{'>'}</Text>
+                    </TouchableOpacity>
+                </View>
+                {/* PAGINATION VIEW END */}
+
                 {/* Comment Text Field Modal */}
                 {this.state.modalState && (
                     <View>
@@ -430,7 +562,7 @@ export default connect<IReduxState>(
 )(GroupQuestionPage);
 
 const styles = StyleSheet.create({
-    mainViewContainer: { marginLeft: 55, height: '92vh', marginTop: 70, position: 'relative' },
+    mainViewContainer: { marginLeft: 55, height: 780, marginTop: 70, position: 'relative' },
     smMainViewContainer: { marginLeft: 5, height: 503, zIndex: -1 },
     questionHeaderContainer: { marginLeft: 55, marginTop: 70 },
     questionHeaderContainerSM: { marginLeft: 5, zIndex: -1 },
@@ -446,7 +578,6 @@ const styles = StyleSheet.create({
     smInnerContainer: {
         marginTop: 10,
         marginLeft: 5,
-        //paddingLeft: 70,
         marginRight: 7,
         paddingRight: 7,
         display: 'flex',
@@ -470,9 +601,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         marginLeft: 50,
         borderBottomWidth: 1,
-        // borderLeftWidth: 1,
-        // borderRightWidth: 1,
-        // borderTopWidth: 1,
         borderBottomColor: '#aaa',
         padding: 30,
     },
@@ -612,5 +740,46 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
+    },
+    pageCountTextStyle: {
+        color: '#ffffff',
+    },
+
+    paginationView: {
+        flexDirection: 'row',
+        padding: 20,
+        justifyContent: 'center',
+        marginLeft: 10,
+        position: 'absolute',
+        top: '99%',
+    },
+    smPaginationView: {
+        flexDirection: 'row',
+        padding: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: '99%',
+        width: '100%',
+    },
+    paginationButton: {
+        marginRight: 20,
+        backgroundColor: '#ffffff',
+        borderRadius: 30,
+        padding: 10,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    pageCountStyle: {
+        marginRight: 20,
+        backgroundColor: '#d72b2b',
+        borderRadius: 30,
+        padding: 10,
+        height: 30,
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
