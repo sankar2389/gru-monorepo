@@ -561,6 +561,7 @@ export const newQuestion = (creator: any, title: any, description: string, group
                               }
                             }
                           }
+                          
                         `,
                         variables: {
                             "input": {
@@ -743,7 +744,6 @@ export const newComment = (creator: any, description: string, groupID: string, q
                               }
                             }
                           }
-                          
                         `,
                         variables: {
                             "input": {

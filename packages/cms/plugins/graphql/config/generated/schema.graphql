@@ -338,6 +338,86 @@ input CommentsInput {
   questions: ID
 }
 
+type Comments {
+  _id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  description: String!
+  groupID: String!
+  questionID: String!
+  creator: JSON!
+  questions: Questions
+}
+
+type CommentsAggregator {
+  count: Int
+}
+
+type CommentsConnection {
+  values: [Comments]
+  groupBy: CommentsGroupBy
+  aggregate: CommentsAggregator
+}
+
+type CommentsConnection_id {
+  key: ID
+  connection: CommentsConnection
+}
+
+type CommentsConnectionCreatedAt {
+  key: DateTime
+  connection: CommentsConnection
+}
+
+type CommentsConnectionCreator {
+  key: JSON
+  connection: CommentsConnection
+}
+
+type CommentsConnectionDescription {
+  key: String
+  connection: CommentsConnection
+}
+
+type CommentsConnectionGroupID {
+  key: String
+  connection: CommentsConnection
+}
+
+type CommentsConnectionQuestionID {
+  key: String
+  connection: CommentsConnection
+}
+
+type CommentsConnectionQuestions {
+  key: ID
+  connection: CommentsConnection
+}
+
+type CommentsConnectionUpdatedAt {
+  key: DateTime
+  connection: CommentsConnection
+}
+
+type CommentsGroupBy {
+  _id: [CommentsConnection_id]
+  createdAt: [CommentsConnectionCreatedAt]
+  updatedAt: [CommentsConnectionUpdatedAt]
+  description: [CommentsConnectionDescription]
+  groupID: [CommentsConnectionGroupID]
+  questionID: [CommentsConnectionQuestionID]
+  creator: [CommentsConnectionCreator]
+  questions: [CommentsConnectionQuestions]
+}
+
+input CommentsInput {
+  description: String!
+  groupID: String!
+  questionID: String!
+  creator: JSON!
+  questions: ID
+}
+
 input createBuyInput {
   data: BuyInput
 }
@@ -484,6 +564,14 @@ input editBuyInput {
   type: String
   bids: JSON
   acceptedBids: JSON
+}
+
+input editCommentsInput {
+  description: String
+  groupID: String
+  questionID: String
+  creator: JSON
+  questions: ID
 }
 
 input editCommentsInput {
